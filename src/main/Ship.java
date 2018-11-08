@@ -132,7 +132,7 @@ public class Ship {
 				location.y += ySpeed;
 			}
 		}
-		System.out.println(location.x + "," + location.y);
+//		System.out.println(location.x + "," + location.y);
 //		System.out.println(xSpeed + "," + ySpeed);
 	}
 	
@@ -147,14 +147,17 @@ public class Ship {
 	
 	public void setDirection(Point mouse) {
 		double angleDifference = MathStuffs.AngleBetween(location, rotation, mouse);
-		if (angleDifference < rotationSpeed) {
+		// Don't allow the change in difference to exceed the max rotation speed
+//		System.out.println((int)(angleDifference * 1000));
+		if (angleDifference > -0.01 && angleDifference < 0.01) {
 			rotation += angleDifference;
 			return;
 		}
 		if (angleDifference > 0) {
-			rotation += rotationSpeed;
+			rotation -= 0.01;
 		} else {
-			rotation -= rotationSpeed;
+			rotation += 0.01;
 		}
+		System.out.println((int) (100 * rotation));
 	}
 }

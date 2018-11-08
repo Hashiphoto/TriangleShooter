@@ -10,10 +10,10 @@ public class Constants {
 	}
 	
 	// GAME
-	public static final int FRAMERATE = 60;
+	public static final int FRAMERATE = 10;
 	
 	// SHIP
-	public static final double DEFAULT_SHIP_ROTATION_SPEED = 0.24 * Math.PI;
+	public static final double DEFAULT_SHIP_ROTATION_SPEED = 0.01 * Math.PI;
 	public static final double DEFAULT_SHIP_ACCEL = 1.0;
 	public static final int DEFAULT_SHIP_MAX_SPEED = 10;
 	public static final int DEFAULT_BULLET_SPEED = 5;
