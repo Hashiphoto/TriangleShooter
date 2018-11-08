@@ -44,4 +44,8 @@ public class Constants {
 	public static final int DEFAULT_BULLET_SPEED = 6;
 	public static final int DEFAULT_BULLET_RANGE = 300;
 	public static final int BULLET_DEATH_DISTANCE = 5;
+	
+	// NETWORK
+	public static final int PORT = 707;
+	public static final int CONNECT_DELAY = 1;
 }

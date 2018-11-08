@@ -153,7 +153,7 @@ public class Ship {
 	// Shooting
 	private void checkReload() {
 		System.out.println("Ammo: " + ammo);
-		double currentTimeSec = System.currentTimeMillis() / 1000;
+		double currentTimeSec = TimeSeconds.get();
 		if (ammo < clipSize && currentTimeSec - lastReloaded > reloadTime) {
 			ammo++;
 			lastReloaded = currentTimeSec;
@@ -165,7 +165,7 @@ public class Ship {
 		if (ammo > 0) {
 			// Don't reload immediately after firing the first shot
 			if(ammo == clipSize) {
-				lastReloaded = System.currentTimeMillis() / 1000;
+				lastReloaded = TimeSeconds.get();
 			}
 			newBullet = new Bullet(id, new Point(location), new Double(rotation), bulletSpeed, bulletRange, accuracy);
 			ammo--;
