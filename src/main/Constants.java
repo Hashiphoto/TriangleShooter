@@ -14,7 +14,7 @@ public class Constants {
 	
 	// SHIP
 	public static final double DEFAULT_SHIP_ROTATION_SPEED = 5;
-	public static final double DEFAULT_SHIP_ACCEL = 1.0;
+	public static final double DEFAULT_SHIP_ACCEL = 0.4;
 	public static final int DEFAULT_SHIP_MAX_SPEED = 10;
 	public static final int DEFAULT_BULLET_SPEED = 5;
 	public static final int DEFAULT_BULLET_RANGE = 20;

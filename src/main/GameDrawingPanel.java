@@ -35,7 +35,7 @@ public class GameDrawingPanel extends JPanel {
 		for(int i = 0; i < numShips; i++) {
 			Ship s = ships.get(i);
 			
-			g.drawOval(s.getX(), s.getY(), 5, 5);
+			g.drawOval(s.getX() - 5, s.getY() - 5, 10, 10);
 			g.drawLine(s.getX(), s.getY(), s.getX() + (int)(150 * Math.cos(s.getRotation())), s.getY() + (int)(150 * Math.sin(s.getRotation())));
 		}
 	}

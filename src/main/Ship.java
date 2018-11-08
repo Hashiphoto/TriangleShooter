@@ -80,59 +80,57 @@ public class Ship {
 			if (ySpeed < -shipMaxSpeed) {
 				ySpeed = -shipMaxSpeed;
 			}
-			location.y += ySpeed;
 		}
 		else if (keysHeld[Constants.DOWN]) {
 			ySpeed += shipAcceleration;
 			if (ySpeed > shipMaxSpeed) {
 				ySpeed = shipMaxSpeed;
 			}
-			location.y += ySpeed;
+		}
+		else {
+			if (ySpeed > 0) {
+				ySpeed -= shipAcceleration;
+				if(ySpeed < 0) {
+					ySpeed = 0;
+				}
+			} 
+			else if (ySpeed < 0) {
+				ySpeed += shipAcceleration;
+				if(ySpeed > 0) {
+					ySpeed = 0;
+				}
+			}
 		}
 		if (keysHeld[Constants.LEFT]) {
 			xSpeed -= shipAcceleration;
 			if (xSpeed < -shipMaxSpeed) {
 				xSpeed = -shipMaxSpeed;
 			}
-			location.x += xSpeed;
 		}
 		else if (keysHeld[Constants.RIGHT]) {
 			xSpeed += shipAcceleration;
 			if (xSpeed > shipMaxSpeed) {
 				xSpeed = shipMaxSpeed;
 			}
-			location.x += xSpeed;
 		}
-		if (noKeysHeld()) {
-			if (xSpeed != 0) {
-				if (xSpeed > 0) {
-					xSpeed -= shipAcceleration;
-					if (xSpeed < 0) {
-						xSpeed = 0;
-					}
-				} else {
-					xSpeed += shipAcceleration;
-					if (xSpeed > 0) {
-						xSpeed = 0;
-					}
+		else {
+			if (xSpeed > 0) {
+				xSpeed -= shipAcceleration;
+				if(xSpeed < 0) {
+					xSpeed = 0;
 				}
-				location.x += xSpeed;
-			} else {
-				if (ySpeed > 0) {
-					ySpeed -= shipAcceleration;
-					if (ySpeed < 0) {
-						ySpeed = 0;
-					}
-				} else {
-					ySpeed += shipAcceleration;
-					if (ySpeed > 0) {
-						ySpeed = 0;
-					}
+			} 
+			else if (xSpeed < 0) {
+				xSpeed += shipAcceleration;
+				if(xSpeed > 0) {
+					xSpeed = 0;
 				}
-				location.y += ySpeed;
 			}
 		}
-		System.out.println(location.x + "," + location.y);
+
+		location.x += xSpeed;
+		location.y += ySpeed;
+//		System.out.println(location.x + "," + location.y);
 //		System.out.println(xSpeed + "," + ySpeed);
 	}
 	
