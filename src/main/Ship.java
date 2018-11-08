@@ -148,12 +148,12 @@ public class Ship {
 		return newBullet;
 	}
 	
-	public int getX() {
-		return location.x;
+	public int getId() {
+		return id;
 	}
 	
-	public int getY() {
-		return location.y;
+	public Point getLocation() {
+		return location;
 	}
 	
 	public double getRotation() {

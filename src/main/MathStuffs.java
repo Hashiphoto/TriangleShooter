@@ -36,4 +36,19 @@ public class MathStuffs {
 		
 		return new Point(newX, newY);
 	}
+	
+	public static int[][] shipVertices(Point location, double rotation) {
+		int x[] = {
+        		location.x + (int) (Math.cos(rotation) * Constants.SHIP_FRONT_LENGTH),
+        		location.x + (int) (Math.cos(rotation+Math.PI*2/3) * Constants.SHIP_SIDE_LENGTH),
+        		location.x + (int) (Math.cos(rotation+Math.PI*4/3) * Constants.SHIP_SIDE_LENGTH)
+        };
+        int y[] = {
+        		location.y + (int) (Math.sin(rotation) * Constants.SHIP_FRONT_LENGTH),
+        		location.y + (int) (Math.sin(rotation+Math.PI*2/3) * Constants.SHIP_SIDE_LENGTH),
+        		location.y + (int) (Math.sin(rotation+Math.PI*4/3) * Constants.SHIP_SIDE_LENGTH)
+        };
+        
+        return new int[][] {x, y};
+	}
 }

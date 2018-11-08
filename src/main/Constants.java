@@ -1,9 +1,16 @@
 package main;
 
+import java.awt.Color;
+
 public class Constants {
 	public static final int GetNumUpgrades() {
 		return Upgrades.values().length;
 	}
+	
+	public static Color[] ShipColors = {
+		Color.CYAN,
+		Color.MAGENTA
+	};
 	
 	public enum Upgrades {
 		LASER;		//0
@@ -23,6 +30,10 @@ public class Constants {
 	public static final int DOWN = 1;
 	public static final int LEFT = 2;
 	public static final int RIGHT = 3;
+	
+	public static final int SHIP_SIDE_LENGTH = 20;
+	public static final int SHIP_FRONT_LENGTH = 50;
+	public static final int SHIP_OVAL_SIZE = 15;
 	
 	//Bullet
 	public static final int DEFAULT_SHIP_MAX_SPEED = 10;
