@@ -21,10 +21,11 @@ public class Bullet {
 		this.accuracy = accuracy;
 	}
 	
-	public void step() {
-//		System.out.println(rotation);
+	public boolean step() {
 		x += Math.cos(rotation) * speed;
 		y += Math.sin(rotation) * speed;
+		
+		return true;
 	}
 	
 	public double getX() {

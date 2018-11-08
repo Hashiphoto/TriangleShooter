@@ -19,9 +19,11 @@ public class Ship {
 	
 	private int bulletSpeed;
 	private int bulletRange;
+	private int clipSize;
+	private int ammo;
 	private double accuracy;
-	private int reloadTime;
-	private int reloadProgress;
+	private double reloadTime;
+	private double lastReloaded;
 	
 	public Ship(int id, Point start) {
 		this.id = id;
@@ -29,8 +31,10 @@ public class Ship {
 		this.rotation = 0;
 		this.xSpeed = 0;
 		this.ySpeed = 0;
-		this.reloadProgress = 0;
+		this.lastReloaded = 0;
 		this.keysHeld = new boolean[4];
+		this.clipSize = Constants.DEFAULT_CLIP_SIZE;
+		this.ammo = clipSize;
 		this.accuracy = Constants.DEFAULT_ACCURACY;
 		this.rotationSpeed = Constants.DEFAULT_SHIP_ROTATION_SPEED;
 		this.shipMaxSpeed = Constants.DEFAULT_SHIP_MAX_SPEED;
@@ -39,6 +43,12 @@ public class Ship {
 		this.bulletSpeed = Constants.DEFAULT_BULLET_SPEED;
 		this.bulletRange = Constants.DEFAULT_BULLET_RANGE;
 		this.reloadTime = Constants.DEFAULT_RELOAD_TIME;
+	}
+	
+	public void step(Point mouseLocation) {
+		move();
+		setDirection(mouseLocation);
+		checkReload();
 	}
 	
 	// Movement
@@ -141,13 +151,29 @@ public class Ship {
 	}
 	
 	// Shooting
+	private void checkReload() {
+		System.out.println("Ammo: " + ammo);
+		double currentTimeSec = System.currentTimeMillis() / 1000;
+		if (ammo < clipSize && currentTimeSec - lastReloaded > reloadTime) {
+			ammo++;
+			lastReloaded = currentTimeSec;
+		}
+	}
+	
 	public Bullet createBullet() {
-		System.out.println("Ship: " + rotation);
-		Bullet newBullet = new Bullet(id, new Point(location), new Double(rotation), bulletSpeed, bulletRange, accuracy);
-		
+		Bullet newBullet = null;
+		if (ammo > 0) {
+			// Don't reload immediately after firing the first shot
+			if(ammo == clipSize) {
+				lastReloaded = System.currentTimeMillis() / 1000;
+			}
+			newBullet = new Bullet(id, new Point(location), new Double(rotation), bulletSpeed, bulletRange, accuracy);
+			ammo--;
+		}
 		return newBullet;
 	}
 	
+	// Gets	
 	public int getId() {
 		return id;
 	}

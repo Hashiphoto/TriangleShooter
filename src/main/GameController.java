@@ -44,8 +44,7 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 	}
 	
 	private void update() {
-		myShip.move();
-		myShip.setDirection(contentPanel.getMouseLocation());
+		myShip.step(contentPanel.getMouseLocation());
 		// Iterate through each ship and update them
 		for(int i = 0; i < ships.size(); i++) {
 			if(ships.get(i) == myShip) {
@@ -81,7 +80,10 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 	public void mouseClicked(MouseEvent e) {
 		// Left Click
 		if(e.getButton() == 1) {
-			bullets.add(myShip.createBullet());
+			Bullet bullet = myShip.createBullet();
+			if(bullet != null) {
+				bullets.add(bullet);
+			}
 		}
 	}
 
