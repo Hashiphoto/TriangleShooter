@@ -3,7 +3,7 @@ package main;
 import java.awt.Point;
 
 public class MathStuffs {
-	public static double CalculateNewAngle(Point origin, Point mouse, double currentAngle, double turnSpeed) {
+	public static double calculateNewAngle(Point origin, Point mouse, double currentAngle, double turnSpeed) {
 		Point mouseUnitVector = new Point();
 		Point curDirUnitVector = new Point();
 		Point newUnitVector = new Point();
@@ -19,5 +19,21 @@ public class MathStuffs {
 		newUnitVector.y = (int) ((int) (mouseUnitVector.y + turnSpeed * curDirUnitVector.y) / 1.5);
 		
 		return Math.atan2(newUnitVector.y , newUnitVector.x);
+	}
+	
+	public static double distance(Point a, Point b) {
+		return Math.sqrt(Math.pow((a.y - b.y), 2) + Math.pow((a.x - b.x), 2));
+	}
+	
+	public static Point bulletMove(Point bullet, Point target, int speed) {
+		// Get the distance between the bullet and target
+		double dist = distance(bullet, target);
+		
+		// Calculate how many parts the total length can be divided into 
+		double ratio = speed / dist;
+		int newX = (int) ((bullet.x + target.x) / 2);
+		int newY = (int) ((bullet.y + target.y) / 2);
+		
+		return new Point(newX, newY);
 	}
 }

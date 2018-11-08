@@ -18,7 +18,7 @@ public class Ship {
 	private boolean[] upgrades;
 	
 	private int bulletSpeed;
-	private int bulletDistance;
+	private int bulletRange;
 	private double accuracy;
 	private int reloadTime;
 	private int reloadProgress;
@@ -37,9 +37,11 @@ public class Ship {
 		this.shipAcceleration = Constants.DEFAULT_SHIP_ACCEL;
 		this.upgrades = new boolean[Constants.GetNumUpgrades()];
 		this.bulletSpeed = Constants.DEFAULT_BULLET_SPEED;
+		this.bulletRange = Constants.DEFAULT_BULLET_RANGE;
 		this.reloadTime = Constants.DEFAULT_RELOAD_TIME;
 	}
 	
+	// Movement
 	public void keyPressed(int keyCode) {
 		switch(keyCode) {
 		case KeyEvent.VK_W:
@@ -134,17 +136,16 @@ public class Ship {
 //		System.out.println(xSpeed + "," + ySpeed);
 	}
 	
-	public boolean noKeysHeld() {
-		for (int i = 0; i < keysHeld.length; i++) {
-			if (keysHeld[i]) {
-				return false;
-			}
-		}
-		return true;
+	public void setDirection(Point mouse) {
+		rotation = MathStuffs.calculateNewAngle(location, mouse, rotation, rotationSpeed);
 	}
 	
-	public void setDirection(Point mouse) {
-		rotation = MathStuffs.CalculateNewAngle(location, mouse, rotation, rotationSpeed);
+	// Shooting
+	public Bullet createBullet() {
+		System.out.println("Ship: " + rotation);
+		Bullet newBullet = new Bullet(id, new Point(location), new Double(rotation), bulletSpeed, bulletRange, accuracy);
+		
+		return newBullet;
 	}
 	
 	public int getX() {
