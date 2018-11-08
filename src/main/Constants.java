@@ -42,6 +42,6 @@ public class Constants {
 	// BULLET
 	public static final int DEFAULT_SHIP_MAX_SPEED = 10;
 	public static final int DEFAULT_BULLET_SPEED = 6;
-	public static final int DEFAULT_BULLET_RANGE = 500;
+	public static final int DEFAULT_BULLET_RANGE = 300;
 	public static final int BULLET_DEATH_DISTANCE = 5;
 }

@@ -3,6 +3,7 @@ package main;
 import java.awt.Point;
 
 public class Bullet {
+	private Point initialLocation;
 	private double x;
 	private double y;
 	private double rotation;
@@ -13,6 +14,7 @@ public class Bullet {
 	
 	public Bullet(int id, Point location, double rotation, int speed, int range, double accuracy) {
 		this.id = id;
+		this.initialLocation = location;
 		this.x = location.x;
 		this.y = location.y;
 		this.rotation = rotation;
@@ -21,7 +23,11 @@ public class Bullet {
 		this.accuracy = accuracy;
 	}
 	
+	// Returns false if the bullet has expired
 	public boolean step() {
+		if (MathStuffs.distance(initialLocation, new Point((int)x, (int)y)) > range) {
+			return false;
+		}
 		x += Math.cos(rotation) * speed;
 		y += Math.sin(rotation) * speed;
 		

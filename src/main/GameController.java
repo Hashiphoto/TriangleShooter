@@ -54,9 +54,10 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 		}
 		
 		// Iterate through bullets and update them
-		int numBullets = bullets.size();
-		for(int i = 0; i < numBullets; i++) {
-			bullets.get(i).step();
+		for(int i = 0; i < bullets.size(); i++) {
+			if(!bullets.get(i).step()) {
+				bullets.remove(i);
+			}
 		}
 		contentPanel.repaint();
 	}
