@@ -1,6 +1,5 @@
 package main;
 
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -11,16 +10,17 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class GameGui extends JFrame implements KeyListener{
-	private JPanel contentPanel;
+	private GameDrawingPanel contentPanel;
 	private ArrayList<Ship> ships;
 	private Ship myShip;
 	private GameTime timer;
 	
 	public GameGui() {
-		contentPanel = new JPanel();
-		ships = new ArrayList<Ship>();
-		// Iterate through the network and add each ship with its ID
 		myShip = new Ship(0, new Point(600, 360));
+		ships = new ArrayList<Ship>();
+		ships.add(myShip);
+		// Iterate through the network and add each ship with its ID
+		contentPanel = new GameDrawingPanel(ships);
 		this.setTitle("Triangle Shooter");
 		this.setSize(1280, 720);
 		this.setContentPane(contentPanel);
@@ -41,15 +41,15 @@ public class GameGui extends JFrame implements KeyListener{
 	
 	private void update() {
 		myShip.move();
-		myShip.setDirection(MouseInfo.getPointerInfo().getLocation());
+		myShip.setDirection(contentPanel.getMouseLocation());
 		// Iterate through each ship and update them
 		for(int i = 0; i < ships.size(); i++) {
 			if(ships.get(i) == myShip) {
 				// Update based on keyboard input
-				return;
 			}
 			// Update based on network input
 		}
+		contentPanel.repaint();
 	}
 	
 	@Override

@@ -3,17 +3,21 @@ package main;
 import java.awt.Point;
 
 public class MathStuffs {
-	public static double AngleBetween(Point origin, double currentAngle, Point mouse) {
-		double newAngle = Math.atan2(mouse.y - origin.y, mouse.x - origin.x);
+	public static double CalculateNewAngle(Point origin, Point mouse, double currentAngle, double turnSpeed) {
+		Point mouseUnitVector = new Point();
+		Point curDirUnitVector = new Point();
+		Point newUnitVector = new Point();
+		double distanceToMouse = Math.sqrt(Math.pow(mouse.x - origin.x, 2) + Math.pow(mouse.y - origin.y, 2));
+
+		mouseUnitVector.x = (int) (((mouse.x - origin.x) / distanceToMouse) * Constants.TURN_PRECISION);
+		mouseUnitVector.y = (int) (((mouse.y - origin.y) / distanceToMouse) * Constants.TURN_PRECISION);
+
+		curDirUnitVector.x = (int) ((Math.cos(currentAngle)) * Constants.TURN_PRECISION);
+		curDirUnitVector.y = (int) ((Math.sin(currentAngle)) * Constants.TURN_PRECISION);
+
+		newUnitVector.x = (int) ((int) (mouseUnitVector.x + turnSpeed * curDirUnitVector.x) / 1.5);
+		newUnitVector.y = (int) ((int) (mouseUnitVector.y + turnSpeed * curDirUnitVector.y) / 1.5);
 		
-		double angle = currentAngle - newAngle;
-		if(angle > Math.PI) {
-			angle -= Math.PI;
-		}
-		else if(angle < -Math.PI) {
-			angle += Math.PI;
-		}
-		
-		return angle;
+		return Math.atan2(newUnitVector.y , newUnitVector.x);
 	}
 }
