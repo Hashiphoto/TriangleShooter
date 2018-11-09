@@ -7,14 +7,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Network {
+	public boolean connected;
 	private Socket clientSocket;
 	private ServerSocket serverSocket;
 	private String serverIp;
 	private InputStream input;
 	private OutputStream output;
 	
-	public Network(String ip) {
-
+	public Network() {
+		connected = false;
 	}
 	
 	public void join(String ip) {
@@ -25,6 +26,8 @@ public class Network {
 			}
 			try {
 				clientSocket = new Socket(ip, Constants.PORT);
+				connected = true;
+				System.out.println("Connected to server!");
 			} catch (IOException e) {
 				System.err.println("Error instantiating client socket");
 			}
@@ -48,6 +51,7 @@ public class Network {
 				input = opponent.getInputStream();
 				output = opponent.getOutputStream();
 				System.out.println("Connected to " + opponent.getInetAddress().getHostAddress());
+				connected = true;
 				connections++;
 			} catch (IOException e) {
 				System.err.println("Server failed to connect to a client");

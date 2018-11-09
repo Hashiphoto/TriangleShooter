@@ -152,7 +152,7 @@ public class Ship {
 	
 	// Shooting
 	private void checkReload() {
-		System.out.println("Ammo: " + ammo);
+//		System.out.println("Ammo: " + ammo);
 		double currentTimeSec = TimeSeconds.get();
 		if (ammo < clipSize && currentTimeSec - lastReloaded > reloadTime) {
 			ammo++;
