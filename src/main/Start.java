@@ -7,27 +7,26 @@ public class Start {
 
 	public static void main(String[] args) {
 		try {
-            // Set cross-platform Java L&F (also called "Metal")
-        UIManager.setLookAndFeel(
-            UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	    } 
 	    catch (UnsupportedLookAndFeelException e) {
-	       // handle exception
+	       e.printStackTrace();
 	    }
 	    catch (ClassNotFoundException e) {
-	       // handle exception
+	       e.printStackTrace();
 	    }
 	    catch (InstantiationException e) {
-	       // handle exception
+	       e.printStackTrace();
 	    }
 	    catch (IllegalAccessException e) {
-	       // handle exception
+	       e.printStackTrace();
 	    }
 		
 		NetworkConnectionWindow networkConnector = new NetworkConnectionWindow();
 		Network network = networkConnector.getConnection();
+		network.initializeShips();
 		
-		GameController game = new GameController();
+		GameController game = new GameController(network);
 		game.start();
 	}
 
