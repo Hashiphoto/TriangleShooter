@@ -48,4 +48,5 @@ public class Constants {
 	// NETWORK
 	public static final int PORT = 707;
 	public static final int CONNECT_DELAY = 1;
+	public static final int SHIP_PACKET_SIZE = Integer.BYTES * 2 + Float.BYTES;
 }

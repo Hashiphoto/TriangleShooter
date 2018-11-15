@@ -34,6 +34,15 @@ public class Network {
 		return null;
 	}
 	
+	public Ship getOpponent() {
+		for(Ship s : shipList) {
+			if(s.getId() != id) {
+				return s;
+			}
+		}
+		return null;
+	}
+	
 	public void initializeShips() {
 		switch(id) {
 		// Hosting
@@ -82,19 +91,44 @@ public class Network {
 	}
 	
 	public void sendShipState(Ship s) {
-		byte[] data = DataPacket.convertToGameShip(s);
 		try {
-			output.write(data);
-			output.flush();
+			ShipPacket packet = new ShipPacket(s.getLocation().x, s.getLocation().y, (float) s.getRotation());
+			output.write(packet.toByteArray());
 		}
 		catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-//	public Point getOpponentShipLocation() {
-//		input.read(arg0)
-//	}
+	public void sendBullet(Bullet b) {
+		
+	}
+	
+	public void read(byte[] byteArray) throws ArrayIndexOutOfBoundsException{
+		try {
+			input.read(byteArray);
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public int bytesAvailable() {
+		try {
+			return input.available();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	public void clearInputStream() {
+		try {
+			input.reset();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public int getId() {
 		return id;

@@ -47,7 +47,7 @@ public class Ship {
 	
 	public void step(Point mouseLocation) {
 		move();
-		setDirection(mouseLocation);
+		setDirectionMouse(mouseLocation);
 		checkReload();
 	}
 	
@@ -146,8 +146,12 @@ public class Ship {
 //		System.out.println(xSpeed + "," + ySpeed);
 	}
 	
-	public void setDirection(Point mouse) {
+	public void setDirectionMouse(Point mouse) {
 		rotation = MathStuffs.calculateNewAngle(location, mouse, rotation, rotationSpeed);
+	}
+	
+	public void setDirectionAngle(Double angle) {
+		rotation = angle;
 	}
 	
 	// Shooting
@@ -167,7 +171,7 @@ public class Ship {
 			if(ammo == clipSize) {
 				lastReloaded = TimeSeconds.get();
 			}
-			newBullet = new Bullet(id, new Point(location), new Double(rotation), bulletSpeed, bulletRange, accuracy);
+			newBullet = new Bullet(id, new Point(location), rotation, bulletSpeed, bulletRange, accuracy);
 			ammo--;
 		}
 		return newBullet;
@@ -184,5 +188,13 @@ public class Ship {
 	
 	public double getRotation() {
 		return rotation;
+	}
+	
+	// Sets
+	public void setLocation(Point newLocation) {
+		if (newLocation == null) {
+			return;
+		}
+		location = newLocation;
 	}
 }

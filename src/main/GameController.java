@@ -14,13 +14,17 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
 	private Ship myShip;
+	private Ship opponent;
 	private GameTime timer;
 	private Network network;
+	private ShipUpdateThread opponentThread;
 	
 	public GameController(Network network) {
 		this.network = network;
 		ships = network.getAllShips();
 		myShip = network.getMyShip();
+		opponent = network.getOpponent();
+		opponentThread = new ShipUpdateThread(network, opponent);
 		bullets = new ArrayList<Bullet>();
 		ships.add(myShip);
 		// Iterate through the network and add each ship with its ID
@@ -34,30 +38,22 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 	}
 	
 	public void start() {
+		System.out.println("Game Start!");
+		opponentThread.start();
 		this.setVisible(true);
 		timer = new GameTime();
 		while(true) {
 			if(timer.GetTimeElapsedSeconds() >= 1.0/Constants.FRAMERATE) {
 				update();
-				network.sendShipInit(myShip);
+				network.sendShipState(myShip);
 				timer.reset();
 			}
 		}
 	}
 	
 	private void update() {
-		// Iterate through each ship and update them
-		for(int i = 0; i < ships.size(); i++) {
-			if(ships.get(i) == null) {
-				System.err.println(network.getId() + " ship at index " + i + " is null");
-			}
-			if(ships.get(i) == myShip) {
-				// Update based on keyboard input
-				myShip.step(contentPanel.getMouseLocation());
-				continue;
-			}
-			// Update based on network input
-		}
+		myShip.step(contentPanel.getMouseLocation());
+		
 		
 		// Iterate through bullets and update them
 		for(int i = 0; i < bullets.size(); i++) {
@@ -90,6 +86,7 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 			Bullet bullet = myShip.createBullet();
 			if(bullet != null) {
 				bullets.add(bullet);
+				network.sendBullet(bullet);
 			}
 		}
 	}
