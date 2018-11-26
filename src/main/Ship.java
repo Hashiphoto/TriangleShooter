@@ -2,7 +2,7 @@ package main;
 
 import java.awt.Point;
 
-import com.sun.glass.events.KeyEvent;
+import javafx.scene.input.KeyEvent;
 
 public class Ship {
 	public boolean isFiring;
@@ -75,35 +75,35 @@ public class Ship {
 	}
 	
 	// Movement
-	public void keyPressed(int keyCode) {
+	public void keyPressed(String keyCode) {
 		switch(keyCode) {
-		case KeyEvent.VK_W:
+		case "W":
 			keysHeld[Constants.UP] = true;
 			break;
-		case KeyEvent.VK_S:
+		case "S":
 			keysHeld[Constants.DOWN] = true;
 			break;
-		case KeyEvent.VK_A:
+		case "A":
 			keysHeld[Constants.LEFT] = true;
 			break;
-		case KeyEvent.VK_D:
+		case "D":
 			keysHeld[Constants.RIGHT] = true;
 			break;
 		}
 	}
 	
-	public void keyReleased(int keyCode) {
+	public void keyReleased(String keyCode) {
 		switch(keyCode) {
-		case KeyEvent.VK_W:
+		case "W":
 			keysHeld[Constants.UP] = false;
 			break;
-		case KeyEvent.VK_S:
+		case "S":
 			keysHeld[Constants.DOWN] = false;
 			break;
-		case KeyEvent.VK_A:
+		case "A":
 			keysHeld[Constants.LEFT] = false;
 			break;
-		case KeyEvent.VK_D:
+		case "D":
 			keysHeld[Constants.RIGHT] = false;
 			break;
 		}

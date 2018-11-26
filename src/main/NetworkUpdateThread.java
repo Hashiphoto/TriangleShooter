@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class NetworkUpdateThread extends Thread {
 	private Ship ship;
 	private Network network;
-	private final Lock lock = new ReentrantLock();
+//	private final Lock lock = new ReentrantLock();
 	GameTime timer;
 	
 	public NetworkUpdateThread(Network n, Ship s) {
@@ -26,7 +26,7 @@ public class NetworkUpdateThread extends Thread {
 	}	
 	
 	public void getUpdates() {
-		lock.lock();
+//		lock.lock();
 		if(network.bytesAvailable() == 0) {
 			return;
 		}
@@ -42,7 +42,7 @@ public class NetworkUpdateThread extends Thread {
 			ship.setDirectionAngle(packet.getRotation());
 		} 
 		finally {
-			lock.unlock();
+//			lock.unlock();
 		}
 	}
 }

@@ -3,9 +3,19 @@ package main;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-public class Start {
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.stage.Stage;
+
+public class Start extends Application{
 
 	public static void main(String[] args) {
+		launch(args);
+	}
+	
+	public void start(Stage theStage) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	    } 
@@ -26,8 +36,16 @@ public class Start {
 		Network network = networkConnector.getConnection();
 		network.initializeShips();
 		
-		GameController game = new GameController(network);
-		game.start();
+		Group root = new Group();
+		GameCanvas canvas = new GameCanvas(1280, 720);
+		GameController game = new GameController(network, root, canvas);
+	    theStage.setScene(game);
+	    theStage.setTitle("Triangles");
+	 
+	    root.getChildren().add(canvas);
+	    
+	    theStage.show();
+	    game.start();
 	}
 
 }

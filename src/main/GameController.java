@@ -1,26 +1,32 @@
 package main;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.Point;
 import java.util.ArrayList;
 
-import javax.swing.JFrame;
+import javafx.animation.AnimationTimer;
+import javafx.event.EventHandler;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
-@SuppressWarnings("serial")
-public class GameController extends JFrame implements KeyListener, MouseListener {
-	private GameDrawingPanel contentPanel;
+public class GameController extends Scene {
+	private GameCanvas canvas;
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
+//	private ArrayList<String> input;
 	private Ship myShip;
 	private Ship opponent;
 	private GameTime timer;
 	private Network network;
 	private NetworkUpdateThread opponentThread;
+	private Point mouseLocation;
 	
-	public GameController(Network network) {
+	public GameController(Network network, Group group, GameCanvas canvas) {
+		super(group);
 		this.network = network;
+		this.canvas = canvas;
 		ships = network.getAllShips();
 		myShip = network.getMyShip();
 		opponent = network.getOpponent();
@@ -28,31 +34,58 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 		opponentThread = new NetworkUpdateThread(network, opponent);
 		bullets = new ArrayList<Bullet>();
 		ships.add(myShip);
-		// Iterate through the network and add each ship with its ID
-		contentPanel = new GameDrawingPanel(ships, bullets);
-		this.setTitle("Triangle Shooter | ID: " + network.getId());
-		this.setSize(1280, 720);
-		this.setContentPane(contentPanel);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.addKeyListener(this);
-		this.addMouseListener(this);
+		canvas.init(ships, bullets);
+		mouseLocation = new Point();
+		this.setOnMouseMoved(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				mouseLocation.x = (int) event.getX();
+				mouseLocation.y = (int) event.getY();
+			}
+		});
+		this.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getButton() == MouseButton.PRIMARY) {
+					myShip.isFiring = true;
+				}
+			}
+		});
+		this.setOnKeyPressed(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				String code = event.getCode().toString();
+//				if(!input.contains(code)) {
+//					input.add(code);
+//				}
+				myShip.keyPressed(code);
+			}
+		});
+		this.setOnKeyReleased(new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				String code = event.getCode().toString();
+//				input.remove(code);
+				myShip.keyReleased(code);
+			}
+		});
 	}
 	
 	public void start() {
 		System.out.println("Game Start!");
 		opponentThread.start();
-		this.setVisible(true);
-		timer = new GameTime();
-		while(true) {
-			if(timer.GetTimeElapsedSeconds() >= 1.0/Constants.FRAMERATE) {
+		
+	    final long startNanoTime = System.nanoTime();	
+		new AnimationTimer() {
+			public void handle(long currentNanoTime) {
+				double t = (currentNanoTime - startNanoTime) / 1000000000.0;
 				update();
-				timer.reset();
 			}
-		}
+		}.start();
 	}
 	
 	private void update() {
-		myShip.step(contentPanel.getMouseLocation());
+		myShip.step(mouseLocation);
 		if(myShip.isFiring) {
 			Bullet bullet = myShip.createBullet();
 			if(bullet != null) {
@@ -75,52 +108,8 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 				bullets.remove(i);
 			}
 		}
-		contentPanel.repaint();
+		canvas.repaint();
 		network.sendShipState(myShip);
 		myShip.isFiring = false;
 	}
-	
-	@Override
-	public void keyPressed(KeyEvent key) {
-		myShip.keyPressed(key.getKeyCode());		
-	}
-
-	@Override
-	public void keyReleased(KeyEvent key) {
-		myShip.keyReleased(key.getKeyCode());
-	}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {
-		
-	}
-	
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// Left Click
-		if(e.getButton() == 1) {
-			myShip.isFiring = true;
-		}
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		
-	}
-	
 }

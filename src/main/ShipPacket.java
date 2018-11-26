@@ -22,7 +22,7 @@ public class ShipPacket {
 		// If received more than one packet, grab the latest position/rotation only
 		// BUT make sure to acknowledge if a bullet was fired
 		if(b.length > Constants.SHIP_PACKET_SIZE) {
-			System.out.println("Recieved more than one byte");
+//			System.out.println("Recieved more than one byte");
 			byte[] newByteArr;
 			newByteArr = new byte[Constants.SHIP_PACKET_SIZE];
 			for(int i = 0; i < Constants.SHIP_PACKET_SIZE; i++) {

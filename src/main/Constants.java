@@ -1,13 +1,14 @@
 package main;
 
-import java.awt.Color;
+
+import javafx.scene.paint.Color;
 
 public class Constants {
 	public static final int GetNumUpgrades() {
 		return Upgrades.values().length;
 	}
-	
-	public static Color[] ShipColors = {
+
+	public static final Color[] ShipColors = {
 		Color.CYAN,
 		Color.MAGENTA
 	};
@@ -20,8 +21,9 @@ public class Constants {
 	public static final int FRAMERATE = 60;
 	
 	// SHIP
-	public static final double DEFAULT_SHIP_ROTATION_SPEED = 5;
+	public static final double DEFAULT_SHIP_ROTATION_SPEED = 3;
 	public static final double DEFAULT_SHIP_ACCEL = 0.4;
+	public static final int DEFAULT_SHIP_MAX_SPEED = 3;
 	public static final int TURN_PRECISION = 1000;
 	
 	public static final int STOP = -1;
@@ -40,8 +42,7 @@ public class Constants {
 	public static final int DEFAULT_CLIP_SIZE = 5;
 	
 	// BULLET
-	public static final int DEFAULT_SHIP_MAX_SPEED = 10;
-	public static final int DEFAULT_BULLET_SPEED = 6;
+	public static final int DEFAULT_BULLET_SPEED = 8;
 	public static final int DEFAULT_BULLET_RANGE = 300;
 	public static final int BULLET_DEATH_DISTANCE = 5;
 	public static final int BULLET_PACKET_SIZE = 1 + Integer.BYTES * 5 + Double.BYTES;
