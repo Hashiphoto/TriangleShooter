@@ -3,19 +3,25 @@ package main;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ShipUpdateThread extends Thread {
+public class NetworkUpdateThread extends Thread {
 	private Ship ship;
 	private Network network;
 	private final Lock lock = new ReentrantLock();
-	public ShipUpdateThread(Network n, Ship s) {
+	GameTime timer;
+	
+	public NetworkUpdateThread(Network n, Ship s) {
 		ship = s;
 		network = n;
 	}
 	
 	@Override
 	public void run() {
+		timer = new GameTime();
 		while(true) {
-			getUpdates();
+			if(timer.GetTimeElapsedSeconds() >= 0.01) {
+				getUpdates();
+				timer.reset();
+			}
 		}
 	}	
 	
@@ -31,6 +37,7 @@ public class ShipUpdateThread extends Thread {
 			if(packet == null) {
 				return;
 			}
+			ship.isFiring = packet.isFiring();
 			ship.setLocation(packet.getlocation());
 			ship.setDirectionAngle(packet.getRotation());
 		} 

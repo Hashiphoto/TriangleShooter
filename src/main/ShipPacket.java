@@ -4,12 +4,14 @@ import java.awt.Point;
 import java.nio.ByteBuffer;
 
 public class ShipPacket {
+	boolean isFiring;
 	private int x;
 	private int y;
 	private float rotation;
 	private int size;
 	
-	public ShipPacket(int x, int y, float rotation) {
+	public ShipPacket(boolean isFiring, int x, int y, float rotation) {
+		this.isFiring = isFiring;
 		this.x = x;
 		this.y = y;
 		this.rotation = rotation;
@@ -19,66 +21,37 @@ public class ShipPacket {
 	public static ShipPacket convertToShipPacket(byte[] b) {
 		if(b.length > Constants.SHIP_PACKET_SIZE) {
 			byte[] newByteArr;
-			newByteArr = new byte[12];
-			for(int i = 0; i < 12; i++) {
-				newByteArr[i] = b[b.length - 12 + i];
+			newByteArr = new byte[Constants.SHIP_PACKET_SIZE];
+			for(int i = 0; i < Constants.SHIP_PACKET_SIZE; i++) {
+				newByteArr[i] = b[b.length - Constants.SHIP_PACKET_SIZE + i];
 			}
 			b = newByteArr;
 		}
-		byte[] temp = new byte[4];
-		int x = 0;
-		int y = 0;
-		float rotation = 0;
-		for(int i = 0; i < b.length; i++) {
-			switch(i) {
-			case 0:
-				temp[i] = b[i];
-				break;
-			case 1:
-				temp[i] = b[i];
-				break;
-			case 2:
-				temp[i] = b[i];
-				break;
-			case 3:
-				temp[i] = b[i];
-				x = ByteBuffer.wrap(temp).getInt();
-				break;
-			case 4:
-				temp[i % 4] = b[i];
-				break;
-			case 5:
-				temp[i % 4] = b[i];
-				break;
-			case 6:
-				temp[i % 4] = b[i];
-				break;
-			case 7:
-				temp[i % 4] = b[i];
-				y = ByteBuffer.wrap(temp).getInt();
-				break;
-			case 8:
-				temp[i % 4] = b[i];
-				break;
-			case 9:
-				temp[i % 4] = b[i];
-				break;
-			case 10:
-				temp[i % 4] = b[i];
-				break;
-			case 11:
-				temp[i % 4] = b[i];
-				rotation = ByteBuffer.wrap(temp).getFloat();
-				break;
-			}
-		}
-		return new ShipPacket(x, y, rotation);
+		boolean isFiring = b[0] != 0;
+		int x = extractInt(b, 1);
+		int y = extractInt(b, 5);
+		float rotation = extractFloat(b, 9);
+		
+		return new ShipPacket(isFiring, x, y, rotation);
 	}
 	
 	public byte[] toByteArray() {
 		ByteBuffer buffer = ByteBuffer.allocate(size);
-		buffer.putInt(x).putInt(y).putFloat(rotation);
+		byte booleanByte = 0;
+		if(isFiring) {
+			booleanByte = (byte) 1;
+		}
+		buffer.put(booleanByte).putInt(x).putInt(y).putFloat(rotation);
 		return buffer.array();
+	}
+	
+	private static int extractInt(byte[]b, int start) {
+		return b[start] << 24 | (b[start + 1] & 0xFF) << 16 | (b[start + 2] & 0xFF) << 8 | (b[start + 3] & 0xFF);
+	}
+	
+	private static float extractFloat(byte[]b, int start) {
+//		return b[start] << 24 | (b[start + 1] & 0xFF) << 16 | (b[start + 2] & 0xFF) << 8 | (b[start + 3] & 0xFF);
+		return ByteBuffer.wrap(b, start, 4).getFloat();
 	}
 	
 	public int size() {
@@ -91,5 +64,9 @@ public class ShipPacket {
 	
 	public double getRotation() {
 		return rotation;
+	}
+	
+	public boolean isFiring() {
+		return isFiring;
 	}
 }

@@ -44,9 +44,10 @@ public class Constants {
 	public static final int DEFAULT_BULLET_SPEED = 6;
 	public static final int DEFAULT_BULLET_RANGE = 300;
 	public static final int BULLET_DEATH_DISTANCE = 5;
+	public static final int BULLET_PACKET_SIZE = 1 + Integer.BYTES * 5 + Double.BYTES;
 	
 	// NETWORK
 	public static final int PORT = 707;
 	public static final int CONNECT_DELAY = 1;
-	public static final int SHIP_PACKET_SIZE = Integer.BYTES * 2 + Float.BYTES;
+	public static final int SHIP_PACKET_SIZE = 1 + Integer.BYTES * 2 + Float.BYTES;
 }

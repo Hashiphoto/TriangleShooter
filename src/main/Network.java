@@ -51,10 +51,7 @@ public class Network {
 				// Send ship
 				Ship myShip = new Ship(id, new Point(300, 300));
 				shipList.add(myShip);
-				output.writeInt(id);
-				output.writeInt(myShip.getLocation().x);
-				output.writeInt(myShip.getLocation().y);
-				output.flush();
+				sendShipInit(myShip);
 				// Receive ship
 				int opponentId = input.readInt();
 				int x = input.readInt();
@@ -74,10 +71,7 @@ public class Network {
 				shipList.add(new Ship(opponentId, new Point(x, y)));
 				// Send ship
 				Ship myShip = new Ship(id, new Point(600, 300));
-				output.writeInt(id);
-				output.writeInt(myShip.getLocation().x);
-				output.writeInt(myShip.getLocation().y);
-				output.flush();
+				sendShipInit(myShip);
 				shipList.add(myShip);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -86,13 +80,27 @@ public class Network {
 		}
 	}
 	
-	public void sendShipInit(Ship s) {
+	public void sendShipInit(Ship myShip) {
+		try {
+			output.writeInt(id);
+			output.writeInt(myShip.getLocation().x);
+			output.writeInt(myShip.getLocation().y);
+			output.writeInt(myShip.getShipMaxSpeed());
+			output.writeDouble(myShip.getShipAcceleration());
+			output.writeInt(myShip.getBulletSpeed());
+			output.writeInt(myShip.getBulletRange());
+			output.writeInt(myShip.getClipSize());
+			output.writeDouble(myShip.getReloadTime());
+			output.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
 	public void sendShipState(Ship s) {
 		try {
-			ShipPacket packet = new ShipPacket(s.getLocation().x, s.getLocation().y, (float) s.getRotation());
+			ShipPacket packet = new ShipPacket(s.isFiring, s.getLocation().x, s.getLocation().y, (float) s.getRotation());
 			output.write(packet.toByteArray());
 		}
 		catch(IOException e) {
@@ -101,7 +109,13 @@ public class Network {
 	}
 	
 	public void sendBullet(Bullet b) {
-		
+		try {
+			BulletPacket packet = new BulletPacket(b);
+			output.write(packet.toByteArray());
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void read(byte[] byteArray) throws ArrayIndexOutOfBoundsException{

@@ -5,6 +5,8 @@ import java.awt.Point;
 import com.sun.glass.events.KeyEvent;
 
 public class Ship {
+	public boolean isFiring;
+	
 	private int id;
 	private Point location;
 	private double rotation;
@@ -14,9 +16,7 @@ public class Ship {
 	private int shipMaxSpeed;
 	private double shipAcceleration;
 	private boolean[] keysHeld;
-	
 	private boolean[] upgrades;
-	
 	private int bulletSpeed;
 	private int bulletRange;
 	private int clipSize;
@@ -26,6 +26,7 @@ public class Ship {
 	private double lastReloaded;
 	
 	public Ship(int id, Point start) {
+		this.isFiring = false;
 		this.id = id;
 		this.location = start;
 		this.rotation = 0;
@@ -43,6 +44,27 @@ public class Ship {
 		this.bulletSpeed = Constants.DEFAULT_BULLET_SPEED;
 		this.bulletRange = Constants.DEFAULT_BULLET_RANGE;
 		this.reloadTime = Constants.DEFAULT_RELOAD_TIME;
+	}
+	
+	public Ship(int id, Point start, int maxSpeed, double acceleration, int bulletSpeed, int bulletRange, int clipSize, double reloadTime) {
+		this.isFiring = false;
+		this.id = id;
+		this.location = start;
+		this.rotation = 0;
+		this.xSpeed = 0;
+		this.ySpeed = 0;
+		this.lastReloaded = 0;
+		this.keysHeld = new boolean[4];
+		this.clipSize = clipSize;
+		this.ammo = clipSize;
+		this.accuracy = Constants.DEFAULT_ACCURACY;
+		this.rotationSpeed = Constants.DEFAULT_SHIP_ROTATION_SPEED;
+		this.shipMaxSpeed = maxSpeed;
+		this.shipAcceleration = acceleration;
+		this.upgrades = new boolean[Constants.GetNumUpgrades()];
+		this.bulletSpeed = bulletSpeed;
+		this.bulletRange = bulletRange;
+		this.reloadTime = reloadTime;
 	}
 	
 	public void step(Point mouseLocation) {
@@ -188,6 +210,34 @@ public class Ship {
 	
 	public double getRotation() {
 		return rotation;
+	}
+	
+	public int getShipMaxSpeed() {
+		return shipMaxSpeed;
+	}
+	
+	public double getShipAcceleration() {
+		return shipAcceleration;
+	}
+	
+	//private boolean[] upgrades;
+	
+	public int getBulletSpeed() {
+		return bulletSpeed;
+	}
+	
+	public int getBulletRange() {
+		return bulletRange;
+	}
+	
+	public int getClipSize() {
+		return clipSize;
+	}
+
+//	private double accuracy;
+	
+	public double getReloadTime() {
+		return reloadTime;
 	}
 	
 	// Sets

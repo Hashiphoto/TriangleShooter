@@ -34,11 +34,27 @@ public class Bullet {
 		return true;
 	}
 	
-	public double getX() {
-		return x;
+	public int getId() {
+		return id;
 	}
 	
-	public double getY() {
-		return y;
+	public int getX() {
+		return (int) x;
+	}
+	
+	public int getY() {
+		return (int) y;
+	}
+	
+	public double getRotation() {
+		return rotation;
+	}
+	
+	public int getSpeed() {
+		return speed;
+	}
+	
+	public int getRange() {
+		return range;
 	}
 }

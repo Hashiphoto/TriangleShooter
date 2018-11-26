@@ -17,14 +17,14 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 	private Ship opponent;
 	private GameTime timer;
 	private Network network;
-	private ShipUpdateThread opponentThread;
+	private NetworkUpdateThread opponentThread;
 	
 	public GameController(Network network) {
 		this.network = network;
 		ships = network.getAllShips();
 		myShip = network.getMyShip();
 		opponent = network.getOpponent();
-		opponentThread = new ShipUpdateThread(network, opponent);
+		opponentThread = new NetworkUpdateThread(network, opponent);
 		bullets = new ArrayList<Bullet>();
 		ships.add(myShip);
 		// Iterate through the network and add each ship with its ID
@@ -45,7 +45,6 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 		while(true) {
 			if(timer.GetTimeElapsedSeconds() >= 1.0/Constants.FRAMERATE) {
 				update();
-				network.sendShipState(myShip);
 				timer.reset();
 			}
 		}
@@ -53,7 +52,18 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 	
 	private void update() {
 		myShip.step(contentPanel.getMouseLocation());
-		
+		if(myShip.isFiring) {
+			Bullet bullet = myShip.createBullet();
+			if(bullet != null) {
+				bullets.add(bullet);
+			}
+		}
+		if(opponent.isFiring) {
+			Bullet bullet = opponent.createBullet();
+			if(bullet != null) {
+				bullets.add(bullet);
+			}
+		}
 		
 		// Iterate through bullets and update them
 		for(int i = 0; i < bullets.size(); i++) {
@@ -62,6 +72,8 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 			}
 		}
 		contentPanel.repaint();
+		network.sendShipState(myShip);
+		myShip.isFiring = false;
 	}
 	
 	@Override
@@ -83,11 +95,7 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 	public void mouseClicked(MouseEvent e) {
 		// Left Click
 		if(e.getButton() == 1) {
-			Bullet bullet = myShip.createBullet();
-			if(bullet != null) {
-				bullets.add(bullet);
-				network.sendBullet(bullet);
-			}
+			myShip.isFiring = true;
 		}
 	}
 
