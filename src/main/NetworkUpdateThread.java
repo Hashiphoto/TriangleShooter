@@ -18,7 +18,7 @@ public class NetworkUpdateThread extends Thread {
 	public void run() {
 		timer = new GameTime();
 		while(true) {
-			if(timer.GetTimeElapsedSeconds() >= 0.01) {
+			if(timer.GetTimeElapsedSeconds() >= 0.001) {
 				getUpdates();
 				timer.reset();
 			}

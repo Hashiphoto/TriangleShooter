@@ -19,11 +19,24 @@ public class ShipPacket {
 	}
 	
 	public static ShipPacket convertToShipPacket(byte[] b) {
+		// If received more than one packet, grab the latest position/rotation only
+		// BUT make sure to acknowledge if a bullet was fired
 		if(b.length > Constants.SHIP_PACKET_SIZE) {
+			System.out.println("Recieved more than one byte");
 			byte[] newByteArr;
 			newByteArr = new byte[Constants.SHIP_PACKET_SIZE];
 			for(int i = 0; i < Constants.SHIP_PACKET_SIZE; i++) {
 				newByteArr[i] = b[b.length - Constants.SHIP_PACKET_SIZE + i];
+			}
+			
+			// Iterate through all first bits to see if a bullet was fired in the time span
+			if(newByteArr[0] == 0) {
+				for(int i = 0; i < b.length; i += Constants.SHIP_PACKET_SIZE) {
+					if (b[i] == 1) {
+						newByteArr[0] = 1;
+						break;
+					}
+				}
 			}
 			b = newByteArr;
 		}

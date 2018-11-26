@@ -94,6 +94,14 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 	public void keyTyped(KeyEvent arg0) {
 		
 	}
+	
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// Left Click
+		if(e.getButton() == 1) {
+			myShip.isFiring = true;
+		}
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -108,15 +116,6 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 	@Override
 	public void mouseExited(MouseEvent e) {
 		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		System.out.println("Hello");
-		// Left Click
-		if(e.getButton() == 1) {
-			myShip.isFiring = true;
-		}
 	}
 
 	@Override
