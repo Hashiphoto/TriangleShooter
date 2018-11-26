@@ -6,6 +6,7 @@ import com.sun.glass.events.KeyEvent;
 
 public class Ship {
 	public boolean isFiring;
+	public boolean isEnemy;
 	
 	private int id;
 	private Point location;
@@ -188,7 +189,7 @@ public class Ship {
 	
 	public Bullet createBullet() {
 		Bullet newBullet = null;
-		if (ammo > 0) {
+		if (ammo > 0 || isEnemy) { // Don't restrict enemy fire
 			// Don't reload immediately after firing the first shot
 			if(ammo == clipSize) {
 				lastReloaded = TimeSeconds.get();
@@ -220,7 +221,7 @@ public class Ship {
 		return shipAcceleration;
 	}
 	
-	//private boolean[] upgrades;
+//	private boolean[] upgrades;
 	
 	public int getBulletSpeed() {
 		return bulletSpeed;

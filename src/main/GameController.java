@@ -24,6 +24,7 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 		ships = network.getAllShips();
 		myShip = network.getMyShip();
 		opponent = network.getOpponent();
+		opponent.isEnemy = true;
 		opponentThread = new NetworkUpdateThread(network, opponent);
 		bullets = new ArrayList<Bullet>();
 		ships.add(myShip);
@@ -56,6 +57,9 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 			Bullet bullet = myShip.createBullet();
 			if(bullet != null) {
 				bullets.add(bullet);
+			}
+			else {
+				myShip.isFiring = false;
 			}
 		}
 		if(opponent.isFiring) {
@@ -93,10 +97,7 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// Left Click
-		if(e.getButton() == 1) {
-			myShip.isFiring = true;
-		}
+
 	}
 
 	@Override
@@ -111,7 +112,11 @@ public class GameController extends JFrame implements KeyListener, MouseListener
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		
+		System.out.println("Hello");
+		// Left Click
+		if(e.getButton() == 1) {
+			myShip.isFiring = true;
+		}
 	}
 
 	@Override
