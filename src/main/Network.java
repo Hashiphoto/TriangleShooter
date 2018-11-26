@@ -108,16 +108,6 @@ public class Network {
 		}
 	}
 	
-	public void sendBullet(Bullet b) {
-		try {
-			BulletPacket packet = new BulletPacket(b);
-			output.write(packet.toByteArray());
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public void read(byte[] byteArray) throws ArrayIndexOutOfBoundsException{
 		try {
 			input.read(byteArray);
