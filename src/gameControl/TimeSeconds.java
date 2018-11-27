@@ -1,4 +1,4 @@
-package main;
+package gameControl;
 
 public class TimeSeconds {
 	public static double get() {

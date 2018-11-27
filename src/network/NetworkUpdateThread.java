@@ -1,4 +1,7 @@
-package main;
+package network;
+
+import gameControl.GameTime;
+import gameElements.Ship;
 
 public class NetworkUpdateThread extends Thread {
 	private Ship ship;

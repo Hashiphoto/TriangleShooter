@@ -1,4 +1,4 @@
-package main;
+package gameElements;
 
 public class ShipMods {
 	public static final int GetNumUpgrades() {

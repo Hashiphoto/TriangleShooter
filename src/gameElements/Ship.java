@@ -1,6 +1,9 @@
-package main;
+package gameElements;
 
 import java.awt.Point;
+
+import gameControl.MathStuffs;
+import gameControl.TimeSeconds;
 
 public class Ship {
 	private static final int UP = 0;

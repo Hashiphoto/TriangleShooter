@@ -1,4 +1,4 @@
-package main;
+package network;
 
 import java.awt.Point;
 import java.io.DataInputStream;
@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+
+import gameControl.TimeSeconds;
+import gameElements.Ship;
 
 public class Network {
 	private static final int PORT = 707;

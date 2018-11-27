@@ -1,11 +1,13 @@
-package main;
+package gui;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import gameControl.GameController;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.stage.Stage;
+import network.Network;
 
 public class Start extends Application{
 

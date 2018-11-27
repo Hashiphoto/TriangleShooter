@@ -1,4 +1,4 @@
-package main;
+package gameControl;
 
 import java.awt.Point;
 

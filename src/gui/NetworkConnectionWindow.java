@@ -1,4 +1,4 @@
-package main;
+package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -10,6 +10,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import network.Network;
 
 @SuppressWarnings("serial")
 public class NetworkConnectionWindow extends JFrame{

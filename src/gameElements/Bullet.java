@@ -1,6 +1,9 @@
-package main;
+package gameElements;
 
 import java.awt.Point;
+
+import gameControl.MathStuffs;
+
 
 public class Bullet {
 	private Point initialLocation;

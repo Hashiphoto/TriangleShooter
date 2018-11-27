@@ -1,8 +1,11 @@
-package main;
+package gameControl;
 
 import java.awt.Point;
 import java.util.ArrayList;
 
+import gameElements.Bullet;
+import gameElements.Ship;
+import gui.GameCanvas;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -10,6 +13,8 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import network.Network;
+import network.NetworkUpdateThread;
 
 public class GameController extends Scene {
 	public static final int FRAMERATE = 60;

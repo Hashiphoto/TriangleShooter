@@ -1,7 +1,10 @@
-package main;
+package gui;
 
 import java.util.ArrayList;
 
+import gameControl.MathStuffs;
+import gameElements.Bullet;
+import gameElements.Ship;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
