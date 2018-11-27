@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.nio.ByteBuffer;
 
 public class ShipPacket {
+	private static final int SHIP_PACKET_SIZE = 1 + Integer.BYTES * 2 + Float.BYTES;
+	
 	boolean isFiring;
 	private int x;
 	private int y;
@@ -15,23 +17,23 @@ public class ShipPacket {
 		this.x = x;
 		this.y = y;
 		this.rotation = rotation;
-		size = Constants.SHIP_PACKET_SIZE;
+		size = SHIP_PACKET_SIZE;
 	}
 	
 	public static ShipPacket convertToShipPacket(byte[] b) {
 		// If received more than one packet, grab the latest position/rotation only
 		// BUT make sure to acknowledge if a bullet was fired
-		if(b.length > Constants.SHIP_PACKET_SIZE) {
+		if(b.length > SHIP_PACKET_SIZE) {
 //			System.out.println("Recieved more than one byte");
 			byte[] newByteArr;
-			newByteArr = new byte[Constants.SHIP_PACKET_SIZE];
-			for(int i = 0; i < Constants.SHIP_PACKET_SIZE; i++) {
-				newByteArr[i] = b[b.length - Constants.SHIP_PACKET_SIZE + i];
+			newByteArr = new byte[SHIP_PACKET_SIZE];
+			for(int i = 0; i < SHIP_PACKET_SIZE; i++) {
+				newByteArr[i] = b[b.length - SHIP_PACKET_SIZE + i];
 			}
 			
 			// Iterate through all first bits to see if a bullet was fired in the time span
 			if(newByteArr[0] == 0) {
-				for(int i = 0; i < b.length; i += Constants.SHIP_PACKET_SIZE) {
+				for(int i = 0; i < b.length; i += SHIP_PACKET_SIZE) {
 					if (b[i] == 1) {
 						newByteArr[0] = 1;
 						break;

@@ -2,9 +2,21 @@ package main;
 
 import java.awt.Point;
 
-import javafx.scene.input.KeyEvent;
-
 public class Ship {
+	private static final int UP = 0;
+	private static final int DOWN = 1;
+	private static final int LEFT = 2;
+	private static final int RIGHT = 3;
+	private static final double DEFAULT_SHIP_ROTATION_SPEED = 3;
+	private static final double DEFAULT_SHIP_ACCEL = 0.4;
+	private static final int DEFAULT_SHIP_MAX_SPEED = 3;
+	public static final double DEFAULT_ACCURACY = 1.0;
+	public static final double DEFAULT_RELOAD_TIME = 0.5;
+	public static final int DEFAULT_CLIP_SIZE = 5;
+	public static final int DEFAULT_BULLET_SPEED = 8;
+	public static final int DEFAULT_BULLET_RANGE = 300;
+	public static final int BULLET_DEATH_DISTANCE = 5;
+	
 	public boolean isFiring;
 	public boolean isEnemy;
 	
@@ -17,7 +29,7 @@ public class Ship {
 	private int shipMaxSpeed;
 	private double shipAcceleration;
 	private boolean[] keysHeld;
-	private boolean[] upgrades;
+//	private boolean[] upgrades;
 	private int bulletSpeed;
 	private int bulletRange;
 	private int clipSize;
@@ -35,16 +47,16 @@ public class Ship {
 		this.ySpeed = 0;
 		this.lastReloaded = 0;
 		this.keysHeld = new boolean[4];
-		this.clipSize = Constants.DEFAULT_CLIP_SIZE;
+		this.clipSize = DEFAULT_CLIP_SIZE;
 		this.ammo = clipSize;
-		this.accuracy = Constants.DEFAULT_ACCURACY;
-		this.rotationSpeed = Constants.DEFAULT_SHIP_ROTATION_SPEED;
-		this.shipMaxSpeed = Constants.DEFAULT_SHIP_MAX_SPEED;
-		this.shipAcceleration = Constants.DEFAULT_SHIP_ACCEL;
-		this.upgrades = new boolean[Constants.GetNumUpgrades()];
-		this.bulletSpeed = Constants.DEFAULT_BULLET_SPEED;
-		this.bulletRange = Constants.DEFAULT_BULLET_RANGE;
-		this.reloadTime = Constants.DEFAULT_RELOAD_TIME;
+		this.accuracy = DEFAULT_ACCURACY;
+		this.rotationSpeed = DEFAULT_SHIP_ROTATION_SPEED;
+		this.shipMaxSpeed = DEFAULT_SHIP_MAX_SPEED;
+		this.shipAcceleration = DEFAULT_SHIP_ACCEL;
+//		this.upgrades = new boolean[ShipMods.GetNumUpgrades()];
+		this.bulletSpeed = DEFAULT_BULLET_SPEED;
+		this.bulletRange = DEFAULT_BULLET_RANGE;
+		this.reloadTime = DEFAULT_RELOAD_TIME;
 	}
 	
 	public Ship(int id, Point start, int maxSpeed, double acceleration, int bulletSpeed, int bulletRange, int clipSize, double reloadTime) {
@@ -58,11 +70,11 @@ public class Ship {
 		this.keysHeld = new boolean[4];
 		this.clipSize = clipSize;
 		this.ammo = clipSize;
-		this.accuracy = Constants.DEFAULT_ACCURACY;
-		this.rotationSpeed = Constants.DEFAULT_SHIP_ROTATION_SPEED;
+		this.accuracy = DEFAULT_ACCURACY;
+		this.rotationSpeed = DEFAULT_SHIP_ROTATION_SPEED;
 		this.shipMaxSpeed = maxSpeed;
 		this.shipAcceleration = acceleration;
-		this.upgrades = new boolean[Constants.GetNumUpgrades()];
+//		this.upgrades = new boolean[ShipMods.GetNumUpgrades()];
 		this.bulletSpeed = bulletSpeed;
 		this.bulletRange = bulletRange;
 		this.reloadTime = reloadTime;
@@ -78,16 +90,16 @@ public class Ship {
 	public void keyPressed(String keyCode) {
 		switch(keyCode) {
 		case "W":
-			keysHeld[Constants.UP] = true;
+			keysHeld[UP] = true;
 			break;
 		case "S":
-			keysHeld[Constants.DOWN] = true;
+			keysHeld[DOWN] = true;
 			break;
 		case "A":
-			keysHeld[Constants.LEFT] = true;
+			keysHeld[LEFT] = true;
 			break;
 		case "D":
-			keysHeld[Constants.RIGHT] = true;
+			keysHeld[RIGHT] = true;
 			break;
 		}
 	}
@@ -95,28 +107,28 @@ public class Ship {
 	public void keyReleased(String keyCode) {
 		switch(keyCode) {
 		case "W":
-			keysHeld[Constants.UP] = false;
+			keysHeld[UP] = false;
 			break;
 		case "S":
-			keysHeld[Constants.DOWN] = false;
+			keysHeld[DOWN] = false;
 			break;
 		case "A":
-			keysHeld[Constants.LEFT] = false;
+			keysHeld[LEFT] = false;
 			break;
 		case "D":
-			keysHeld[Constants.RIGHT] = false;
+			keysHeld[RIGHT] = false;
 			break;
 		}
 	}
 	
 	public void move() {
-		if (keysHeld[Constants.UP]) {
+		if (keysHeld[UP]) {
 			ySpeed -= shipAcceleration;
 			if (ySpeed < -shipMaxSpeed) {
 				ySpeed = -shipMaxSpeed;
 			}
 		}
-		else if (keysHeld[Constants.DOWN]) {
+		else if (keysHeld[DOWN]) {
 			ySpeed += shipAcceleration;
 			if (ySpeed > shipMaxSpeed) {
 				ySpeed = shipMaxSpeed;
@@ -136,13 +148,13 @@ public class Ship {
 				}
 			}
 		}
-		if (keysHeld[Constants.LEFT]) {
+		if (keysHeld[LEFT]) {
 			xSpeed -= shipAcceleration;
 			if (xSpeed < -shipMaxSpeed) {
 				xSpeed = -shipMaxSpeed;
 			}
 		}
-		else if (keysHeld[Constants.RIGHT]) {
+		else if (keysHeld[RIGHT]) {
 			xSpeed += shipAcceleration;
 			if (xSpeed > shipMaxSpeed) {
 				xSpeed = shipMaxSpeed;
