@@ -10,7 +10,7 @@ public class Bullet {
 	private int id;
 	private int speed;
 	private int range;
-	private double accuracy;
+//	private double accuracy;
 	
 	public Bullet(int id, Point location, double rotation, int speed, int range, double accuracy) {
 		this.id = id;
@@ -20,7 +20,7 @@ public class Bullet {
 		this.rotation = rotation;
 		this.speed = speed;
 		this.range = range;
-		this.accuracy = accuracy;
+//		this.accuracy = accuracy;
 	}
 	
 	// Returns false if the bullet has expired

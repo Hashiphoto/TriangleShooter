@@ -12,13 +12,14 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
 public class GameController extends Scene {
+	public static final int FRAMERATE = 60;
+	
 	private GameCanvas canvas;
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
 //	private ArrayList<String> input;
 	private Ship myShip;
 	private Ship opponent;
-	private GameTime timer;
 	private Network network;
 	private NetworkUpdateThread opponentThread;
 	private Point mouseLocation;
@@ -75,10 +76,8 @@ public class GameController extends Scene {
 		System.out.println("Game Start!");
 		opponentThread.start();
 		
-	    final long startNanoTime = System.nanoTime();	
 		new AnimationTimer() {
 			public void handle(long currentNanoTime) {
-				double t = (currentNanoTime - startNanoTime) / 1000000000.0;
 				update();
 			}
 		}.start();

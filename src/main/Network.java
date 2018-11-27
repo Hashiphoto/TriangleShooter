@@ -9,7 +9,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class Network {
+	private static final int PORT = 707;
+	private static final int CONNECT_DELAY = 1;
+	
 	public boolean connected;
+	
 	private int id;
 	private ServerSocket serverSocket;
 	private DataInputStream input;
@@ -104,7 +108,7 @@ public class Network {
 			output.write(packet.toByteArray());
 		}
 		catch(IOException e) {
-			e.printStackTrace();
+			System.err.println("Could not reach other client");
 		}
 	}
 	
@@ -143,10 +147,10 @@ public class Network {
 		double initialTime = TimeSeconds.get();
 		int numTries = 0;
 		while (socket == null) {
-			if(TimeSeconds.get() - initialTime > Constants.CONNECT_DELAY) {
+			if(TimeSeconds.get() - initialTime > CONNECT_DELAY) {
 				try {
 					System.out.println("Connecting to server... Attempt [" + numTries + "]");
-					socket = new Socket(ip, Constants.PORT);
+					socket = new Socket(ip, PORT);
 					System.out.println("Socket created");
 					input = new DataInputStream(socket.getInputStream());
 					output = new DataOutputStream(socket.getOutputStream());
@@ -166,7 +170,7 @@ public class Network {
 	
 	public void host() {
 		try {
-			serverSocket = new ServerSocket(Constants.PORT);
+			serverSocket = new ServerSocket(PORT);
 		} catch (IOException e) {
 			System.err.println("Could not instantiate server socket");
 		}
