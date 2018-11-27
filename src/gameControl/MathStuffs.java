@@ -2,8 +2,12 @@ package gameControl;
 
 import java.awt.Point;
 
+import gameElements.Bullet;
+import gameElements.Ship;
+
 public class MathStuffs {
 	private static final int TURN_PRECISION = 1000;
+	private static final int COLLISION_DISTANCE = 40;
 	
 	public static double calculateNewAngle(Point origin, Point mouse, double currentAngle, double turnSpeed) {
 		Point mouseUnitVector = new Point();
@@ -49,5 +53,10 @@ public class MathStuffs {
         };
         
         return new double[][] {x, y};
+	}
+	
+	public static boolean isCollision(Bullet b, Ship s) {
+		double distance = distance(new Point(b.getX(), b.getY()), new Point(s.getLocation()));
+		return distance < COLLISION_DISTANCE;
 	}
 }

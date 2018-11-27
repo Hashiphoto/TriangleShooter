@@ -79,8 +79,17 @@ public class GameController extends Scene {
 		
 		// Iterate through bullets and update them
 		for(int i = 0; i < bullets.size(); i++) {
-			if(!bullets.get(i).step()) {
-				bullets.remove(i);
+			Bullet b = bullets.get(i);
+			// Collision checking
+			if(b.getId() != myShip.getId()) {
+				if(MathStuffs.isCollision(b, myShip)) {
+					myShip.setHealth(-10);
+					System.out.println(myShip.getHealth());
+					bullets.remove(b);
+				}
+			}
+			if(!b.step()) {
+				bullets.remove(b);
 			}
 		}
 		canvas.repaint();

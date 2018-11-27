@@ -13,12 +13,12 @@ public class Ship {
 	private static final double DEFAULT_SHIP_ROTATION_SPEED = 3;
 	private static final double DEFAULT_SHIP_ACCEL = 0.4;
 	private static final int DEFAULT_SHIP_MAX_SPEED = 3;
-	public static final double DEFAULT_ACCURACY = 1.0;
-	public static final double DEFAULT_RELOAD_TIME = 0.5;
-	public static final int DEFAULT_CLIP_SIZE = 5;
-	public static final int DEFAULT_BULLET_SPEED = 8;
-	public static final int DEFAULT_BULLET_RANGE = 300;
-	public static final int BULLET_DEATH_DISTANCE = 5;
+	private static final double DEFAULT_ACCURACY = 1.0;
+	private static final double DEFAULT_RELOAD_TIME = 0.5;
+	private static final int DEFAULT_CLIP_SIZE = 5;
+	private static final int DEFAULT_BULLET_SPEED = 8;
+	private static final int DEFAULT_BULLET_RANGE = 300;
+	private static final int DEFAULT_HEALTH = 100;
 	
 	public boolean isFiring;
 	public boolean isEnemy;
@@ -40,29 +40,13 @@ public class Ship {
 	private double accuracy;
 	private double reloadTime;
 	private double lastReloaded;
+	private int health;
 	
 	public Ship(int id, Point start) {
-		this.isFiring = false;
-		this.id = id;
-		this.location = start;
-		this.rotation = 0;
-		this.xSpeed = 0;
-		this.ySpeed = 0;
-		this.lastReloaded = 0;
-		this.keysHeld = new boolean[4];
-		this.clipSize = DEFAULT_CLIP_SIZE;
-		this.ammo = clipSize;
-		this.accuracy = DEFAULT_ACCURACY;
-		this.rotationSpeed = DEFAULT_SHIP_ROTATION_SPEED;
-		this.shipMaxSpeed = DEFAULT_SHIP_MAX_SPEED;
-		this.shipAcceleration = DEFAULT_SHIP_ACCEL;
-//		this.upgrades = new boolean[ShipMods.GetNumUpgrades()];
-		this.bulletSpeed = DEFAULT_BULLET_SPEED;
-		this.bulletRange = DEFAULT_BULLET_RANGE;
-		this.reloadTime = DEFAULT_RELOAD_TIME;
+		this(id, start, DEFAULT_SHIP_MAX_SPEED, DEFAULT_SHIP_ACCEL, DEFAULT_BULLET_SPEED, DEFAULT_BULLET_RANGE, DEFAULT_CLIP_SIZE, DEFAULT_RELOAD_TIME, DEFAULT_HEALTH);
 	}
-	
-	public Ship(int id, Point start, int maxSpeed, double acceleration, int bulletSpeed, int bulletRange, int clipSize, double reloadTime) {
+
+	public Ship(int id, Point start, int maxSpeed, double acceleration, int bulletSpeed, int bulletRange, int clipSize, double reloadTime, int health) {
 		this.isFiring = false;
 		this.id = id;
 		this.location = start;
@@ -81,6 +65,7 @@ public class Ship {
 		this.bulletSpeed = bulletSpeed;
 		this.bulletRange = bulletRange;
 		this.reloadTime = reloadTime;
+		this.health = health;
 	}
 	
 	public void step(Point mouseLocation) {
@@ -89,7 +74,7 @@ public class Ship {
 		checkReload();
 	}
 	
-	// Movement
+	// Movement ///////////////////////////////////////////////////////////////
 	public void keyPressed(String keyCode) {
 		switch(keyCode) {
 		case "W":
@@ -215,7 +200,7 @@ public class Ship {
 		return newBullet;
 	}
 	
-	// Gets	
+	// Gets	///////////////////////////////////////////////////////////////////
 	public int getId() {
 		return id;
 	}
@@ -256,11 +241,23 @@ public class Ship {
 		return reloadTime;
 	}
 	
-	// Sets
+	public int getHealth() {
+		return health;
+	}
+	
+	public boolean isDead() {
+		return health <= 0;
+	}
+	
+	// Sets ///////////////////////////////////////////////////////////////////
 	public void setLocation(Point newLocation) {
 		if (newLocation == null) {
 			return;
 		}
 		location = newLocation;
+	}
+	
+	public void setHealth(int change) {
+		health += change;
 	}
 }
