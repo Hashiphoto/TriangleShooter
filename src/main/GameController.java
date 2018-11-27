@@ -37,39 +37,10 @@ public class GameController extends Scene {
 		ships.add(myShip);
 		canvas.init(ships, bullets);
 		mouseLocation = new Point();
-		this.setOnMouseMoved(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				mouseLocation.x = (int) event.getX();
-				mouseLocation.y = (int) event.getY();
-			}
-		});
-		this.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				if(event.getButton() == MouseButton.PRIMARY) {
-					myShip.isFiring = true;
-				}
-			}
-		});
-		this.setOnKeyPressed(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				String code = event.getCode().toString();
-//				if(!input.contains(code)) {
-//					input.add(code);
-//				}
-				myShip.keyPressed(code);
-			}
-		});
-		this.setOnKeyReleased(new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent event) {
-				String code = event.getCode().toString();
-//				input.remove(code);
-				myShip.keyReleased(code);
-			}
-		});
+		this.setOnMouseMoved(MouseMoved());
+		this.setOnMousePressed(MousePressed());
+		this.setOnKeyPressed(KeyPressed());
+		this.setOnKeyReleased(KeyReleased());
 	}
 	
 	public void start() {
@@ -110,5 +81,50 @@ public class GameController extends Scene {
 		canvas.repaint();
 		network.sendShipState(myShip);
 		myShip.isFiring = false;
+	}
+	
+	public EventHandler<MouseEvent> MouseMoved() {
+		return new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				mouseLocation.x = (int) event.getX();
+				mouseLocation.y = (int) event.getY();
+			}
+		};
+	}
+	
+	public EventHandler<MouseEvent> MousePressed() {
+		return new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getButton() == MouseButton.PRIMARY) {
+					myShip.isFiring = true;
+				}
+			}
+		};
+	}
+	
+	public EventHandler<KeyEvent> KeyPressed() {
+		return new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				String code = event.getCode().toString();
+//				if(!input.contains(code)) {
+//					input.add(code);
+//				}
+				myShip.keyPressed(code);
+			}
+		};
+	}
+	
+	public EventHandler<KeyEvent> KeyReleased() {
+		return new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				String code = event.getCode().toString();
+//				input.remove(code);
+				myShip.keyReleased(code);
+			}
+		};
 	}
 }
