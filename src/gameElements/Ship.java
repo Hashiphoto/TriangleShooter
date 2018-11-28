@@ -266,7 +266,7 @@ public class Ship {
 		location = newLocation;
 	}
 	
-	public void setHealth(int change) {
-		health += change;
+	public void takeDamage(int damage) {
+		health -= damage;
 	}
 }

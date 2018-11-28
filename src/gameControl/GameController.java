@@ -6,20 +6,15 @@ import java.util.ArrayList;
 import gameElements.Bullet;
 import gameElements.Ship;
 import gui.GameCanvas;
+import gui.Scoreboard;
 import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
-import javafx.util.Duration;
 import network.Network;
 import network.NetworkUpdateThread;
 
@@ -38,6 +33,7 @@ public class GameController extends Scene {
 	private Point mouseLocation;
 	private boolean gamePaused;
 	private Group root;
+	private Scoreboard scoreboard;
 	
 	public GameController(Network network, Group group, GameCanvas canvas) {
 		super(group);
@@ -52,7 +48,8 @@ public class GameController extends Scene {
 		opponentThread = new NetworkUpdateThread(network, opponent);
 		bullets = new ArrayList<Bullet>();
 		ships.add(myShip);
-		canvas.init(ships, bullets);
+		scoreboard = new Scoreboard();
+		canvas.init(ships, bullets, scoreboard);
 		mouseLocation = new Point();
 		gamePaused = true;
 		this.setOnMouseMoved(MouseMoved());
@@ -80,6 +77,8 @@ public class GameController extends Scene {
 		// reset positions
 		canvas.addMessage(new Message("ROUND " + round, 3, Color.WHITE));
 		canvas.addMessage(new Message("GLORY IN VICTORY", 0.5, Color.RED));
+		scoreboard.reset();
+		scoreboard.start();
 	}
 	
 	private void update() {
@@ -106,7 +105,7 @@ public class GameController extends Scene {
 			// Collision checking
 			if(b.getId() != myShip.getId()) {
 				if(MathStuffs.isCollision(b, myShip)) {
-					myShip.setHealth(-10);
+					myShip.takeDamage(b.getDamage());
 					System.out.println(myShip.getHealth());
 					bullets.remove(b);
 				}
