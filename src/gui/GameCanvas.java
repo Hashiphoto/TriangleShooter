@@ -3,11 +3,14 @@ package gui;
 import java.util.ArrayList;
 
 import gameControl.MathStuffs;
+import gameControl.Message;
 import gameElements.Bullet;
 import gameElements.Ship;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 
 public class GameCanvas extends Canvas {
 	private static final Color[] ShipColors = {
@@ -20,24 +23,52 @@ public class GameCanvas extends Canvas {
 	private static final int BULLET_SIZE = 6;
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
+	private ArrayList<Message> messages;
 	private int numShips;
 	GraphicsContext gc;
 	
 	public GameCanvas(int width, int height) {
 		super(width, height);
 		gc = this.getGraphicsContext2D();
+		messages = new ArrayList<Message>();
 	}
 
 	public void init(ArrayList<Ship> ships, ArrayList<Bullet> bullets) {
 		this.ships = ships;
 		this.bullets = bullets;
 		numShips = ships.size();
+		gc.setTextAlign(TextAlignment.CENTER);
+		gc.setFont(new Font("Agency FB", 100));
 	}
 	public void repaint() {
 		gc.setFill(Color.BLACK);
 		gc.fillRect(0, 0, this.getWidth(), this.getHeight());
 		drawShips();
 		drawBullets();
+		drawMessage();
+	}
+	
+	public void addMessage(Message msg) {
+		messages.add(msg);
+	}
+	
+	public boolean messageDisplayed() {
+		return !messages.isEmpty();
+	}
+	
+	private void drawMessage() {
+		if(messages.isEmpty()) {
+			return;
+		}
+		Message currentMessage = messages.get(0);
+		if(currentMessage.duration > 0) {
+			currentMessage.duration--;
+			gc.setFill(currentMessage.color);
+			gc.fillText(currentMessage.text, this.getWidth() / 2, this.getHeight() / 2);
+		}
+		else {
+			messages.remove(currentMessage);
+		}
 	}
 	
 	private void drawShips() {

@@ -40,6 +40,7 @@ public class Start extends Application{
 		GameCanvas canvas = new GameCanvas(1280, 720);
 		GameController game = new GameController(network, root, canvas);
 	    theStage.setScene(game);
+	    theStage.setResizable(false);
 	    theStage.setTitle("Triangles");
 	 
 	    root.getChildren().add(canvas);

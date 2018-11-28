@@ -7,7 +7,7 @@ import gameElements.Ship;
 
 public class MathStuffs {
 	private static final int TURN_PRECISION = 1000;
-	private static final int COLLISION_DISTANCE = 40;
+	private static final int COLLISION_DISTANCE = 35;
 	
 	public static double calculateNewAngle(Point origin, Point mouse, double currentAngle, double turnSpeed) {
 		Point mouseUnitVector = new Point();

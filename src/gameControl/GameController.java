@@ -7,12 +7,19 @@ import gameElements.Bullet;
 import gameElements.Ship;
 import gui.GameCanvas;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
+import javafx.util.Duration;
 import network.Network;
 import network.NetworkUpdateThread;
 
@@ -28,9 +35,12 @@ public class GameController extends Scene {
 	private Network network;
 	private NetworkUpdateThread opponentThread;
 	private Point mouseLocation;
+	private boolean gamePaused;
+	private Group root;
 	
 	public GameController(Network network, Group group, GameCanvas canvas) {
 		super(group);
+		root = group;
 		this.network = network;
 		this.canvas = canvas;
 		ships = network.getAllShips();
@@ -42,6 +52,7 @@ public class GameController extends Scene {
 		ships.add(myShip);
 		canvas.init(ships, bullets);
 		mouseLocation = new Point();
+		gamePaused = true;
 		this.setOnMouseMoved(MouseMoved());
 		this.setOnMousePressed(MousePressed());
 		this.setOnKeyPressed(KeyPressed());
@@ -54,9 +65,14 @@ public class GameController extends Scene {
 		
 		new AnimationTimer() {
 			public void handle(long currentNanoTime) {
+				// If a message is displayed on screen, game is paused
+				gamePaused = canvas.messageDisplayed();
 				update();
 			}
 		}.start();
+		canvas.addMessage(new Message("SYNCHRONIZING...", 4, Color.GRAY));
+		canvas.addMessage(new Message("ROUND 1", 3, Color.WHITE));
+		canvas.addMessage(new Message("GLORY IN VICTORY", 0.5, Color.RED));
 	}
 	
 	private void update() {
@@ -111,6 +127,9 @@ public class GameController extends Scene {
 		return new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				if(gamePaused) {
+					return;
+				}
 				if(event.getButton() == MouseButton.PRIMARY) {
 					myShip.isFiring = true;
 				}
@@ -122,6 +141,9 @@ public class GameController extends Scene {
 		return new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
+				if(gamePaused) {
+					return;
+				}
 				String code = event.getCode().toString();
 //				if(!input.contains(code)) {
 //					input.add(code);
@@ -135,6 +157,9 @@ public class GameController extends Scene {
 		return new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
+				if(gamePaused) {
+					return;
+				}
 				String code = event.getCode().toString();
 //				input.remove(code);
 				myShip.keyReleased(code);
