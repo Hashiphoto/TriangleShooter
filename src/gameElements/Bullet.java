@@ -13,9 +13,10 @@ public class Bullet {
 	private int id;
 	private int speed;
 	private int range;
+	private int damage;
 //	private double accuracy;
 	
-	public Bullet(int id, Point location, double rotation, int speed, int range, double accuracy) {
+	public Bullet(int id, Point location, double rotation, int speed, int range, double accuracy, int damage) {
 		this.id = id;
 		this.initialLocation = location;
 		this.x = location.x;
@@ -23,6 +24,7 @@ public class Bullet {
 		this.rotation = rotation;
 		this.speed = speed;
 		this.range = range;
+		this.damage = damage;
 //		this.accuracy = accuracy;
 	}
 	
@@ -59,5 +61,9 @@ public class Bullet {
 	
 	public int getRange() {
 		return range;
+	}
+	
+	public int getDamage() {
+		return damage;
 	}
 }

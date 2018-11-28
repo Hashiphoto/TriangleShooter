@@ -51,40 +51,50 @@ public class Network {
 	}
 	
 	public void initializeShips(Point start0, Point start1) {
+		Ship opponent;
+		Ship myShip;
 		switch(id) {
 		// Hosting
 		case 0: 
-			try {
-				// Send ship
-				Ship myShip = new Ship(id, start0);
-				shipList.add(myShip);
-				sendShipInit(myShip);
-				// Receive ship
-				int opponentId = input.readInt();
-				int x = input.readInt();
-				int y = input.readInt();
-				shipList.add(new Ship(opponentId, new Point(x, y)));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			// Send ship
+			myShip = new Ship(id, start0);
+			shipList.add(myShip);
+			sendShipInit(myShip);
+			// Receive ship
+			opponent = readShip();
+			shipList.add(opponent);
 			break;
 		// Joining
 		case 1: 
-			try {
-				// Receive ship
-				int opponentId = input.readInt();
-				int x = input.readInt();
-				int y = input.readInt();
-				shipList.add(new Ship(opponentId, new Point(x, y)));
-				// Send ship
-				Ship myShip = new Ship(id, start1);
-				sendShipInit(myShip);
-				shipList.add(myShip);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			// Receive ship
+			opponent = readShip();
+			shipList.add(opponent);
+			// Send ship
+			myShip = new Ship(id, start1);
+			sendShipInit(myShip);
+			shipList.add(myShip);
 			break;
 		}
+	}
+	
+	public Ship readShip() {
+		try {
+			int id = input.readInt();
+			int x = input.readInt();
+			int y = input.readInt();
+			int maxSpeed = input.readInt();
+			double shipAccel = input.readDouble();
+			int bulletSpeed = input.readInt();
+			int bulletRange = input.readInt();
+			int clipSize = input.readInt();
+			double reloadTime = input.readDouble();
+			int health = input.readInt();
+			int damage = input.readInt();
+			return new Ship(id, new Point(x, y), maxSpeed, shipAccel, bulletSpeed, bulletRange, clipSize, reloadTime, health, damage);
+		} catch (IOException e) {
+			System.out.println("Network: Unable to read whole ship");
+		}
+		return null;
 	}
 	
 	public void sendShipInit(Ship myShip) {
@@ -98,6 +108,8 @@ public class Network {
 			output.writeInt(myShip.getBulletRange());
 			output.writeInt(myShip.getClipSize());
 			output.writeDouble(myShip.getReloadTime());
+			output.writeInt(myShip.getHealth());
+			output.writeInt(myShip.getDamage());
 			output.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
