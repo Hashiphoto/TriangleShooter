@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import gameElements.Bullet;
+import gameElements.BulletCounter;
 import gameElements.Ship;
 import gui.GameCanvas;
 import gui.Scoreboard;
@@ -45,8 +46,8 @@ public class GameController extends Scene {
 		myShip = network.getMyShip();
 		opponent = network.getOpponent();
 		opponent.isEnemy = true;
-		opponentThread = new NetworkUpdateThread(network, opponent);
 		bullets = new ArrayList<Bullet>();
+		opponentThread = new NetworkUpdateThread(network, opponent, bullets);
 		ships.add(myShip);
 		scoreboard = new Scoreboard();
 		canvas.init(ships, bullets, scoreboard);
@@ -60,7 +61,7 @@ public class GameController extends Scene {
 	
 	public void start() {
 		opponentThread.start();
-		
+		BulletCounter.setTeam(myShip.getId());
 		canvas.addMessage(new Message("SYNCHRONIZING...", 4, Color.GRAY));
 		startRound(1);
 		
@@ -75,8 +76,8 @@ public class GameController extends Scene {
 	
 	private void startRound(int round) {
 		// reset positions
-		canvas.addMessage(new Message("ROUND " + round, 3, Color.WHITE));
-		canvas.addMessage(new Message("GLORY IN VICTORY", 0.5, Color.RED));
+		canvas.addMessage(new Message("ROUND " + round, 2, Color.WHITE));
+		canvas.addMessage(new Message("WIN OR DIE", 0.25, Color.WHITE));
 		scoreboard.reset();
 		scoreboard.start();
 	}
@@ -93,7 +94,7 @@ public class GameController extends Scene {
 			}
 		}
 		if(opponent.isFiring) {
-			Bullet bullet = opponent.createBullet();
+			Bullet bullet = opponent.createEnemyBullet();
 			if(bullet != null) {
 				bullets.add(bullet);
 			}
@@ -103,10 +104,14 @@ public class GameController extends Scene {
 		for(int i = 0; i < bullets.size(); i++) {
 			Bullet b = bullets.get(i);
 			// Collision checking
-			if(b.getId() != myShip.getId()) {
+			if(b.getPlayer() != myShip.getId()) {
 				if(MathStuffs.isCollision(b, myShip)) {
 					myShip.takeDamage(b.getDamage());
+					myShip.hitBy = b.getId();
 					System.out.println(myShip.getHealth());
+					if(myShip.getHealth() <= 0) {
+						startRound(2);
+					}
 					bullets.remove(b);
 				}
 			}
@@ -114,9 +119,15 @@ public class GameController extends Scene {
 				bullets.remove(b);
 			}
 		}
+		System.out.print("{");
+		for(Bullet b : bullets) {
+			System.out.print(b.getId() + ", ");
+		}
+		System.out.println("}");
 		canvas.repaint();
 		network.sendShipState(myShip);
 		myShip.isFiring = false;
+		myShip.hitBy = -1;
 	}
 	
 	public EventHandler<MouseEvent> MouseMoved() {

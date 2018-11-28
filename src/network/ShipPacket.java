@@ -4,27 +4,28 @@ import java.awt.Point;
 import java.nio.ByteBuffer;
 
 public class ShipPacket {
-	private static final int SHIP_PACKET_SIZE = 1 + Integer.BYTES * 2 + Float.BYTES;
+	private static final int SHIP_PACKET_SIZE = 1 + Integer.BYTES * 4 + Float.BYTES;
 	
 	boolean isFiring;
 	private int x;
 	private int y;
 	private float rotation;
-	private int size;
+	private int destroyBullet;
+	private int newBulletId;
 	
-	public ShipPacket(boolean isFiring, int x, int y, float rotation) {
+	public ShipPacket(boolean isFiring, int x, int y, float rotation, int destroyBullet, int newBulletId) {
 		this.isFiring = isFiring;
 		this.x = x;
 		this.y = y;
 		this.rotation = rotation;
-		size = SHIP_PACKET_SIZE;
+		this.destroyBullet = destroyBullet;
+		this.newBulletId = newBulletId;
 	}
 	
 	public static ShipPacket convertToShipPacket(byte[] b) {
 		// If received more than one packet, grab the latest position/rotation only
 		// BUT make sure to acknowledge if a bullet was fired
 		if(b.length > SHIP_PACKET_SIZE) {
-//			System.out.println("Recieved more than one byte");
 			byte[] newByteArr;
 			newByteArr = new byte[SHIP_PACKET_SIZE];
 			for(int i = 0; i < SHIP_PACKET_SIZE; i++) {
@@ -46,17 +47,19 @@ public class ShipPacket {
 		int x = extractInt(b, 1);
 		int y = extractInt(b, 5);
 		float rotation = extractFloat(b, 9);
+		int destroyBullet = extractInt(b, 13);
+		int createBullet = extractInt(b, 17);
 		
-		return new ShipPacket(isFiring, x, y, rotation);
+		return new ShipPacket(isFiring, x, y, rotation, destroyBullet, createBullet);
 	}
 	
 	public byte[] toByteArray() {
-		ByteBuffer buffer = ByteBuffer.allocate(size);
+		ByteBuffer buffer = ByteBuffer.allocate(SHIP_PACKET_SIZE);
 		byte booleanByte = 0;
 		if(isFiring) {
 			booleanByte = (byte) 1;
 		}
-		buffer.put(booleanByte).putInt(x).putInt(y).putFloat(rotation);
+		buffer.put(booleanByte).putInt(x).putInt(y).putFloat(rotation).putInt(destroyBullet).putInt(newBulletId);
 		return buffer.array();
 	}
 	
@@ -70,7 +73,7 @@ public class ShipPacket {
 	}
 	
 	public int size() {
-		return size;
+		return SHIP_PACKET_SIZE;
 	}
 	
 	public Point getlocation() {
@@ -83,5 +86,13 @@ public class ShipPacket {
 	
 	public boolean isFiring() {
 		return isFiring;
+	}
+	
+	public int destroyedBullet() {
+		return destroyBullet;
+	}
+	
+	public int newBulletId() {
+		return newBulletId;
 	}
 }

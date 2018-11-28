@@ -10,14 +10,19 @@ public class Bullet {
 	private double x;
 	private double y;
 	private double rotation;
-	private int id;
+	private int player;
 	private int speed;
 	private int range;
 	private int damage;
 //	private double accuracy;
+	private int id;
 	
-	public Bullet(int id, Point location, double rotation, int speed, int range, double accuracy, int damage) {
-		this.id = id;
+	public Bullet(int player, Point location, double rotation, int speed, int range, double accuracy, int damage) {
+		this(player, location, rotation, speed, range, accuracy, damage, BulletCounter.getNextId());
+	}
+	
+	public Bullet(int player, Point location, double rotation, int speed, int range, double accuracy, int damage, int id) {
+		this.player = player;
 		this.initialLocation = location;
 		this.x = location.x;
 		this.y = location.y;
@@ -26,6 +31,7 @@ public class Bullet {
 		this.range = range;
 		this.damage = damage;
 //		this.accuracy = accuracy;
+		this.id = id;
 	}
 	
 	// Returns false if the bullet has expired
@@ -39,8 +45,8 @@ public class Bullet {
 		return true;
 	}
 	
-	public int getId() {
-		return id;
+	public int getPlayer() {
+		return player;
 	}
 	
 	public int getX() {
@@ -65,5 +71,9 @@ public class Bullet {
 	
 	public int getDamage() {
 		return damage;
+	}
+	
+	public int getId() {
+		return id;
 	}
 }

@@ -1,6 +1,9 @@
 package network;
 
+import java.util.ArrayList;
+
 import gameControl.GameTime;
+import gameElements.Bullet;
 import gameElements.Ship;
 
 public class NetworkUpdateThread extends Thread {
@@ -8,10 +11,12 @@ public class NetworkUpdateThread extends Thread {
 	private Network network;
 //	private final Lock lock = new ReentrantLock();
 	GameTime timer;
+	private ArrayList<Bullet> bullets;
 	
-	public NetworkUpdateThread(Network n, Ship s) {
+	public NetworkUpdateThread(Network n, Ship s, ArrayList<Bullet> b) {
 		ship = s;
 		network = n;
+		bullets = b;
 	}
 	
 	@Override
@@ -38,6 +43,14 @@ public class NetworkUpdateThread extends Thread {
 		ship.isFiring = packet.isFiring();
 		ship.setLocation(packet.getlocation());
 		ship.setDirectionAngle(packet.getRotation());
-
+		ship.firingId = packet.newBulletId();
+		if(packet.destroyedBullet() != -1) {
+			for(int i = 0; i < bullets.size(); i++) {
+				if(bullets.get(i).getId() == packet.destroyedBullet()) {
+					bullets.remove(bullets.get(i));
+					break;
+				}
+			}
+		}
 	}
 }

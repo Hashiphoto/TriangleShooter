@@ -155,7 +155,7 @@ public class GameCanvas extends Canvas {
 		int numBullets = bullets.size();
 		for (int i = 0; i < numBullets; i++) {
 			Bullet b = bullets.get(i);
-			gc.setFill(ShipColors[b.getId()]);
+			gc.setFill(ShipColors[b.getPlayer()]);
 			gc.fillOval((int) b.getX() - (BULLET_SIZE / 2), (int) b.getY() - (BULLET_SIZE / 2), BULLET_SIZE, BULLET_SIZE);
 		}
 	}

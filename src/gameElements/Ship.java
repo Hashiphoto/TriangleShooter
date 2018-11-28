@@ -23,6 +23,8 @@ public class Ship {
 	
 	public boolean isFiring;
 	public boolean isEnemy;
+	public int hitBy;
+	public int firingId;
 	
 	private int id;
 	private Point location;
@@ -71,6 +73,8 @@ public class Ship {
 		this.reloadTime = reloadTime;
 		this.damage = damage;
 		this.health = health;
+		hitBy = -1;
+		firingId = -1;
 	}
 	
 	public void step(Point mouseLocation) {
@@ -200,9 +204,14 @@ public class Ship {
 				lastReloaded = TimeSeconds.get();
 			}
 			newBullet = new Bullet(id, new Point(location), rotation, bulletSpeed, bulletRange, accuracy, damage);
+			firingId = newBullet.getId();
 			ammo--;
 		}
 		return newBullet;
+	}
+	
+	public Bullet createEnemyBullet() {
+		return new Bullet(id, new Point(location), rotation, bulletSpeed, bulletRange, accuracy, damage, firingId);
 	}
 	
 	// Gets	///////////////////////////////////////////////////////////////////
