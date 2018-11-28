@@ -25,6 +25,7 @@ import network.NetworkUpdateThread;
 
 public class GameController extends Scene {
 	public static final int FRAMERATE = 60;
+	private static final int ROUNDS = 7;
 	
 	private GameCanvas canvas;
 	private ArrayList<Ship> ships;
@@ -43,6 +44,7 @@ public class GameController extends Scene {
 		root = group;
 		this.network = network;
 		this.canvas = canvas;
+		network.initializeShips(new Point(200, (int) (canvas.getHeight() / 2)),  new Point((int) canvas.getWidth() - 200, (int) (canvas.getHeight() / 2)));
 		ships = network.getAllShips();
 		myShip = network.getMyShip();
 		opponent = network.getOpponent();
@@ -60,8 +62,10 @@ public class GameController extends Scene {
 	}
 	
 	public void start() {
-		System.out.println("Game Start!");
 		opponentThread.start();
+		
+		canvas.addMessage(new Message("SYNCHRONIZING...", 4, Color.GRAY));
+		startRound(1);
 		
 		new AnimationTimer() {
 			public void handle(long currentNanoTime) {
@@ -70,8 +74,11 @@ public class GameController extends Scene {
 				update();
 			}
 		}.start();
-		canvas.addMessage(new Message("SYNCHRONIZING...", 4, Color.GRAY));
-		canvas.addMessage(new Message("ROUND 1", 3, Color.WHITE));
+	}
+	
+	private void startRound(int round) {
+		// reset positions
+		canvas.addMessage(new Message("ROUND " + round, 3, Color.WHITE));
 		canvas.addMessage(new Message("GLORY IN VICTORY", 0.5, Color.RED));
 	}
 	

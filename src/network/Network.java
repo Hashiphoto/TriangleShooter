@@ -50,13 +50,13 @@ public class Network {
 		return null;
 	}
 	
-	public void initializeShips() {
+	public void initializeShips(Point start0, Point start1) {
 		switch(id) {
 		// Hosting
 		case 0: 
 			try {
 				// Send ship
-				Ship myShip = new Ship(id, new Point(300, 300));
+				Ship myShip = new Ship(id, start0);
 				shipList.add(myShip);
 				sendShipInit(myShip);
 				// Receive ship
@@ -77,7 +77,7 @@ public class Network {
 				int y = input.readInt();
 				shipList.add(new Ship(opponentId, new Point(x, y)));
 				// Send ship
-				Ship myShip = new Ship(id, new Point(600, 300));
+				Ship myShip = new Ship(id, start1);
 				sendShipInit(myShip);
 				shipList.add(myShip);
 			} catch (IOException e) {
@@ -154,7 +154,6 @@ public class Network {
 				try {
 					System.out.println("Connecting to server... Attempt [" + numTries + "]");
 					socket = new Socket(ip, PORT);
-					System.out.println("Socket created");
 					input = new DataInputStream(socket.getInputStream());
 					output = new DataOutputStream(socket.getOutputStream());
 					// ID for joiner is 1

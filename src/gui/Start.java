@@ -34,7 +34,6 @@ public class Start extends Application{
 		
 		NetworkConnectionWindow networkConnector = new NetworkConnectionWindow();
 		Network network = networkConnector.getConnection();
-		network.initializeShips();
 		
 		Group root = new Group();
 		GameCanvas canvas = new GameCanvas(1280, 720);
