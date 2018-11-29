@@ -123,6 +123,10 @@ public class GameController extends Scene {
 				startNextRound(winner);
 			}
 		}
+		else {
+			myShip.stop();
+			opponent.stop();
+		}
 		canvas.repaint();
 		network.sendShipState(myShip);
 		myShip.isFiring = false;

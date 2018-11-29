@@ -187,6 +187,14 @@ public class Ship {
 		location.y += ySpeed;
 	}
 	
+	public void stop() {
+		xSpeed = 0;
+		ySpeed = 0;
+		for(int i = 0; i < keysHeld.length; i++) {
+			keysHeld[i] = false;
+		}
+	}
+	
 	public void setDirectionMouse(Point mouse) {
 		rotation = MathStuffs.calculateNewAngle(location, mouse, rotation, rotationSpeed);
 	}
