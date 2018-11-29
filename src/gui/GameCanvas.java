@@ -13,9 +13,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
 public class GameCanvas extends Canvas {
-	private static final Color[] ShipColors = {
+	public static final Color[] ShipColors = {
 		Color.CYAN,
-		Color.MAGENTA
+		Color.ORANGE
 	};
 	private static final Color NEUTRAL = Color.WHITE;
 	private static final int SHIP_SIDE_LENGTH = 22;

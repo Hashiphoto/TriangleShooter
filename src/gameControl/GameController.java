@@ -9,6 +9,9 @@ import gameElements.Ship;
 import gui.GameCanvas;
 import gui.Scoreboard;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -16,6 +19,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import network.Network;
 import network.NetworkUpdateThread;
 
@@ -33,6 +37,7 @@ public class GameController extends Scene {
 	private Point mouseLocation;
 	private boolean gamePaused;
 	private Scoreboard scoreboard;
+	private int currentRound;
 	
 	public GameController(Network network, Group group, GameCanvas canvas) {
 		super(group);
@@ -50,6 +55,7 @@ public class GameController extends Scene {
 		canvas.init(ships, bullets, scoreboard);
 		mouseLocation = new Point();
 		gamePaused = true;
+		currentRound = 0;
 		this.setOnMouseMoved(MouseMoved());
 		this.setOnMousePressed(MousePressed());
 		this.setOnKeyPressed(KeyPressed());
@@ -60,7 +66,7 @@ public class GameController extends Scene {
 		opponentThread.start();
 		BulletCounter.setTeam(myShip.getId());
 		canvas.addMessage(new Message("SYNCHRONIZING...", 4, Color.GRAY));
-		startRound(1);
+		startNextRound(-1);
 		
 		new AnimationTimer() {
 			public void handle(long currentNanoTime) {
@@ -71,11 +77,17 @@ public class GameController extends Scene {
 		}.start();
 	}
 	
-	private void startRound(int round) {
-		canvas.addMessage(new Message("ROUND " + round, 2, Color.WHITE));
+	private void startNextRound(int roundWinner) {
+		if(roundWinner != -1) {
+			String winner = Ship.Name[roundWinner];
+			canvas.addMessage(new Message(winner + " WINS!", 2, GameCanvas.ShipColors[roundWinner]));
+		}
+		delay(4, e -> myShip.reset());
+		canvas.addMessage(new Message("ROUND " + currentRound, 2, Color.WHITE));
 		canvas.addMessage(new Message("WIN OR DIE", 0.25, Color.WHITE));
 		scoreboard.reset();
 		scoreboard.start();
+		currentRound++;
 	}
 	
 	private void update() {
@@ -98,10 +110,6 @@ public class GameController extends Scene {
 				if(MathStuffs.isCollision(b, myShip)) {
 					myShip.takeDamage(b.getDamage());
 					myShip.hitBy = b.getId();
-					System.out.println(myShip.getHealth());
-					if(myShip.getHealth() <= 0) {
-						startRound(2);
-					}
 					bullets.remove(b);
 				}
 			}
@@ -109,10 +117,43 @@ public class GameController extends Scene {
 				bullets.remove(b);
 			}
 		}
+		if(!gamePaused) {
+			int winner = getWinner();
+			if(winner != -1) {
+				startNextRound(winner);
+			}
+		}
 		canvas.repaint();
 		network.sendShipState(myShip);
 		myShip.isFiring = false;
 		myShip.hitBy = -1;
+	}
+	
+	private int getWinner() {
+		if(myShip.getHealth() <= 0) {
+			System.out.println("I'M DEAD");
+			return opponent.getId();
+		}
+		if(opponent.getHealth() <= 0) {
+			System.out.println("OPPONENT IS DEAD");
+			return myShip.getId();
+		}
+		return -1;
+	}
+	
+	private Ship getShipById(int id) {
+		for(Ship s : ships) {
+			if(s.getId() == id) {
+				return s;
+			}
+		}
+		return null;
+	}
+	
+	private void delay(double duration, EventHandler<ActionEvent> event) {
+		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(duration), event));
+	    timeline.setCycleCount(1);
+	    timeline.play();
 	}
 	
 	public EventHandler<MouseEvent> MouseMoved() {

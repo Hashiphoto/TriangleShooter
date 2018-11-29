@@ -25,6 +25,9 @@ public class Ship {
 	public boolean isEnemy;
 	public int hitBy;
 	public int firingId;
+	public static final String[] Name = {
+		"BLUE", "ORANGE"
+	};
 	
 	private int id;
 	private Point location;
@@ -45,6 +48,7 @@ public class Ship {
 	private double lastReloaded;
 	private int damage;
 	private int health;
+	private Point start;
 	
 	public Ship(int id, Point start) {
 		this(id, start, DEFAULT_SHIP_MAX_SPEED, DEFAULT_SHIP_ACCEL, DEFAULT_BULLET_SPEED, 
@@ -73,6 +77,7 @@ public class Ship {
 		this.reloadTime = reloadTime;
 		this.damage = damage;
 		this.health = health;
+		this.start = start;
 		hitBy = -1;
 		firingId = -1;
 	}
@@ -81,6 +86,11 @@ public class Ship {
 		move();
 		setDirectionMouse(mouseLocation);
 		checkReload();
+	}
+	
+	public void reset() {
+		this.location = start;
+		this.health = DEFAULT_HEALTH;
 	}
 	
 	// Movement ///////////////////////////////////////////////////////////////
@@ -174,8 +184,6 @@ public class Ship {
 
 		location.x += xSpeed;
 		location.y += ySpeed;
-//		System.out.println(location.x + "," + location.y);
-//		System.out.println(xSpeed + "," + ySpeed);
 	}
 	
 	public void setDirectionMouse(Point mouse) {
@@ -188,7 +196,6 @@ public class Ship {
 	
 	// Shooting
 	private void checkReload() {
-//		System.out.println("Ammo: " + ammo);
 		double currentTimeSec = TimeSeconds.get();
 		if (ammo < clipSize && currentTimeSec - lastReloaded > reloadTime) {
 			ammo++;
