@@ -101,7 +101,7 @@ public class GameCanvas extends Canvas {
 		gc.setStroke(ShipColors[1]);
 		gc.setFill(ShipColors[1]);
 		gc.strokeRect(this.getWidth() - HEALTH_WIDTH - HUD_BORDER, HUD_BORDER, HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
-		gc.fillRect(this.getWidth() - HEALTH_WIDTH - HUD_BORDER, HUD_BORDER, (ships.get(1).getHealth() / 100.0) * HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
+		gc.fillRect(this.getWidth() - HEALTH_WIDTH - HUD_BORDER + ((100 - ships.get(1).getHealth()) / 100.0) * HEALTH_WIDTH, HUD_BORDER, (ships.get(1).getHealth() / 100.0) * HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
 	}
 	
 	private void drawWins() {
