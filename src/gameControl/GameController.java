@@ -55,7 +55,7 @@ public class GameController extends Scene {
 		canvas.init(ships, bullets, scoreboard);
 		mouseLocation = new Point();
 		gamePaused = true;
-		currentRound = 0;
+		currentRound = 1;
 		this.setOnMouseMoved(MouseMoved());
 		this.setOnMousePressed(MousePressed());
 		this.setOnKeyPressed(KeyPressed());
@@ -82,7 +82,7 @@ public class GameController extends Scene {
 			String winner = Ship.Name[roundWinner];
 			canvas.addMessage(new Message(winner + " WINS!", 2, GameCanvas.ShipColors[roundWinner]));
 		}
-		delay(4, e -> myShip.reset());
+		delay(2, e -> myShip.reset());
 		canvas.addMessage(new Message("ROUND " + currentRound, 2, Color.WHITE));
 		canvas.addMessage(new Message("WIN OR DIE", 0.25, Color.WHITE));
 		scoreboard.reset();
