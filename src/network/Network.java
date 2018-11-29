@@ -4,8 +4,10 @@ import java.awt.Point;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import gameControl.TimeSeconds;
@@ -187,8 +189,16 @@ public class Network {
 			serverSocket = new ServerSocket(PORT);
 		} catch (IOException e) {
 			System.err.println("Could not instantiate server socket");
+			return;
 		}
-		System.out.println("Host listening for connections");
+		String myIp = "";
+		try {
+			InetAddress localhost = InetAddress.getLocalHost();
+			myIp = localhost.getHostAddress();
+		} catch (UnknownHostException e1) {
+			System.err.println("Could not create local host");
+		}
+		System.out.println("Host listening for connections at " + myIp);
 		
 		int maxConnections = 1;
 		int connections = 0;

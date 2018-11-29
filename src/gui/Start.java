@@ -5,8 +5,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import gameControl.GameController;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import network.Network;
 
 public class Start extends Application{
@@ -41,11 +44,17 @@ public class Start extends Application{
 	    theStage.setScene(game);
 	    theStage.setResizable(false);
 	    theStage.setTitle("Triangles");
+	    theStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent t) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
 	 
 	    root.getChildren().add(canvas);
 	    
 	    theStage.show();
 	    game.start();
 	}
-
 }
