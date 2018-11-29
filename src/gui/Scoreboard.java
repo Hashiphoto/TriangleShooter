@@ -26,7 +26,6 @@ public class Scoreboard {
 	}
 	
 	public int getOneWin() {
-//		return oneWins;
 		return oneWins;
 	}
 
@@ -39,11 +38,13 @@ public class Scoreboard {
 		return (int) (MATCH_LENGTH - timeElapsed);
 	}
 	
-	public void zeroWin() {
-		zeroWins++;
-	}
-	
-	public void oneWin() {
-		oneWins++;
+	public void win(int winner) {
+		if(winner == 0) {
+			zeroWins++;
+		}
+		else if(winner == 1) {
+			oneWins++;
+		}
+		System.out.println(zeroWins + " " + oneWins);
 	}
 }

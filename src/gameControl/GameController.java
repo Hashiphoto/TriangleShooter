@@ -81,11 +81,11 @@ public class GameController extends Scene {
 		if(roundWinner != -1) {
 			String winner = Ship.Name[roundWinner];
 			canvas.addMessage(new Message(winner + " WINS!", 2, GameCanvas.ShipColors[roundWinner]));
+			scoreboard.win(roundWinner);
 		}
 		delay(2, e -> myShip.reset());
 		canvas.addMessage(new Message("ROUND " + currentRound, 2, Color.WHITE));
 		canvas.addMessage(new Message("WIN OR DIE", 0.25, Color.WHITE));
-		scoreboard.reset();
 		scoreboard.start();
 		currentRound++;
 	}
@@ -131,11 +131,9 @@ public class GameController extends Scene {
 	
 	private int getWinner() {
 		if(myShip.getHealth() <= 0) {
-			System.out.println("I'M DEAD");
 			return opponent.getId();
 		}
 		if(opponent.getHealth() <= 0) {
-			System.out.println("OPPONENT IS DEAD");
 			return myShip.getId();
 		}
 		return -1;
