@@ -9,7 +9,6 @@ import gameElements.Ship;
 public class NetworkUpdateThread extends Thread {
 	private Ship ship;
 	private Network network;
-//	private final Lock lock = new ReentrantLock();
 	GameTime timer;
 	private ArrayList<Bullet> bullets;
 	
@@ -44,13 +43,11 @@ public class NetworkUpdateThread extends Thread {
 		
 		// Set my current location to the most recent incoming packet);
 		ShipPacket current = allPackets[allPackets.length - 1];
-//		System.out.println(current.getlocation().x + "," + current.getlocation().y);
 		ship.setLocation(current.getlocation());
 		ship.setDirectionAngle(current.getRotation());
-//		ship.isFiring = current.isFiring;
-//		ship.firingId = current.newBulletId();
+		ship.setHealth(current.getHealth());
 		
-//		 Retroactively go through old packets and create bullets received
+		// Retroactively go through old packets and create bullets received
 		for(int i = 0; i < allPackets.length; i++) {
 			if(!allPackets[i].isFiring) {
 				continue;

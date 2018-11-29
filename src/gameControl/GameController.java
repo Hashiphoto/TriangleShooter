@@ -26,7 +26,6 @@ public class GameController extends Scene {
 	private GameCanvas canvas;
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
-//	private ArrayList<String> input;
 	private Ship myShip;
 	private Ship opponent;
 	private Network network;
@@ -73,7 +72,6 @@ public class GameController extends Scene {
 	}
 	
 	private void startRound(int round) {
-		// reset positions
 		canvas.addMessage(new Message("ROUND " + round, 2, Color.WHITE));
 		canvas.addMessage(new Message("WIN OR DIE", 0.25, Color.WHITE));
 		scoreboard.reset();
@@ -91,12 +89,6 @@ public class GameController extends Scene {
 				myShip.isFiring = false;
 			}
 		}
-//		if(opponent.isFiring) {
-//			Bullet bullet = opponent.createEnemyBullet();
-//			if(bullet != null) {
-//				bullets.add(bullet);
-//			}
-//		}
 		
 		// Iterate through bullets and update them
 		for(int i = 0; i < bullets.size(); i++) {
@@ -117,11 +109,6 @@ public class GameController extends Scene {
 				bullets.remove(b);
 			}
 		}
-//		System.out.print("{");
-//		for(Bullet b : bullets) {
-//			System.out.print(b.getId() + ", ");
-//		}
-//		System.out.println("}");
 		canvas.repaint();
 		network.sendShipState(myShip);
 		myShip.isFiring = false;
@@ -160,9 +147,6 @@ public class GameController extends Scene {
 					return;
 				}
 				String code = event.getCode().toString();
-//				if(!input.contains(code)) {
-//					input.add(code);
-//				}
 				myShip.keyPressed(code);
 			}
 		};
@@ -176,7 +160,6 @@ public class GameController extends Scene {
 					return;
 				}
 				String code = event.getCode().toString();
-//				input.remove(code);
 				myShip.keyReleased(code);
 			}
 		};

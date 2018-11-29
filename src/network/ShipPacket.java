@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.nio.ByteBuffer;
 
 public class ShipPacket {
-	private static final int SHIP_PACKET_SIZE = 1 + Integer.BYTES * 4 + Float.BYTES;
+	private static final int SHIP_PACKET_SIZE = 1 + Integer.BYTES * 5 + Float.BYTES;
 	
 	boolean isFiring;
 	private int x;
@@ -12,14 +12,16 @@ public class ShipPacket {
 	private float rotation;
 	private int destroyBullet;
 	private int newBulletId;
+	private int health;
 	
-	public ShipPacket(boolean isFiring, int x, int y, float rotation, int destroyBullet, int newBulletId) {
+	public ShipPacket(boolean isFiring, int x, int y, float rotation, int destroyBullet, int newBulletId, int health) {
 		this.isFiring = isFiring;
 		this.x = x;
 		this.y = y;
 		this.rotation = rotation;
 		this.destroyBullet = destroyBullet;
 		this.newBulletId = newBulletId;
+		this.health = health;
 	}
 	
 	public static ShipPacket[] convertToShipPacket(byte[] b) {
@@ -33,7 +35,9 @@ public class ShipPacket {
 			float rotation 		= extractFloat(b, 9 + SHIP_PACKET_SIZE * i);
 			int destroyBullet 	= extractInt(b, 13 + SHIP_PACKET_SIZE * i);
 			int createBullet 	= extractInt(b, 17 + SHIP_PACKET_SIZE * i);
-			allPackets[i] = new ShipPacket(isFiring, x, y, rotation, destroyBullet, createBullet);
+			int health 			= extractInt(b, 21 + SHIP_PACKET_SIZE * i);
+			
+			allPackets[i] = new ShipPacket(isFiring, x, y, rotation, destroyBullet, createBullet, health);
 		}
 		
 		return allPackets;
@@ -45,7 +49,7 @@ public class ShipPacket {
 		if(isFiring) {
 			booleanByte = (byte) 1;
 		}
-		buffer.put(booleanByte).putInt(x).putInt(y).putFloat(rotation).putInt(destroyBullet).putInt(newBulletId);
+		buffer.put(booleanByte).putInt(x).putInt(y).putFloat(rotation).putInt(destroyBullet).putInt(newBulletId).putInt(health);
 		return buffer.array();
 	}
 	
@@ -80,5 +84,9 @@ public class ShipPacket {
 	
 	public int newBulletId() {
 		return newBulletId;
+	}
+	
+	public int getHealth() {
+		return health;
 	}
 }

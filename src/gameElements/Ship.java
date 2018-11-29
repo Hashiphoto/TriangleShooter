@@ -278,4 +278,8 @@ public class Ship {
 	public void takeDamage(int damage) {
 		health -= damage;
 	}
+	
+	public void setHealth(int h) {
+		health = h;
+	}
 }
