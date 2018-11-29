@@ -6,6 +6,7 @@ import gameControl.MathStuffs;
 import gameControl.Message;
 import gameElements.Bullet;
 import gameElements.Ship;
+import gameElements.Wall;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -22,7 +23,7 @@ public class GameCanvas extends Canvas {
 	private static final int SHIP_FRONT_LENGTH = 40;
 	private static final int SHIP_OVAL_SIZE = 15;
 	private static final int BULLET_SIZE = 6;
-	private static final int HUD_HEIGHT = 60;
+	public static final int HUD_HEIGHT = 60;
 	private static final int CLOCK_WIDTH = 50;
 	private static final int HUD_BORDER = 20;
 	private static final int HEALTH_WIDTH = 450;
@@ -36,6 +37,7 @@ public class GameCanvas extends Canvas {
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
 	private ArrayList<Message> messages;
+	private ArrayList<Wall> walls;
 	private int numShips;
 	private GraphicsContext gc;
 	private Scoreboard scoreboard;
@@ -47,12 +49,13 @@ public class GameCanvas extends Canvas {
 		messages = new ArrayList<Message>();
 	}
 
-	public void init(ArrayList<Ship> ships, ArrayList<Bullet> bullets, Scoreboard scoreboard) {
+	public void init(ArrayList<Ship> ships, ArrayList<Bullet> bullets, Scoreboard scoreboard, ArrayList<Wall> walls) {
 		this.ships = ships;
 		this.bullets = bullets;
 		this.numShips = ships.size();
 		this.scoreboard = scoreboard;
 		this.lastTimeSeconds = 0;
+		this.walls = walls;
 	}
 	
 	public void repaint() {
@@ -62,6 +65,7 @@ public class GameCanvas extends Canvas {
 		drawBullets();
 		drawMessage();
 		drawScoreboard();
+		drawWalls();
 	}
 	
 	public void addMessage(Message msg) {
@@ -70,6 +74,15 @@ public class GameCanvas extends Canvas {
 	
 	public boolean messageDisplayed() {
 		return !messages.isEmpty();
+	}
+	
+	public void drawWalls() {
+		int numWalls = walls.size();
+		gc.setStroke(NEUTRAL);
+		for(int i = 0; i < numWalls; i++) {
+			Wall wall = walls.get(i);
+			gc.strokeRect(wall.x1, wall.y1, wall.width(), wall.height());
+		}
 	}
 	
 	private void drawScoreboard() {

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import gameElements.Bullet;
 import gameElements.BulletCounter;
 import gameElements.Ship;
+import gameElements.Wall;
 import gui.GameCanvas;
 import gui.Scoreboard;
 import javafx.animation.AnimationTimer;
@@ -20,6 +21,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import levels.Level;
 import network.Network;
 import network.NetworkUpdateThread;
 
@@ -30,6 +32,7 @@ public class GameController extends Scene {
 	private GameCanvas canvas;
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
+	private ArrayList<Wall> walls;
 	private Ship myShip;
 	private Ship opponent;
 	private Network network;
@@ -52,10 +55,11 @@ public class GameController extends Scene {
 		opponentThread = new NetworkUpdateThread(network, opponent, bullets);
 		ships.add(myShip);
 		scoreboard = new Scoreboard();
-		canvas.init(ships, bullets, scoreboard);
 		mouseLocation = new Point();
 		gamePaused = true;
 		currentRound = 1;
+		walls = new Level().getWalls();
+		canvas.init(ships, bullets, scoreboard, walls);
 		this.setOnMouseMoved(MouseMoved());
 		this.setOnMousePressed(MousePressed());
 		this.setOnKeyPressed(KeyPressed());

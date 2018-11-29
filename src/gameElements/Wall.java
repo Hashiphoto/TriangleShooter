@@ -2,11 +2,11 @@ package gameElements;
 
 public class Wall {
 	public int x1;
-	public int x2;
 	public int y1;
+	public int x2;
 	public int y2;
 	
-	public Wall(int x1, int x2, int y1, int y2) {
+	public Wall(int x1, int y1, int x2, int y2) {
 		if(x1 < x2) {
 			this.x1 = x1;
 			this.x2 = x2;
