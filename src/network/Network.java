@@ -10,20 +10,24 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import com.sun.javafx.property.adapter.PropertyDescriptor.Listener;
+
 import gameControl.TimeSeconds;
 import gameElements.Ship;
+import javafx.animation.Timeline;
 
 public class Network {
 	private static final int PORT = 707;
 	private static final int CONNECT_DELAY = 1;
 	
-	public boolean connected;
-	
+	private boolean connected;
 	private int id;
 	private ServerSocket serverSocket;
 	private DataInputStream input;
 	private DataOutputStream output;
 	private ArrayList<Ship> shipList;
+	private Timeline timeline;
+	private HostListener listener;
 	
 	public Network() {
 		connected = false;
@@ -159,38 +163,32 @@ public class Network {
 		return id;
 	}
 	
+	public boolean isConnected() {
+		return connected;
+	}
+	
+	public void setTimeline(Timeline timeline) {
+		this.timeline = timeline;
+	}
+	
 	public void join(String ip) {
 		Socket socket = null;
-		double initialTime = TimeSeconds.get();
-		int numTries = 0;
-		while (socket == null) {
-			if(TimeSeconds.get() - initialTime > CONNECT_DELAY) {
-				try {
-					System.out.println("Connecting to server... Attempt [" + numTries + "]");
-					socket = new Socket(ip, PORT);
-					input = new DataInputStream(socket.getInputStream());
-					output = new DataOutputStream(socket.getOutputStream());
-					// ID for joiner is 1
-					id = 1;
-					connected = true;
-					System.out.println("Connected to server!");
-				} catch (IOException e) {
-					System.err.println("Error instantiating client socket");
-				}
-
-				initialTime = TimeSeconds.get();
-				numTries++;
+		try {
+			socket = new Socket(ip, PORT);
+			input = new DataInputStream(socket.getInputStream());
+			output = new DataOutputStream(socket.getOutputStream());
+			// ID for joiner is 1
+			id = 1;
+			connected = true;
+			if(timeline != null) {
+				timeline.stop();
 			}
+		} catch (IOException e) {
+			System.err.println("Error instantiating client socket");
 		}
 	}
 	
-	public void host() {
-		try {
-			serverSocket = new ServerSocket(PORT);
-		} catch (IOException e) {
-			System.err.println("Could not instantiate server socket");
-			return;
-		}
+	public String getMyIp() {
 		String myIp = "";
 		try {
 			InetAddress localhost = InetAddress.getLocalHost();
@@ -198,22 +196,34 @@ public class Network {
 		} catch (UnknownHostException e1) {
 			System.err.println("Could not create local host");
 		}
-		System.out.println("Host listening for connections at " + myIp);
-		
-		int maxConnections = 1;
-		int connections = 0;
-		while (connections < maxConnections) {
+		return myIp;
+	}
+	
+	public void host() {
+		if(serverSocket == null) {
 			try {
-				Socket opponent = serverSocket.accept();
-				input = new DataInputStream(opponent.getInputStream());
-				output = new DataOutputStream(opponent.getOutputStream());
-				System.out.println("Connected to " + opponent.getInetAddress().getHostAddress());
+				serverSocket = new ServerSocket(PORT);
+			} catch (IOException e) {
+				System.err.println("Could not instantiate server socket");
+				return;
+			}
+			listener = new HostListener(serverSocket);
+			listener.start();
+		}
+		
+		Socket socket = listener.getSocket();
+		if(socket != null) {
+			try {
+				input = new DataInputStream(socket.getInputStream());
+				output = new DataOutputStream(socket.getOutputStream());
 				// ID for host is 0
 				id = 0;
 				connected = true;
-				connections++;
+				if(timeline != null) {
+					timeline.stop();
+				}
 			} catch (IOException e) {
-				System.err.println("Server failed to connect to a client");
+				e.printStackTrace();
 			}
 		}
 	}
