@@ -22,35 +22,21 @@ public class ShipPacket {
 		this.newBulletId = newBulletId;
 	}
 	
-	public static ShipPacket convertToShipPacket(byte[] b) {
-		// If received more than one packet, grab the latest position/rotation only
-		// BUT make sure to acknowledge if a bullet was fired
-		if(b.length > SHIP_PACKET_SIZE) {
-			byte[] newByteArr;
-			newByteArr = new byte[SHIP_PACKET_SIZE];
-			for(int i = 0; i < SHIP_PACKET_SIZE; i++) {
-				newByteArr[i] = b[b.length - SHIP_PACKET_SIZE + i];
-			}
-			
-			// Iterate through all first bits to see if a bullet was fired in the time span
-			if(newByteArr[0] == 0) {
-				for(int i = 0; i < b.length; i += SHIP_PACKET_SIZE) {
-					if (b[i] == 1) {
-						newByteArr[0] = 1;
-						break;
-					}
-				}
-			}
-			b = newByteArr;
-		}
-		boolean isFiring = b[0] != 0;
-		int x = extractInt(b, 1);
-		int y = extractInt(b, 5);
-		float rotation = extractFloat(b, 9);
-		int destroyBullet = extractInt(b, 13);
-		int createBullet = extractInt(b, 17);
+	public static ShipPacket[] convertToShipPacket(byte[] b) {
+		int numPackets = b.length / SHIP_PACKET_SIZE;
+		ShipPacket[] allPackets = new ShipPacket[numPackets];
 		
-		return new ShipPacket(isFiring, x, y, rotation, destroyBullet, createBullet);
+		for(int i = 0; i < numPackets; i++) {
+			boolean isFiring 	= b[SHIP_PACKET_SIZE * i] != 0;
+			int x 				= extractInt(b, 1 + SHIP_PACKET_SIZE * i);
+			int y 				= extractInt(b, 5 + SHIP_PACKET_SIZE * i);
+			float rotation 		= extractFloat(b, 9 + SHIP_PACKET_SIZE * i);
+			int destroyBullet 	= extractInt(b, 13 + SHIP_PACKET_SIZE * i);
+			int createBullet 	= extractInt(b, 17 + SHIP_PACKET_SIZE * i);
+			allPackets[i] = new ShipPacket(isFiring, x, y, rotation, destroyBullet, createBullet);
+		}
+		
+		return allPackets;
 	}
 	
 	public byte[] toByteArray() {

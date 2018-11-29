@@ -36,17 +36,35 @@ public class NetworkUpdateThread extends Thread {
 		}
 		byte[] byteArray = new byte[network.bytesAvailable()];
 		network.read(byteArray);
-		ShipPacket packet = ShipPacket.convertToShipPacket(byteArray);
-		if(packet == null) {
+		ShipPacket[] allPackets = ShipPacket.convertToShipPacket(byteArray);
+		if(allPackets == null) {
+			System.err.println("WHAT");
 			return;
 		}
-		ship.isFiring = packet.isFiring();
-		ship.setLocation(packet.getlocation());
-		ship.setDirectionAngle(packet.getRotation());
-		ship.firingId = packet.newBulletId();
-		if(packet.destroyedBullet() != -1) {
+		
+		// Set my current location to the most recent incoming packet);
+		ShipPacket current = allPackets[allPackets.length - 1];
+//		System.out.println(current.getlocation().x + "," + current.getlocation().y);
+		ship.setLocation(current.getlocation());
+		ship.setDirectionAngle(current.getRotation());
+//		ship.isFiring = current.isFiring;
+//		ship.firingId = current.newBulletId();
+		
+//		 Retroactively go through old packets and create bullets received
+		for(int i = 0; i < allPackets.length; i++) {
+			if(!allPackets[i].isFiring) {
+				continue;
+			}
+			ship.firingId = allPackets[i].newBulletId();
+			Bullet bullet = ship.createEnemyBullet();
+			if(bullet != null) {
+				bullets.add(bullet);
+			}
+		}
+		
+		if(current.destroyedBullet() != -1) {
 			for(int i = 0; i < bullets.size(); i++) {
-				if(bullets.get(i).getId() == packet.destroyedBullet()) {
+				if(bullets.get(i).getId() == current.destroyedBullet()) {
 					bullets.remove(bullets.get(i));
 					break;
 				}

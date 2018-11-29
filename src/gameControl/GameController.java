@@ -33,12 +33,10 @@ public class GameController extends Scene {
 	private NetworkUpdateThread opponentThread;
 	private Point mouseLocation;
 	private boolean gamePaused;
-	private Group root;
 	private Scoreboard scoreboard;
 	
 	public GameController(Network network, Group group, GameCanvas canvas) {
 		super(group);
-		root = group;
 		this.network = network;
 		this.canvas = canvas;
 		network.initializeShips(new Point(200, (int) (canvas.getHeight() / 2)),  new Point((int) canvas.getWidth() - 200, (int) (canvas.getHeight() / 2)));
@@ -93,12 +91,12 @@ public class GameController extends Scene {
 				myShip.isFiring = false;
 			}
 		}
-		if(opponent.isFiring) {
-			Bullet bullet = opponent.createEnemyBullet();
-			if(bullet != null) {
-				bullets.add(bullet);
-			}
-		}
+//		if(opponent.isFiring) {
+//			Bullet bullet = opponent.createEnemyBullet();
+//			if(bullet != null) {
+//				bullets.add(bullet);
+//			}
+//		}
 		
 		// Iterate through bullets and update them
 		for(int i = 0; i < bullets.size(); i++) {
@@ -119,11 +117,11 @@ public class GameController extends Scene {
 				bullets.remove(b);
 			}
 		}
-		System.out.print("{");
-		for(Bullet b : bullets) {
-			System.out.print(b.getId() + ", ");
-		}
-		System.out.println("}");
+//		System.out.print("{");
+//		for(Bullet b : bullets) {
+//			System.out.print(b.getId() + ", ");
+//		}
+//		System.out.println("}");
 		canvas.repaint();
 		network.sendShipState(myShip);
 		myShip.isFiring = false;
