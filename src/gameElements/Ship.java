@@ -78,7 +78,6 @@ public class Ship {
 		this.damage = damage;
 		this.health = health;
 		this.start = new Point(start.x, start.y);
-		System.out.println("Starting at " + start.x + "," + start.y);
 		hitBy = -1;
 		firingId = -1;
 	}
@@ -90,7 +89,6 @@ public class Ship {
 	}
 	
 	public void reset() {
-		System.out.println("moving from " + location.x + "," + location.y + " to " + start.x + "," + start.y);
 		location.x = start.x;
 		location.y = start.y;
 		health = DEFAULT_HEALTH;
