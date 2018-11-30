@@ -10,7 +10,7 @@ import gameElements.Wall;
 public class MathStuffs {
 	private static final int TURN_PRECISION = 1000;
 	private static final int COLLISION_DISTANCE = 35;
-	private static final int WALL_COLLISION_DISTANCE = 20;
+	private static final int WALL_COLLISION_DISTANCE = 15;
 	
 	public static Point collide(Point position, ArrayList<Wall> walls) {
 		int numWalls = walls.size();
@@ -18,7 +18,6 @@ public class MathStuffs {
 		for(int i = 0; i < numWalls; i++) {
 			Wall wall = walls.get(i);
 			boolean linedUpHor = (position.x < wall.x1 || position.x > wall.x2) && position.y - WALL_COLLISION_DISTANCE < wall.y2 && position.y + WALL_COLLISION_DISTANCE > wall.y1;
-			System.out.println(position.x + "," + position.y);
 			if(linedUpHor) {
 				// Hitting the right wall
 				if(position.x > wall.centerX() && position.x - WALL_COLLISION_DISTANCE < wall.x2) {

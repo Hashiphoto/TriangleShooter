@@ -1,8 +1,5 @@
 package gui;
 
-import java.awt.FontFormatException;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import gameControl.MathStuffs;
@@ -22,10 +19,10 @@ public class GameCanvas extends Canvas {
 		Color.ORANGE
 	};
 	private static final Color NEUTRAL = Color.WHITE;
-	private static final int SHIP_SIDE_LENGTH = 22;
-	private static final int SHIP_FRONT_LENGTH = 40;
-	private static final int SHIP_OVAL_SIZE = 15;
-	private static final int BULLET_SIZE = 6;
+	private static final int SHIP_SIDE_LENGTH = 35;
+	private static final int SHIP_FRONT_LENGTH = 60;
+	private static final int SHIP_OVAL_SIZE = 30;
+	private static final int BULLET_SIZE = 10;
 	public static final int HUD_HEIGHT = 60;
 	private static final int CLOCK_WIDTH = 50;
 	private static final int HUD_BORDER = 20;
@@ -37,6 +34,8 @@ public class GameCanvas extends Canvas {
 	private static final int INNER_WIN_BORDER = 2;
 	private static final Font AGENCY_LARGE = new Font("Agency FB", 100);
 	private static final Font AGENCY_CLOCK = new Font("Agency FB", 40);
+	private static final double LINE_WIDTH = 2;
+	
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
 	private ArrayList<Message> messages;
@@ -59,6 +58,7 @@ public class GameCanvas extends Canvas {
 		this.scoreboard = scoreboard;
 		this.lastTimeSeconds = 0;
 		this.walls = walls;
+		gc.setLineWidth(LINE_WIDTH);
 	}
 	
 	public void repaint() {

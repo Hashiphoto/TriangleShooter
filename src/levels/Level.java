@@ -14,15 +14,14 @@ public class Level {
 	public Level() {
 		walls = new ArrayList<Wall>();
 		
-		addWall(500, 500, 800, 600);
 		// Left wall
-//		addWall(0, 0, BORDER_SIZE, SCREEN_HEIGHT);
-//		// Right wall
-//		addWall(SCREEN_WIDTH - BORDER_SIZE, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-//		// Top wall
-//		addWall(0, 0, SCREEN_WIDTH, BORDER_SIZE);
-//		// Bottom wall
-//		addWall(0, SCREEN_HEIGHT - BORDER_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT);
+		addWall(0, 0, BORDER_SIZE, SCREEN_HEIGHT);
+		// Right wall
+		addWall(SCREEN_WIDTH - BORDER_SIZE, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		// Top wall
+		addWall(0, 0, SCREEN_WIDTH, BORDER_SIZE);
+		// Bottom wall
+		addWall(0, SCREEN_HEIGHT - BORDER_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT);
 	}
 	
 	private void addWall(int x1, int y1, int x2, int y2) {
