@@ -25,7 +25,7 @@ import levels.Level;
 import network.Network;
 import network.NetworkUpdateThread;
 
-public class GameController extends Scene {
+public class GameScene extends Scene {
 	public static final int FRAMERATE = 60;
 	private static final int ROUNDS = 7;
 	
@@ -42,7 +42,7 @@ public class GameController extends Scene {
 	private Scoreboard scoreboard;
 	private int currentRound;
 	
-	public GameController(Network network, Group group, GameCanvas canvas) {
+	public GameScene(Network network, Group group, GameCanvas canvas) {
 		super(group);
 		this.network = network;
 		this.canvas = canvas;
@@ -161,6 +161,10 @@ public class GameController extends Scene {
 		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(duration), event));
 	    timeline.setCycleCount(1);
 	    timeline.play();
+	}
+	
+	public void onLostFocus() {
+		myShip.releaseKeys();
 	}
 	
 	public EventHandler<MouseEvent> MouseMoved() {

@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import gameControl.GameController;
+import gameControl.GameScene;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -67,7 +67,8 @@ public class Start extends Application{
 				
 				Group gameRoot = new Group();
 				GameCanvas canvas = new GameCanvas(1280, 720);
-				GameController game = new GameController(network, gameRoot, canvas);
+				GameScene game = new GameScene(network, gameRoot, canvas);
+				theStage.focusedProperty().addListener((obs, oldVal, newVal) -> game.onLostFocus());
 			    theStage.setScene(game);
 			    theStage.setResizable(false);
 			    theStage.setTitle("Triangles");

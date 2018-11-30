@@ -192,6 +192,10 @@ public class Ship {
 	public void stop() {
 		xSpeed = 0;
 		ySpeed = 0;
+		releaseKeys();
+	}
+	
+	public void releaseKeys() {
 		for(int i = 0; i < keysHeld.length; i++) {
 			keysHeld[i] = false;
 		}
