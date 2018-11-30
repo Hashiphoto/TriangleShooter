@@ -3,7 +3,6 @@ package gameElements;
 import java.awt.Point;
 
 import gameControl.MathStuffs;
-import gameControl.TimeSeconds;
 
 public class Ship {
 	private static final int UP = 0;
@@ -14,7 +13,7 @@ public class Ship {
 	private static final double DEFAULT_SHIP_ACCEL = 0.2;
 	private static final int DEFAULT_SHIP_MAX_SPEED = 5;
 	private static final double DEFAULT_ACCURACY = 1.0;
-	private static final double DEFAULT_RELOAD_TIME = 0.20;
+	private static final int DEFAULT_RELOAD_TIME = 500; // milliseconds
 	private static final int DEFAULT_CLIP_SIZE = 6;
 	private static final int DEFAULT_BULLET_SPEED = 12;
 	private static final int DEFAULT_BULLET_RANGE = 450;
@@ -94,6 +93,7 @@ public class Ship {
 		location.x = start.x;
 		location.y = start.y;
 		health = maxHealth;
+		ammo = clipSize;
 	}
 	
 	// Movement ///////////////////////////////////////////////////////////////
@@ -207,9 +207,11 @@ public class Ship {
 	
 	// Shooting
 	private void checkReload() {
-		double currentTimeSec = TimeSeconds.get();
-		if (ammo < clipSize && currentTimeSec - lastReloaded > reloadTime) {
+		long currentTimeSec = System.currentTimeMillis();
+//		System.out.println(currentTimeSec + " \n " + (reloadTime + lastReloaded) + "\n");
+		if (ammo < clipSize && currentTimeSec > reloadTime + lastReloaded) {
 			ammo++;
+			System.out.println(currentTimeSec - lastReloaded);
 			lastReloaded = currentTimeSec;
 		}
 	}
@@ -219,7 +221,7 @@ public class Ship {
 		if (ammo > 0 || isEnemy) { // Don't restrict enemy fire
 			// Don't reload immediately after firing the first shot
 			if(ammo == clipSize) {
-				lastReloaded = TimeSeconds.get();
+				lastReloaded = System.currentTimeMillis();
 			}
 			newBullet = new Bullet(id, new Point(location), rotation, bulletSpeed, bulletRange, accuracy, damage);
 			firingId = newBullet.getId();
@@ -287,6 +289,10 @@ public class Ship {
 	
 	public int getMaxHealth() {
 		return maxHealth;
+	}
+	
+	public int getAmmo() {
+		return ammo;
 	}
 	
 	// Sets ///////////////////////////////////////////////////////////////////

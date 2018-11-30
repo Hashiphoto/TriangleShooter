@@ -34,7 +34,9 @@ public class GameCanvas extends Canvas {
 	private static final int INNER_WIN_BORDER = 2;
 	private static final Font AGENCY_LARGE = new Font("Agency FB", 100);
 	private static final Font AGENCY_CLOCK = new Font("Agency FB", 40);
+	private static final Font AGENCY_AMMO = new Font("Agency FB", 25);
 	private static final double LINE_WIDTH = 2;
+	private static final int AMMO_OFFSET = 10;
 	
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
@@ -166,10 +168,12 @@ public class GameCanvas extends Canvas {
 			int x = s.getLocation().x;
 			int y = s.getLocation().y;
 			gc.strokeOval(x - SHIP_OVAL_SIZE / 2, y - SHIP_OVAL_SIZE / 2, SHIP_OVAL_SIZE, SHIP_OVAL_SIZE);
-			
 			double[][] shipVertices = MathStuffs.shipVertices(s.getLocation(), s.getRotation(), SHIP_SIDE_LENGTH, SHIP_FRONT_LENGTH);
-
 	        gc.strokePolyline(shipVertices[0], shipVertices[1], shipVertices[0].length);
+
+	        gc.setFill(ShipColors[s.getId()]);
+	        gc.setFont(AGENCY_AMMO);
+	        gc.fillText(Integer.toString(s.getAmmo()), x, y + AMMO_OFFSET);
 		}
 	}
 	

@@ -10,9 +10,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-import com.sun.javafx.property.adapter.PropertyDescriptor.Listener;
-
-import gameControl.TimeSeconds;
 import gameElements.Ship;
 import javafx.animation.Timeline;
 
