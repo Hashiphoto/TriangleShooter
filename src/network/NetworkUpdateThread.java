@@ -46,6 +46,7 @@ public class NetworkUpdateThread extends Thread {
 		ship.setLocation(current.getlocation());
 		ship.setDirectionAngle(current.getRotation());
 		ship.setHealth(current.getHealth());
+		ship.setAmmo(current.getAmmo());
 		
 		// Retroactively go through old packets and create bullets received
 		for(int i = 0; i < allPackets.length; i++) {

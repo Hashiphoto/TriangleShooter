@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.nio.ByteBuffer;
 
 public class ShipPacket {
-	private static final int SHIP_PACKET_SIZE = 1 + Integer.BYTES * 5 + Float.BYTES;
+	private static final int SHIP_PACKET_SIZE = 1 + Integer.BYTES * 6 + Float.BYTES;
 	
 	boolean isFiring;
 	private int x;
@@ -13,8 +13,9 @@ public class ShipPacket {
 	private int destroyBullet;
 	private int newBulletId;
 	private int health;
+	private int ammo;
 	
-	public ShipPacket(boolean isFiring, int x, int y, float rotation, int destroyBullet, int newBulletId, int health) {
+	public ShipPacket(boolean isFiring, int x, int y, float rotation, int destroyBullet, int newBulletId, int health, int ammo) {
 		this.isFiring = isFiring;
 		this.x = x;
 		this.y = y;
@@ -22,6 +23,7 @@ public class ShipPacket {
 		this.destroyBullet = destroyBullet;
 		this.newBulletId = newBulletId;
 		this.health = health;
+		this.ammo = ammo;
 	}
 	
 	public static ShipPacket[] convertToShipPacket(byte[] b) {
@@ -29,15 +31,18 @@ public class ShipPacket {
 		ShipPacket[] allPackets = new ShipPacket[numPackets];
 		
 		for(int i = 0; i < numPackets; i++) {
-			boolean isFiring 	= b[SHIP_PACKET_SIZE * i] != 0;
-			int x 				= extractInt(b, 1 + SHIP_PACKET_SIZE * i);
-			int y 				= extractInt(b, 5 + SHIP_PACKET_SIZE * i);
-			float rotation 		= extractFloat(b, 9 + SHIP_PACKET_SIZE * i);
-			int destroyBullet 	= extractInt(b, 13 + SHIP_PACKET_SIZE * i);
-			int createBullet 	= extractInt(b, 17 + SHIP_PACKET_SIZE * i);
-			int health 			= extractInt(b, 21 + SHIP_PACKET_SIZE * i);
+			int offset = SHIP_PACKET_SIZE * i;
 			
-			allPackets[i] = new ShipPacket(isFiring, x, y, rotation, destroyBullet, createBullet, health);
+			boolean isFiring 	= b[offset] != 0;
+			int x 				= extractInt(b, 1 + offset);
+			int y 				= extractInt(b, 5 + offset);
+			float rotation 		= extractFloat(b, 9 + offset);
+			int destroyBullet 	= extractInt(b, 13 + offset);
+			int createBullet 	= extractInt(b, 17 + offset);
+			int health 			= extractInt(b, 21 + offset);
+			int ammo 			= extractInt(b, 25 + offset);
+			
+			allPackets[i] = new ShipPacket(isFiring, x, y, rotation, destroyBullet, createBullet, health, ammo);
 		}
 		
 		return allPackets;
@@ -49,7 +54,7 @@ public class ShipPacket {
 		if(isFiring) {
 			booleanByte = (byte) 1;
 		}
-		buffer.put(booleanByte).putInt(x).putInt(y).putFloat(rotation).putInt(destroyBullet).putInt(newBulletId).putInt(health);
+		buffer.put(booleanByte).putInt(x).putInt(y).putFloat(rotation).putInt(destroyBullet).putInt(newBulletId).putInt(health).putInt(ammo);
 		return buffer.array();
 	}
 	
@@ -88,5 +93,9 @@ public class ShipPacket {
 	
 	public int getHealth() {
 		return health;
+	}
+	
+	public int getAmmo() {
+		return ammo;
 	}
 }

@@ -212,10 +212,8 @@ public class Ship {
 	// Shooting
 	private void checkReload() {
 		long currentTimeSec = System.currentTimeMillis();
-//		System.out.println(currentTimeSec + " \n " + (reloadTime + lastReloaded) + "\n");
 		if (ammo < clipSize && currentTimeSec > reloadTime + lastReloaded) {
 			ammo++;
-			System.out.println(currentTimeSec - lastReloaded);
 			lastReloaded = currentTimeSec;
 		}
 	}
@@ -311,7 +309,11 @@ public class Ship {
 		health -= damage;
 	}
 	
-	public void setHealth(int h) {
-		health = h;
+	public void setHealth(int health) {
+		this.health = health;
+	}
+	
+	public void setAmmo(int ammo) {
+		this.ammo = ammo;
 	}
 }
