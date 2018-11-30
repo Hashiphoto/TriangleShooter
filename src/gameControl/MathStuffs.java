@@ -20,7 +20,6 @@ public class MathStuffs {
 			boolean linedUpHor = (position.x < wall.x1 || position.x > wall.x2) && position.y - WALL_COLLISION_DISTANCE < wall.y2 && position.y + WALL_COLLISION_DISTANCE > wall.y1;
 			System.out.println(position.x + "," + position.y);
 			if(linedUpHor) {
-				System.out.println("Hor");
 				// Hitting the right wall
 				if(position.x > wall.centerX() && position.x - WALL_COLLISION_DISTANCE < wall.x2) {
 					newPosition.x = wall.x2 + WALL_COLLISION_DISTANCE;
@@ -34,10 +33,8 @@ public class MathStuffs {
 			}
 			boolean linedUpVer = (position.y < wall.y1 || position.y > wall.y2) && position.x - WALL_COLLISION_DISTANCE < wall.x2 && position.x + WALL_COLLISION_DISTANCE > wall.x1;
 			if(linedUpVer) {
-				System.out.println("Ver");
 				// Hitting the bottom wall
 				if(position.y > wall.centerY() && position.y - WALL_COLLISION_DISTANCE < wall.y2) {
-					System.out.println("Hit bottom: " + (position.y - WALL_COLLISION_DISTANCE) + ", " + wall.y2);
 					newPosition.y = wall.y2 + WALL_COLLISION_DISTANCE;
 					return newPosition;
 				} 
