@@ -58,6 +58,7 @@ public class Start extends Application{
 		NetworkConnectionController networkConnector = (NetworkConnectionController) loader.getController();
 		networkStage.setScene(new Scene(networkRoot));
 		networkStage.setTitle("Triangle Shooter");
+		networkStage.setResizable(false);
 		networkStage.show();
 		
 		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(REFRESH_DELAY), ev -> {

@@ -1,5 +1,8 @@
 package gui;
 
+import java.awt.FontFormatException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import gameControl.MathStuffs;
@@ -106,15 +109,17 @@ public class GameCanvas extends Canvas {
 	}
 	
 	private void drawHealthBars() {
+		double maxHealth = ships.get(0).getMaxHealth();
 		gc.setStroke(ShipColors[0]);
 		gc.setFill(ShipColors[0]);
 		gc.strokeRect(HUD_BORDER, HUD_BORDER, HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
-		gc.fillRect(HUD_BORDER, HUD_BORDER, (ships.get(0).getHealth() / 100.0) * HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
+		gc.fillRect(HUD_BORDER, HUD_BORDER, (ships.get(0).getHealth() / maxHealth) * HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
 		
 		gc.setStroke(ShipColors[1]);
 		gc.setFill(ShipColors[1]);
+		maxHealth = ships.get(1).getMaxHealth();
 		gc.strokeRect(this.getWidth() - HEALTH_WIDTH - HUD_BORDER, HUD_BORDER, HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
-		gc.fillRect(this.getWidth() - HEALTH_WIDTH - HUD_BORDER + ((100 - ships.get(1).getHealth()) / 100.0) * HEALTH_WIDTH, HUD_BORDER, (ships.get(1).getHealth() / 100.0) * HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
+		gc.fillRect(this.getWidth() - HEALTH_WIDTH - HUD_BORDER + ((maxHealth - ships.get(1).getHealth()) / maxHealth) * HEALTH_WIDTH, HUD_BORDER, (ships.get(1).getHealth() / 100.0) * HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
 	}
 	
 	private void drawWins() {

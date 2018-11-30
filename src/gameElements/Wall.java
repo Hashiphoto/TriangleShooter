@@ -32,4 +32,12 @@ public class Wall {
 	public int height() {
 		return y2 - y1;
 	}
+	
+	public int centerX() {
+		return (x2 + x1) / 2;
+	}
+	
+	public int centerY() {
+		return (y2 + y1) / 2;
+	}
 }

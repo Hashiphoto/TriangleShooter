@@ -14,18 +14,24 @@ public class Level {
 	public Level() {
 		walls = new ArrayList<Wall>();
 		
+		addWall(500, 500, 800, 600);
 		// Left wall
-		addWall(0, 0, BORDER_SIZE, SCREEN_HEIGHT);
-		// Right wall
-		addWall(SCREEN_WIDTH - BORDER_SIZE, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-		// Top wall
-		addWall(0, 0, SCREEN_WIDTH, BORDER_SIZE);
-		// Bottom wall
-		addWall(0, SCREEN_HEIGHT - BORDER_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT);
+//		addWall(0, 0, BORDER_SIZE, SCREEN_HEIGHT);
+//		// Right wall
+//		addWall(SCREEN_WIDTH - BORDER_SIZE, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+//		// Top wall
+//		addWall(0, 0, SCREEN_WIDTH, BORDER_SIZE);
+//		// Bottom wall
+//		addWall(0, SCREEN_HEIGHT - BORDER_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT);
 	}
 	
 	private void addWall(int x1, int y1, int x2, int y2) {
 		walls.add(new Wall(x1, y1 + GameCanvas.HUD_HEIGHT, x2, y2 + GameCanvas.HUD_HEIGHT));
+	}
+	
+	private void addMirroredWall(int x1, int y1, int x2, int y2) {
+		addWall(x1, y1, x2, y2);
+		addWall(SCREEN_WIDTH - x1, SCREEN_HEIGHT - y2, SCREEN_WIDTH - x2, SCREEN_HEIGHT - y2);
 	}
 	
 	public ArrayList<Wall> getWalls() {

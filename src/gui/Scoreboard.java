@@ -45,6 +45,5 @@ public class Scoreboard {
 		else if(winner == 1) {
 			oneWins++;
 		}
-		System.out.println(zeroWins + " " + oneWins);
 	}
 }

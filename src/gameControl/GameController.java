@@ -69,7 +69,7 @@ public class GameController extends Scene {
 	public void start() {
 		opponentThread.start();
 		BulletCounter.setTeam(myShip.getId());
-		canvas.addMessage(new Message("SYNCHRONIZING...", 4, Color.GRAY));
+		canvas.addMessage(new Message("SYNCHRONIZING...", 1, Color.GRAY));
 		startNextRound(-1);
 		
 		new AnimationTimer() {
@@ -105,7 +105,8 @@ public class GameController extends Scene {
 				myShip.isFiring = false;
 			}
 		}
-		
+
+		myShip.setLocation(MathStuffs.collide(myShip.getLocation(), walls));
 		// Iterate through bullets and update them
 		for(int i = 0; i < bullets.size(); i++) {
 			Bullet b = bullets.get(i);
@@ -195,6 +196,9 @@ public class GameController extends Scene {
 				}
 				String code = event.getCode().toString();
 				myShip.keyPressed(code);
+				if(code == "SPACE") {
+					myShip.isFiring = true;	
+				}
 			}
 		};
 	}

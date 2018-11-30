@@ -1,13 +1,55 @@
 package gameControl;
 
 import java.awt.Point;
+import java.util.ArrayList;
 
 import gameElements.Bullet;
 import gameElements.Ship;
+import gameElements.Wall;
 
 public class MathStuffs {
 	private static final int TURN_PRECISION = 1000;
 	private static final int COLLISION_DISTANCE = 35;
+	private static final int WALL_COLLISION_DISTANCE = 20;
+	
+	public static Point collide(Point position, ArrayList<Wall> walls) {
+		int numWalls = walls.size();
+		Point newPosition = new Point(position.x, position.y);
+		for(int i = 0; i < numWalls; i++) {
+			Wall wall = walls.get(i);
+			boolean linedUpHor = (position.x < wall.x1 || position.x > wall.x2) && position.y - WALL_COLLISION_DISTANCE < wall.y2 && position.y + WALL_COLLISION_DISTANCE > wall.y1;
+			System.out.println(position.x + "," + position.y);
+			if(linedUpHor) {
+				System.out.println("Hor");
+				// Hitting the right wall
+				if(position.x > wall.centerX() && position.x - WALL_COLLISION_DISTANCE < wall.x2) {
+					newPosition.x = wall.x2 + WALL_COLLISION_DISTANCE;
+					return newPosition;
+				} 
+				// Hitting the left wall
+				if(position.x < wall.centerX() && position.x + WALL_COLLISION_DISTANCE > wall.x1) {
+					newPosition.x = wall.x1 - WALL_COLLISION_DISTANCE;
+					return newPosition;
+				}
+			}
+			boolean linedUpVer = (position.y < wall.y1 || position.y > wall.y2) && position.x - WALL_COLLISION_DISTANCE < wall.x2 && position.x + WALL_COLLISION_DISTANCE > wall.x1;
+			if(linedUpVer) {
+				System.out.println("Ver");
+				// Hitting the bottom wall
+				if(position.y > wall.centerY() && position.y - WALL_COLLISION_DISTANCE < wall.y2) {
+					System.out.println("Hit bottom: " + (position.y - WALL_COLLISION_DISTANCE) + ", " + wall.y2);
+					newPosition.y = wall.y2 + WALL_COLLISION_DISTANCE;
+					return newPosition;
+				} 
+				// Hitting the top wall
+				if(position.y < wall.centerY() && position.y + WALL_COLLISION_DISTANCE > wall.y1) {
+					newPosition.y = wall.y1 - WALL_COLLISION_DISTANCE;
+					return newPosition;
+				}
+			}
+		}
+		return newPosition;
+	}
 	
 	public static double calculateNewAngle(Point origin, Point mouse, double currentAngle, double turnSpeed) {
 		Point mouseUnitVector = new Point();

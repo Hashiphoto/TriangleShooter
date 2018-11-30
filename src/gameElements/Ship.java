@@ -11,15 +11,15 @@ public class Ship {
 	private static final int LEFT = 2;
 	private static final int RIGHT = 3;
 	private static final double DEFAULT_SHIP_ROTATION_SPEED = 3;
-	private static final double DEFAULT_SHIP_ACCEL = 0.4;
-	private static final int DEFAULT_SHIP_MAX_SPEED = 3;
+	private static final double DEFAULT_SHIP_ACCEL = 0.2;
+	private static final int DEFAULT_SHIP_MAX_SPEED = 5;
 	private static final double DEFAULT_ACCURACY = 1.0;
-	private static final double DEFAULT_RELOAD_TIME = 0.5;
-	private static final int DEFAULT_CLIP_SIZE = 5;
-	private static final int DEFAULT_BULLET_SPEED = 8;
-	private static final int DEFAULT_BULLET_RANGE = 300;
+	private static final double DEFAULT_RELOAD_TIME = 0.20;
+	private static final int DEFAULT_CLIP_SIZE = 6;
+	private static final int DEFAULT_BULLET_SPEED = 12;
+	private static final int DEFAULT_BULLET_RANGE = 450;
 	private static final int DEFAULT_BULLET_DAMAGE = 10;
-	private static final int DEFAULT_HEALTH = 100;
+	public static final int DEFAULT_HEALTH = 100;
 	
 	public boolean isFiring;
 	public boolean isEnemy;
@@ -49,6 +49,7 @@ public class Ship {
 	private int damage;
 	private int health;
 	private Point start;
+	private int maxHealth;
 	
 	public Ship(int id, Point start) {
 		this(id, start, DEFAULT_SHIP_MAX_SPEED, DEFAULT_SHIP_ACCEL, DEFAULT_BULLET_SPEED, 
@@ -77,6 +78,7 @@ public class Ship {
 		this.reloadTime = reloadTime;
 		this.damage = damage;
 		this.health = health;
+		this.maxHealth = health;
 		this.start = new Point(start.x, start.y);
 		hitBy = -1;
 		firingId = -1;
@@ -91,7 +93,7 @@ public class Ship {
 	public void reset() {
 		location.x = start.x;
 		location.y = start.y;
-		health = DEFAULT_HEALTH;
+		health = maxHealth;
 	}
 	
 	// Movement ///////////////////////////////////////////////////////////////
@@ -281,6 +283,10 @@ public class Ship {
 	
 	public boolean isDead() {
 		return health <= 0;
+	}
+	
+	public int getMaxHealth() {
+		return maxHealth;
 	}
 	
 	// Sets ///////////////////////////////////////////////////////////////////
