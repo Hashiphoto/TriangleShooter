@@ -67,8 +67,8 @@ public class GameCanvas extends Canvas {
 		drawShips();
 		drawBullets();
 		drawMessage();
-		drawScoreboard();
 		drawWalls();
+		drawScoreboard();
 	}
 	
 	public void addMessage(Message msg) {

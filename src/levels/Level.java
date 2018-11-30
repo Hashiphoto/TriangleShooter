@@ -9,19 +9,20 @@ public class Level {
 	private static final int BORDER_SIZE = 30;
 	private static final int SCREEN_WIDTH = 1280;
 	private static final int SCREEN_HEIGHT = 720 - GameCanvas.HUD_HEIGHT;
+	private static final int BORDER_OFFSET = 5;
 	private ArrayList<Wall> walls;
 	
 	public Level() {
 		walls = new ArrayList<Wall>();
 		
 		// Left wall
-		addWall(0, 0, BORDER_SIZE, SCREEN_HEIGHT);
+		addWall(-BORDER_OFFSET, -BORDER_OFFSET, BORDER_SIZE, SCREEN_HEIGHT + BORDER_OFFSET);
 		// Right wall
-		addWall(SCREEN_WIDTH - BORDER_SIZE, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		addWall(SCREEN_WIDTH - BORDER_SIZE, -BORDER_OFFSET, SCREEN_WIDTH+ BORDER_OFFSET, SCREEN_HEIGHT + BORDER_OFFSET);
 		// Top wall
-		addWall(0, 0, SCREEN_WIDTH, BORDER_SIZE);
+		addWall(-BORDER_OFFSET, -BORDER_OFFSET, SCREEN_WIDTH + BORDER_OFFSET, BORDER_SIZE);
 		// Bottom wall
-		addWall(0, SCREEN_HEIGHT - BORDER_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT);
+		addWall(-BORDER_OFFSET, SCREEN_HEIGHT - BORDER_SIZE, SCREEN_WIDTH + BORDER_OFFSET, SCREEN_HEIGHT + BORDER_OFFSET);
 	}
 	
 	private void addWall(int x1, int y1, int x2, int y2) {
