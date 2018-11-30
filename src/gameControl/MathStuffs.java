@@ -15,32 +15,42 @@ public class MathStuffs {
 	public static Point collide(Point position, ArrayList<Wall> walls) {
 		int numWalls = walls.size();
 		Point newPosition = new Point(position.x, position.y);
+		boolean gotX = false;
+		boolean gotY = false;
 		for(int i = 0; i < numWalls; i++) {
 			Wall wall = walls.get(i);
-			boolean linedUpHor = (position.x < wall.x1 || position.x > wall.x2) && position.y - WALL_COLLISION_DISTANCE < wall.y2 && position.y + WALL_COLLISION_DISTANCE > wall.y1;
-			if(linedUpHor) {
-				// Hitting the right wall
-				if(position.x > wall.centerX() && position.x - WALL_COLLISION_DISTANCE < wall.x2) {
-					newPosition.x = wall.x2 + WALL_COLLISION_DISTANCE;
-					return newPosition;
-				} 
-				// Hitting the left wall
-				if(position.x < wall.centerX() && position.x + WALL_COLLISION_DISTANCE > wall.x1) {
-					newPosition.x = wall.x1 - WALL_COLLISION_DISTANCE;
-					return newPosition;
+			if(!gotX) {
+				boolean linedUpHor = (position.x < wall.x1 || position.x > wall.x2) && position.y - WALL_COLLISION_DISTANCE < wall.y2 && position.y + WALL_COLLISION_DISTANCE > wall.y1;
+				if(linedUpHor) {
+					// Hitting the right wall
+					if(position.x > wall.centerX() && position.x - WALL_COLLISION_DISTANCE < wall.x2) {
+						newPosition.x = wall.x2 + WALL_COLLISION_DISTANCE;
+						gotX = true;
+						continue;
+					} 
+					// Hitting the left wall
+					if(position.x < wall.centerX() && position.x + WALL_COLLISION_DISTANCE > wall.x1) {
+						newPosition.x = wall.x1 - WALL_COLLISION_DISTANCE;
+						gotX = true;
+						continue;
+					}
 				}
 			}
-			boolean linedUpVer = (position.y < wall.y1 || position.y > wall.y2) && position.x - WALL_COLLISION_DISTANCE < wall.x2 && position.x + WALL_COLLISION_DISTANCE > wall.x1;
-			if(linedUpVer) {
-				// Hitting the bottom wall
-				if(position.y > wall.centerY() && position.y - WALL_COLLISION_DISTANCE < wall.y2) {
-					newPosition.y = wall.y2 + WALL_COLLISION_DISTANCE;
-					return newPosition;
-				} 
-				// Hitting the top wall
-				if(position.y < wall.centerY() && position.y + WALL_COLLISION_DISTANCE > wall.y1) {
-					newPosition.y = wall.y1 - WALL_COLLISION_DISTANCE;
-					return newPosition;
+			if(!gotY) {
+				boolean linedUpVer = (position.y < wall.y1 || position.y > wall.y2) && position.x - WALL_COLLISION_DISTANCE < wall.x2 && position.x + WALL_COLLISION_DISTANCE > wall.x1;
+				if(linedUpVer) {
+					// Hitting the bottom wall
+					if(position.y > wall.centerY() && position.y - WALL_COLLISION_DISTANCE < wall.y2) {
+						newPosition.y = wall.y2 + WALL_COLLISION_DISTANCE;
+						gotY = true;
+						continue;
+					} 
+					// Hitting the top wall
+					if(position.y < wall.centerY() && position.y + WALL_COLLISION_DISTANCE > wall.y1) {
+						newPosition.y = wall.y1 - WALL_COLLISION_DISTANCE;
+						gotY = true;
+						continue;
+					}
 				}
 			}
 		}
