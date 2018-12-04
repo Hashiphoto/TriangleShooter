@@ -21,7 +21,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import levels.Level;
+import levels.Corridor;
 import network.Network;
 import network.NetworkUpdateThread;
 
@@ -46,7 +46,8 @@ public class GameScene extends Scene {
 		super(group);
 		this.network = network;
 		this.canvas = canvas;
-		network.initializeShips(new Point(200, (int) (canvas.getHeight() / 2)),  new Point((int) canvas.getWidth() - 200, (int) (canvas.getHeight() / 2)));
+		network.initializeShips(new Point(200, (int) (canvas.getHeight() + GameCanvas.HUD_HEIGHT) / 2),
+								new Point((int) canvas.getWidth() - 200, (int) (canvas.getHeight() + GameCanvas.HUD_HEIGHT)/ 2));
 		ships = network.getAllShips();
 		myShip = network.getMyShip();
 		opponent = network.getOpponent();
@@ -58,7 +59,7 @@ public class GameScene extends Scene {
 		mouseLocation = new Point();
 		gamePaused = true;
 		currentRound = 1;
-		walls = new Level().getWalls();
+		walls = new Corridor().getWalls();
 		canvas.init(ships, bullets, scoreboard, walls);
 		this.setOnMouseMoved(MouseMoved());
 		this.setOnMousePressed(MousePressed());

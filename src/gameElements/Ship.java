@@ -13,7 +13,7 @@ public class Ship {
 	private static final double DEFAULT_SHIP_ACCEL = 0.2;
 	private static final int DEFAULT_SHIP_MAX_SPEED = 5;
 	private static final double DEFAULT_ACCURACY = 1.0;
-	private static final int DEFAULT_RELOAD_TIME = 500; // milliseconds
+	private static final int DEFAULT_RELOAD_TIME = 400; // milliseconds
 	private static final int DEFAULT_CLIP_SIZE = 6;
 	private static final int DEFAULT_BULLET_SPEED = 12;
 	private static final int DEFAULT_BULLET_RANGE = 450;
