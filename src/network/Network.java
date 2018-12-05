@@ -95,7 +95,7 @@ public class Network {
 			int damage = input.readInt();
 			return new Ship(id, new Point(x, y), maxSpeed, shipAccel, bulletSpeed, bulletRange, clipSize, reloadTime, health, damage);
 		} catch (IOException e) {
-			System.out.println("Network: Unable to read whole ship");
+			System.err.println("Network: Unable to read whole ship");
 		}
 		return null;
 	}
@@ -131,7 +131,6 @@ public class Network {
 	}
 	
 	public void sendGameInformation(byte level, byte action) {
-		System.out.println("Sent a game state packet");
 		try {
 			GameStatePacket gsp = new GameStatePacket(level, action);
 			output.write(gsp.toByteArray());

@@ -28,8 +28,8 @@ import network.Network;
 import network.NetworkUpdateThread;
 
 public class GameScene extends Scene {
-	public static final int FRAMERATE = 60;
 	private static final int ROUNDS = 7;
+	private static final byte NO_BYTE = -1;
 	
 	private GameCanvas canvas;
 	private ArrayList<Ship> ships;
@@ -80,7 +80,6 @@ public class GameScene extends Scene {
 			state = gameState.WAITING_FOR_START;
 		}
 		else {
-			System.out.println("Waiting for level");
 			state = gameState.WAITING_FOR_LEVEL;
 		}
 		opponentThread.start();
@@ -107,13 +106,10 @@ public class GameScene extends Scene {
 	}
 	
 	private void setupNewLevel() {
-		if(network.isHosting()) {
-			int index = getRandomLevel();
-			setLevel(index);
-			//Send level only
-			network.sendGameInformation((byte) index, (byte) -1);
-			System.out.println("Sent level");
-		}
+		int index = getRandomLevel();
+		setLevel(index);
+		//Send level only
+		network.sendGameInformation((byte) index, NO_BYTE);
 	}
 	
 	private void startRound() {
@@ -127,7 +123,7 @@ public class GameScene extends Scene {
 	}
 	
 	private void update() {
-		System.out.println(state);
+//		System.out.println(state);
 		switch(state) {
 		case PLAYING:
 			playStep();
@@ -141,7 +137,7 @@ public class GameScene extends Scene {
 			break;
 
 		case WAITING_FOR_START:
-			checkForStart();
+			checkForAction();
 			break;
 		}
 		
@@ -189,12 +185,12 @@ public class GameScene extends Scene {
 			}
 		}
 		
-		// Check to see if I've lost
-		if(opponentThread.hasFreshAction()) {
-			doAction(opponentThread.getAction());
-		}
-		else if(myShip.getHealth() <= 0) {
-			lose();
+		// Check to see if opponent lost
+		if(!checkForAction()) {
+			// Check to see if I lost
+			if(myShip.getHealth() <= 0) {
+				lose();
+			}
 		}
 	}
 	
@@ -205,28 +201,27 @@ public class GameScene extends Scene {
 	
 	private void lose() {
 		state = gameState.PAUSED;
-		network.sendGameInformation((byte) -1, LOSE);
+		network.sendGameInformation(NO_BYTE, LOSE);
 		declareWinner(opponent.getId());
 	}
 	
 	private void checkForLevel() {
 		if(opponentThread.hasNewLevel()) {
-			System.out.println("Recieved level");
 			setLevel(opponentThread.getLevel());
 			// Got the level, start the game
-			delay(0.5, e -> {
-				network.sendGameInformation((byte) -1, GAME_START);
+			delay(1.5, e -> {
+				network.sendGameInformation(NO_BYTE, GAME_START);
 				startRound();
 			});
-			System.out.println("Sent game start");
 		}
 	}
 	
-	private void checkForStart() {
+	private boolean checkForAction() {
 		if(opponentThread.hasFreshAction()) {
-			System.out.println("Recieved game start");
 			doAction(opponentThread.getAction());
+			return true;
 		}
+		return false;
 	}
 	
 	private int getWinner() {

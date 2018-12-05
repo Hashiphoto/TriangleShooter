@@ -43,9 +43,6 @@ public abstract class Packet {
 			else if(b[i] == GAME_PACKET_ID) {
 				byte levelSelect 	= b[1 + i];
 				byte gameAction 	= b[2 + i];
-//				System.out.println("Recieved a game state packet");
-//				System.out.println("\tlevel: " + levelSelect);
-//				System.out.println("\taction: " + gameAction);
 				
 				packet = new GameStatePacket(levelSelect, gameAction);
 				i += GAME_PACKET_SIZE;
@@ -58,7 +55,6 @@ public abstract class Packet {
 				currentPackets.add((Packet)packet);
 			}
 		}
-		System.out.println();
 		return currentPackets;
 	}
 }
