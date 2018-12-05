@@ -88,7 +88,7 @@ public class GameScene extends Scene {
 		}
 		opponentThread.start();
 		BulletCounter.setTeam(myShip.getId());
-		canvas.addMessage(new Message("SYNCHRONIZING...", 1, Color.GRAY));
+		canvas.addMessage(new Message("Synchronizing...", 1, Color.GRAY));
 		canvas.init(ships, bullets, scoreboard, walls, pmp);
 		new AnimationTimer() {
 			public void handle(long currentNanoTime) {
@@ -108,11 +108,11 @@ public class GameScene extends Scene {
 		scoreboard.win(roundWinner);
 		if(myShip.getId() == roundWinner) {
 			pmp.disabled = true;
-			canvas.addMessage(new Message("WAIT FOR OPPONENT TO CHOOSE", 1.5, GameCanvas.NEUTRAL));
+			canvas.addMessage(new Message("Wait for opponent to choose", 1.5, GameCanvas.NEUTRAL));
 		}
 		else {
 			pmp.disabled = false;
-			canvas.addMessage(new Message("STEAL A STAT", 1.5, GameCanvas.NEUTRAL));
+			canvas.addMessage(new Message("Steal a stat", 1.5, GameCanvas.NEUTRAL));
 		}
 		delay(3.0, e -> pmp.visible = true);
 	}
@@ -130,6 +130,7 @@ public class GameScene extends Scene {
 		delay(2.0, e -> state = gameState.PLAYING);
 		pmp.visible = false;
 		myShip.reset();
+		bullets.clear();
 		canvas.addMessage(new Message("ROUND " + currentRound, 2, Color.WHITE));
 		canvas.addMessage(new Message("WIN OR DIE", 0.25, Color.WHITE));
 		scoreboard.start();
@@ -143,13 +144,16 @@ public class GameScene extends Scene {
 			playStep();
 			break;
 		case PAUSED:
+			updateShip();
 			myShip.stop();
 			opponent.stop();
 			break;
 		case WAITING_FOR_LEVEL:
+			updateShip();
 			checkForLevel();
 			break;
 		case WAITING_FOR_START:
+			updateShip();
 			checkForAction();
 			break;
 		case WAITING_FOR_LOSER:
@@ -174,8 +178,12 @@ public class GameScene extends Scene {
 		}
 	}
 	
-	private void playStep() {
+	private void updateShip() {
 		myShip.step(mouseLocation);
+	}
+	
+	private void playStep() {
+		updateShip();
 		if(myShip.isFiring) {
 			Bullet bullet = myShip.createBullet();
 			if(bullet != null) {
