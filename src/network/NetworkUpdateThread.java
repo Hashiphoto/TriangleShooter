@@ -83,16 +83,18 @@ public class NetworkUpdateThread extends Thread {
 				break;
 			
 			// Game update packet
-			case Packet.GAME_PACKET_ID: 
+			case Packet.GAME_PACKET_ID:
+				System.out.println("Got a game packet");
 				GameStatePacket currentGame = (GameStatePacket) allPackets.get(i);
-				level = currentGame.getLevel();
-				action = currentGame.getAction();
-				if(level != -1) {
+				if(currentGame.getLevel() != -1) {
+					level = currentGame.getLevel();
 					hasFreshLevel = true;
+					System.out.println("Has level: " + hasFreshLevel);
 				}
-				System.out.println("Action: " + action);
-				if(action != -1) {
+				if(currentGame.getAction() != -1) {
+					action = currentGame.getAction();
 					hasFreshAction = true;
+					System.out.println("Has action: " + hasFreshAction);
 				}
 				break;
 			}			

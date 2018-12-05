@@ -131,6 +131,7 @@ public class Network {
 	}
 	
 	public void sendGameInformation(byte level, byte action) {
+		System.out.println("Sent a game state packet");
 		try {
 			GameStatePacket gsp = new GameStatePacket(level, action);
 			output.write(gsp.toByteArray());

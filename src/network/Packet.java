@@ -23,9 +23,9 @@ public abstract class Packet {
 	public abstract byte[] toByteArray();
 	
 	public static ArrayList<Packet> convertToPacket(byte[] b) {
+		currentPackets.clear();
 		int i = 0;
 		while(i < b.length) {
-			currentPackets.clear();
 			Packet packet = null;
 			if(b[i] == SHIP_PACKET_ID) {
 				boolean isFiring 	= b[1 + i] != 0;
@@ -43,6 +43,9 @@ public abstract class Packet {
 			else if(b[i] == GAME_PACKET_ID) {
 				byte levelSelect 	= b[1 + i];
 				byte gameAction 	= b[2 + i];
+//				System.out.println("Recieved a game state packet");
+//				System.out.println("\tlevel: " + levelSelect);
+//				System.out.println("\taction: " + gameAction);
 				
 				packet = new GameStatePacket(levelSelect, gameAction);
 				i += GAME_PACKET_SIZE;
@@ -51,10 +54,11 @@ public abstract class Packet {
 				System.err.println("Could not interpret incoming packet");
 			}
 			if(packet != null) {
+				Packet genericPacket = (Packet)packet;
 				currentPackets.add((Packet)packet);
 			}
 		}
-		
+		System.out.println();
 		return currentPackets;
 	}
 }
