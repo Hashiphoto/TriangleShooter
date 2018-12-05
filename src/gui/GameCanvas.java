@@ -91,16 +91,14 @@ public class GameCanvas extends Canvas {
 	}
 	
 	private void drawScoreboard() {
-		if(scoreboard.getGameTime() != lastTimeSeconds) {
-			gc.setFill(Color.web("0x333333"));
-			
-			gc.fillRect(0, 0, this.getWidth(), HUD_HEIGHT);
-			gc.setStroke(NEUTRAL);
-			gc.strokeRect((this.getWidth() - CLOCK_WIDTH) / 2, 0, CLOCK_WIDTH, HUD_HEIGHT);
-			drawGameTime(scoreboard.getGameTime());
-			drawHealthBars();
-			drawWins();
-		}
+		gc.setFill(Color.web("0x333333"));
+		
+		gc.fillRect(0, 0, this.getWidth(), HUD_HEIGHT);
+		gc.setStroke(NEUTRAL);
+		gc.strokeRect((this.getWidth() - CLOCK_WIDTH) / 2, 0, CLOCK_WIDTH, HUD_HEIGHT);
+		drawGameTime(scoreboard.getGameTime());
+		drawHealthBars();
+		drawWins();
 	}
 	
 	private void drawGameTime(int time) {

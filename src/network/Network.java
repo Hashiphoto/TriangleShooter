@@ -130,6 +130,16 @@ public class Network {
 		}
 	}
 	
+	public void sendGameInformation(byte level, byte action) {
+		try {
+			GameStatePacket gsp = new GameStatePacket(level, action);
+			output.write(gsp.toByteArray());
+		}
+		catch(IOException e) {
+			System.err.println("Could not reach other client");
+		}
+	}
+	
 	public void read(byte[] byteArray) throws ArrayIndexOutOfBoundsException{
 		try {
 			input.read(byteArray);
@@ -223,6 +233,10 @@ public class Network {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public boolean isHosting() {
+		return id == 0;
 	}
 	
 	public void close() {

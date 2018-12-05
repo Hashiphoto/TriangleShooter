@@ -11,11 +11,11 @@ import gui.GameCanvas;
  *
  */
 public class Level {
-	protected static int X_BORDER_SIZE = 30;
-	protected static int Y_BORDER_SIZE = 30;
-	protected static int SCREEN_WIDTH = 1280;
-	protected static int SCREEN_HEIGHT = 720 - GameCanvas.HUD_HEIGHT;
-	protected static int BORDER_OFFSET = 5;
+	protected int X_BORDER_SIZE = 30;
+	protected int Y_BORDER_SIZE = 30;
+	protected int SCREEN_WIDTH = 1280;
+	protected int SCREEN_HEIGHT = 720 - GameCanvas.HUD_HEIGHT;
+	protected int BORDER_OFFSET = 5;
 	private ArrayList<Wall> walls;
 	
 	public Level() {

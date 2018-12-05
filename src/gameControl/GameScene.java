@@ -22,6 +22,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import levels.Corridor;
+import levels.FourSquare;
+import levels.Level;
 import network.Network;
 import network.NetworkUpdateThread;
 
@@ -33,14 +35,20 @@ public class GameScene extends Scene {
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
 	private ArrayList<Wall> walls;
+	private ArrayList<Level> levels;
 	private Ship myShip;
 	private Ship opponent;
 	private Network network;
 	private NetworkUpdateThread opponentThread;
 	private Point mouseLocation;
-	private boolean gamePaused;
 	private Scoreboard scoreboard;
 	private int currentRound;
+	
+	private enum gameState {
+		PLAYING, PAUSED, WAITING_FOR_LEVEL, WAITING_FOR_START
+	};
+	private static byte GAME_START = 0;
+	private gameState state;
 	
 	public GameScene(Network network, Group group, GameCanvas canvas) {
 		super(group);
@@ -57,10 +65,9 @@ public class GameScene extends Scene {
 		ships.add(myShip);
 		scoreboard = new Scoreboard();
 		mouseLocation = new Point();
-		gamePaused = true;
 		currentRound = 1;
-		walls = new Corridor().getWalls();
-		canvas.init(ships, bullets, scoreboard, walls);
+		walls = new ArrayList<Wall>();
+		initializeLevels();
 		this.setOnMouseMoved(MouseMoved());
 		this.setOnMousePressed(MousePressed());
 		this.setOnKeyPressed(KeyPressed());
@@ -70,32 +77,91 @@ public class GameScene extends Scene {
 	public void start() {
 		opponentThread.start();
 		BulletCounter.setTeam(myShip.getId());
-		canvas.addMessage(new Message("SYNCHRONIZING...", 1, Color.GRAY));
-		startNextRound(-1);
-		
+		canvas.addMessage(new Message("SYNCHRONIZING...", 2, Color.GRAY));
+		setupNewLevel();
+		canvas.init(ships, bullets, scoreboard, walls);
 		new AnimationTimer() {
 			public void handle(long currentNanoTime) {
 				// If a message is displayed on screen, game is paused
-				gamePaused = canvas.messageDisplayed();
+				if(state == gameState.PLAYING && canvas.messageDisplayed()) {
+					state = gameState.PAUSED;
+				}
 				update();
 			}
 		}.start();
 	}
 	
-	private void startNextRound(int roundWinner) {
+	private void declareWinner(int roundWinner) {
 		if(roundWinner != -1) {
 			String winner = Ship.Name[roundWinner];
 			canvas.addMessage(new Message(winner + " WINS!", 2, GameCanvas.ShipColors[roundWinner]));
 			scoreboard.win(roundWinner);
 		}
-		delay(2, e -> myShip.reset());
+	}
+	
+	private void setupNewLevel() {
+		if(network.isHosting()) {
+			state = gameState.WAITING_FOR_START;
+			int index = getRandomLevel();
+			setLevel(index);
+			//Send level only
+			network.sendGameInformation((byte) index, (byte) -1);
+			System.out.println("Sent level");
+		}
+		else {
+			state = gameState.WAITING_FOR_LEVEL;
+		}
+	}
+	
+	private void startRound() {
+		state = gameState.PAUSED;
+		myShip.reset();
 		canvas.addMessage(new Message("ROUND " + currentRound, 2, Color.WHITE));
 		canvas.addMessage(new Message("WIN OR DIE", 0.25, Color.WHITE));
 		scoreboard.start();
 		currentRound++;
+		state = gameState.PLAYING;
 	}
 	
 	private void update() {
+//		System.out.println(state);
+		switch(state) {
+		case PLAYING:
+		case PAUSED:
+			playStep();
+			break;
+		case WAITING_FOR_LEVEL:
+			if(opponentThread.hasNewLevel()) {
+				System.out.println("Recieved level");
+				setLevel(opponentThread.getLevel());
+				// Got the level, start the game
+				delay(1.0, e -> network.sendGameInformation((byte) -1, GAME_START));
+				System.out.println("Sent game start");
+			}
+			break;
+
+		case WAITING_FOR_START:
+			playStep();
+			if(opponentThread.hasFreshAction()) {
+				System.out.println("Recieved game start");
+				doAction(opponentThread.getAction());
+			}
+			break;
+		}
+		
+		canvas.repaint();
+		network.sendShipState(myShip);
+		myShip.isFiring = false;
+		myShip.hitBy = -1;
+	}
+	
+	private void doAction(int action) {
+		if(action == 0) {
+			startRound();
+		}
+	}
+	
+	private void playStep() {
 		myShip.step(mouseLocation);
 		if(myShip.isFiring) {
 			Bullet bullet = myShip.createBullet();
@@ -123,20 +189,16 @@ public class GameScene extends Scene {
 				bullets.remove(b);
 			}
 		}
-		if(!gamePaused) {
+		if(state == gameState.PLAYING) {
 			int winner = getWinner();
 			if(winner != -1) {
-				startNextRound(winner);
+				declareWinner(winner);
 			}
 		}
 		else {
 			myShip.stop();
 			opponent.stop();
 		}
-		canvas.repaint();
-		network.sendShipState(myShip);
-		myShip.isFiring = false;
-		myShip.hitBy = -1;
 	}
 	
 	private int getWinner() {
@@ -149,13 +211,21 @@ public class GameScene extends Scene {
 		return -1;
 	}
 	
-	private Ship getShipById(int id) {
-		for(Ship s : ships) {
-			if(s.getId() == id) {
-				return s;
-			}
-		}
-		return null;
+	public void initializeLevels() {
+		levels = new ArrayList<Level>();
+		levels.add(new Corridor());
+		levels.add(new FourSquare());
+		levels.add(new Level());
+	}
+	
+	public int getRandomLevel() {
+		int random = (int) (Math.random() * levels.size());
+		return random;
+	}
+	
+	public void setLevel(int index) {
+		walls.clear();
+		walls.addAll(levels.get(index).getWalls());
 	}
 	
 	private void delay(double duration, EventHandler<ActionEvent> event) {
@@ -182,7 +252,7 @@ public class GameScene extends Scene {
 		return new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				if(gamePaused) {
+				if(state == gameState.PAUSED) {
 					return;
 				}
 				if(event.getButton() == MouseButton.PRIMARY) {
@@ -196,7 +266,7 @@ public class GameScene extends Scene {
 		return new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				if(gamePaused) {
+				if(state == gameState.PAUSED) {
 					return;
 				}
 				String code = event.getCode().toString();
@@ -212,7 +282,7 @@ public class GameScene extends Scene {
 		return new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				if(gamePaused) {
+				if(state == gameState.PAUSED) {
 					return;
 				}
 				String code = event.getCode().toString();
