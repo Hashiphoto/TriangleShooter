@@ -45,11 +45,13 @@ public class GameScene extends Scene {
 	private int currentRound;
 	
 	private enum gameState {
-		PLAYING, PAUSED, WAITING_FOR_LEVEL, WAITING_FOR_START
+		PLAYING, PAUSED, WAITING_FOR_LEVEL, WAITING_FOR_START, WAITING_FOR_LOSER
 	};
 	private static byte GAME_START = 0;
 	private static byte LOSE = 1;
 	private gameState state;
+	private PowerMeterPanel pmp;
+	private int lastWinner;
 	
 	public GameScene(Network network, Group group, GameCanvas canvas) {
 		super(group);
@@ -68,6 +70,8 @@ public class GameScene extends Scene {
 		mouseLocation = new Point();
 		currentRound = 1;
 		walls = new ArrayList<Wall>();
+		pmp = new PowerMeterPanel();
+		lastWinner = -1;
 		initializeLevels();
 		this.setOnMouseMoved(MouseMoved());
 		this.setOnMousePressed(MousePressed());
@@ -85,7 +89,7 @@ public class GameScene extends Scene {
 		opponentThread.start();
 		BulletCounter.setTeam(myShip.getId());
 		canvas.addMessage(new Message("SYNCHRONIZING...", 1, Color.GRAY));
-		canvas.init(ships, bullets, scoreboard, walls);
+		canvas.init(ships, bullets, scoreboard, walls, pmp);
 		new AnimationTimer() {
 			public void handle(long currentNanoTime) {
 				update();
@@ -98,23 +102,33 @@ public class GameScene extends Scene {
 	}
 	
 	private void declareWinner(int roundWinner) {
-		if(roundWinner != -1) {
-			String winner = Ship.Name[roundWinner];
-			canvas.addMessage(new Message(winner + " WINS!", 2, GameCanvas.ShipColors[roundWinner]));
-			scoreboard.win(roundWinner);
+		String winner = Ship.Name[roundWinner];
+		lastWinner = roundWinner;
+		canvas.addMessage(new Message(winner + " WINS!", 1.5, GameCanvas.ShipColors[roundWinner]));
+		scoreboard.win(roundWinner);
+		if(myShip.getId() == roundWinner) {
+			pmp.disabled = true;
+			canvas.addMessage(new Message("WAIT FOR OPPONENT TO CHOOSE", 1.5, GameCanvas.NEUTRAL));
 		}
+		else {
+			pmp.disabled = false;
+			canvas.addMessage(new Message("STEAL A STAT", 1.5, GameCanvas.NEUTRAL));
+		}
+		delay(3.0, e -> pmp.visible = true);
 	}
 	
 	private void setupNewLevel() {
+		state = gameState.WAITING_FOR_START;
 		int index = getRandomLevel();
 		setLevel(index);
 		//Send level only
-		network.sendGameInformation((byte) index, NO_BYTE);
+		network.sendGameInformation((byte) index, NO_BYTE, NO_BYTE);
 	}
 	
 	private void startRound() {
 		state = gameState.PAUSED;
 		delay(2.0, e -> state = gameState.PLAYING);
+		pmp.visible = false;
 		myShip.reset();
 		canvas.addMessage(new Message("ROUND " + currentRound, 2, Color.WHITE));
 		canvas.addMessage(new Message("WIN OR DIE", 0.25, Color.WHITE));
@@ -135,10 +149,14 @@ public class GameScene extends Scene {
 		case WAITING_FOR_LEVEL:
 			checkForLevel();
 			break;
-
 		case WAITING_FOR_START:
 			checkForAction();
 			break;
+		case WAITING_FOR_LOSER:
+			if(checkForUpgrade()) {
+				pmp.disabled = false;
+				state = gameState.PAUSED;
+			}
 		}
 		
 		canvas.repaint();
@@ -188,20 +206,20 @@ public class GameScene extends Scene {
 		// Check to see if opponent lost
 		if(!checkForAction()) {
 			// Check to see if I lost
-			if(myShip.getHealth() <= 0) {
+			if(myShip.isDead()) {
 				lose();
 			}
 		}
 	}
 	
 	private void win() {
-		state = gameState.PAUSED;
+		state = gameState.WAITING_FOR_LOSER;
 		declareWinner(myShip.getId());
 	}
 	
 	private void lose() {
 		state = gameState.PAUSED;
-		network.sendGameInformation(NO_BYTE, LOSE);
+		network.sendGameInformation(NO_BYTE, LOSE, NO_BYTE);
 		declareWinner(opponent.getId());
 	}
 	
@@ -210,7 +228,7 @@ public class GameScene extends Scene {
 			setLevel(opponentThread.getLevel());
 			// Got the level, start the game
 			delay(1.5, e -> {
-				network.sendGameInformation(NO_BYTE, GAME_START);
+				network.sendGameInformation(NO_BYTE, GAME_START, NO_BYTE);
 				startRound();
 			});
 		}
@@ -224,29 +242,50 @@ public class GameScene extends Scene {
 		return false;
 	}
 	
-	private int getWinner() {
-		if(myShip.getHealth() <= 0) {
-			return opponent.getId();
+	private boolean checkForUpgrade() {
+		if(opponentThread.hasFreshUpgrade()) {
+			UpdateShipPower(opponentThread.getUpgrade());
+			return true;
 		}
-		if(opponent.getHealth() <= 0) {
-			return myShip.getId();
-		}
-		return -1;
+		return false;
 	}
 	
-	public void initializeLevels() {
+	private void UpdateShipPower(int upgrade) {
+		switch(upgrade) {
+		case 0:
+			System.out.println("Upgrading speed");
+			break;
+		case 1:
+			System.out.println("Upgrading Accuracy");
+			break;
+		case 2:
+			System.out.println("Upgrading range");
+			break;
+		case 3:
+			System.out.println("Upgrading dmg");
+			break;
+		case 4:
+			System.out.println("Upgrading size");
+			break;
+		case 5:
+			System.out.println("Upgrading reload");
+			break;
+		}
+	}
+	
+	private void initializeLevels() {
 		levels = new ArrayList<Level>();
 		levels.add(new Corridor());
 		levels.add(new FourSquare());
 		levels.add(new Level());
 	}
 	
-	public int getRandomLevel() {
+	private int getRandomLevel() {
 		int random = (int) (Math.random() * levels.size());
 		return random;
 	}
 	
-	public void setLevel(int index) {
+	private void setLevel(int index) {
 		walls.clear();
 		walls.addAll(levels.get(index).getWalls());
 	}
@@ -261,7 +300,7 @@ public class GameScene extends Scene {
 		myShip.releaseKeys();
 	}
 	
-	public EventHandler<MouseEvent> MouseMoved() {
+	private EventHandler<MouseEvent> MouseMoved() {
 		return new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
@@ -271,11 +310,24 @@ public class GameScene extends Scene {
 		};
 	}
 	
-	public EventHandler<MouseEvent> MousePressed() {
+	private EventHandler<MouseEvent> MousePressed() {
 		return new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				if(state != gameState.PLAYING) {
+					if(pmp.visible && !pmp.disabled) {
+						byte buttonPressed = (byte) canvas.getMeterButtonPressed(event.getX(), event.getY());
+						if(buttonPressed != -1) {
+							if(lastWinner == myShip.getId()) {
+								setupNewLevel();
+							}
+							else {
+								pmp.disabled = true;
+								state = gameState.WAITING_FOR_LEVEL;
+								network.sendGameInformation(NO_BYTE, NO_BYTE, buttonPressed);
+							}
+						}
+					}
 					return;
 				}
 				if(event.getButton() == MouseButton.PRIMARY) {
@@ -285,7 +337,7 @@ public class GameScene extends Scene {
 		};
 	}
 	
-	public EventHandler<KeyEvent> KeyPressed() {
+	private EventHandler<KeyEvent> KeyPressed() {
 		return new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
@@ -301,7 +353,7 @@ public class GameScene extends Scene {
 		};
 	}
 	
-	public EventHandler<KeyEvent> KeyReleased() {
+	private EventHandler<KeyEvent> KeyReleased() {
 		return new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {

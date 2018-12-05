@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public abstract class Packet {
 	protected static final int SHIP_PACKET_SIZE = 2 + Integer.BYTES * 6 + Float.BYTES;
-	protected static final int GAME_PACKET_SIZE = 3;
+	protected static final int GAME_PACKET_SIZE = 4;
 	protected static final byte SHIP_PACKET_ID = 0;
 	protected static final byte GAME_PACKET_ID = 1;
 	public byte packetId;
@@ -43,15 +43,15 @@ public abstract class Packet {
 			else if(b[i] == GAME_PACKET_ID) {
 				byte levelSelect 	= b[1 + i];
 				byte gameAction 	= b[2 + i];
+				byte upgradeSelected= b[3 + i];
 				
-				packet = new GameStatePacket(levelSelect, gameAction);
+				packet = new GameStatePacket(levelSelect, gameAction, upgradeSelected);
 				i += GAME_PACKET_SIZE;
 			}
 			else {
 				System.err.println("Could not interpret incoming packet");
 			}
 			if(packet != null) {
-				Packet genericPacket = (Packet)packet;
 				currentPackets.add((Packet)packet);
 			}
 		}

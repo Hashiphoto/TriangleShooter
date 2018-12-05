@@ -5,20 +5,21 @@ import java.awt.Point;
 import gameControl.MathStuffs;
 
 public class Ship {
+	public static final int DEFAULT_HEALTH = 100;
 	private static final int UP = 0;
 	private static final int DOWN = 1;
 	private static final int LEFT = 2;
 	private static final int RIGHT = 3;
-	private static final double DEFAULT_SHIP_ROTATION_SPEED = 3;
-	private static final double DEFAULT_SHIP_ACCEL = 0.2;
-	private static final int DEFAULT_SHIP_MAX_SPEED = 5;
+	private static final int DEFAULT_MOVEMENT = 50;
+	private static final double MOVEMENT_ROTATION_CONV = 0.06;
+	private static final double MOVEMENT_ACCEL_CONV = 0.004;
+	private static final double MOVEMENT_SPEED_CONV = 0.1;
 	private static final double DEFAULT_ACCURACY = 1.0;
+	private static final int DEFAULT_BULLET_RANGE = 450;
+	private static final int DEFAULT_BULLET_DAMAGE = 10;
 	private static final int DEFAULT_RELOAD_TIME = 400; // milliseconds
 	private static final int DEFAULT_CLIP_SIZE = 6;
 	private static final int DEFAULT_BULLET_SPEED = 12;
-	private static final int DEFAULT_BULLET_RANGE = 450;
-	private static final int DEFAULT_BULLET_DAMAGE = 10;
-	public static final int DEFAULT_HEALTH = 100;
 	
 	public boolean isFiring;
 	public boolean isEnemy;
@@ -37,7 +38,6 @@ public class Ship {
 	private int shipMaxSpeed;
 	private double shipAcceleration;
 	private boolean[] keysHeld;
-//	private boolean[] upgrades;
 	private int bulletSpeed;
 	private int bulletRange;
 	private int clipSize;
@@ -49,14 +49,10 @@ public class Ship {
 	private int health;
 	private Point start;
 	private int maxHealth;
+	private double movement;
+	private int ammoReload;
 	
 	public Ship(int id, Point start) {
-		this(id, start, DEFAULT_SHIP_MAX_SPEED, DEFAULT_SHIP_ACCEL, DEFAULT_BULLET_SPEED, 
-				DEFAULT_BULLET_RANGE, DEFAULT_CLIP_SIZE, DEFAULT_RELOAD_TIME, DEFAULT_HEALTH, DEFAULT_BULLET_DAMAGE);
-	}
-
-	public Ship(int id, Point start, int maxSpeed, double acceleration, int bulletSpeed, 
-			int bulletRange, int clipSize, double reloadTime, int health, int damage) {
 		this.isFiring = false;
 		this.id = id;
 		this.location = start;
@@ -65,18 +61,17 @@ public class Ship {
 		this.ySpeed = 0;
 		this.lastReloaded = 0;
 		this.keysHeld = new boolean[4];
-		this.clipSize = clipSize;
+		this.clipSize = DEFAULT_CLIP_SIZE;
 		this.ammo = clipSize;
 		this.accuracy = DEFAULT_ACCURACY;
-		this.rotationSpeed = DEFAULT_SHIP_ROTATION_SPEED;
-		this.shipMaxSpeed = maxSpeed;
-		this.shipAcceleration = acceleration;
+		this.movement = DEFAULT_MOVEMENT;
+		setMovement(movement);
 //		this.upgrades = new boolean[ShipMods.GetNumUpgrades()];
-		this.bulletSpeed = bulletSpeed;
-		this.bulletRange = bulletRange;
-		this.reloadTime = reloadTime;
-		this.damage = damage;
-		this.health = health;
+		this.bulletSpeed = DEFAULT_BULLET_SPEED;
+		this.bulletRange = DEFAULT_BULLET_RANGE;
+		this.reloadTime = DEFAULT_RELOAD_TIME;
+		this.damage = DEFAULT_BULLET_DAMAGE;
+		this.health = DEFAULT_HEALTH;
 		this.maxHealth = health;
 		this.start = new Point(start.x, start.y);
 		hitBy = -1;
@@ -271,7 +266,9 @@ public class Ship {
 		return clipSize;
 	}
 
-//	private double accuracy;
+	public double getAccuracy() {
+		return accuracy;
+	}
 	
 	public double getReloadTime() {
 		return reloadTime;
@@ -297,6 +294,10 @@ public class Ship {
 		return ammo;
 	}
 	
+	public double getMovement() {
+		return movement;
+	}
+	
 	// Sets ///////////////////////////////////////////////////////////////////
 	public void setLocation(Point newLocation) {
 		if (newLocation == null) {
@@ -315,5 +316,11 @@ public class Ship {
 	
 	public void setAmmo(int ammo) {
 		this.ammo = ammo;
+	}
+	
+	public void setMovement(double movement) {
+		this.rotationSpeed = movement * MOVEMENT_ROTATION_CONV;
+		this.shipMaxSpeed = (int) (movement * MOVEMENT_SPEED_CONV);
+		this.shipAcceleration = movement * MOVEMENT_ACCEL_CONV;
 	}
 }

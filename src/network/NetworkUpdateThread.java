@@ -11,10 +11,12 @@ public class NetworkUpdateThread extends Thread {
 	private Network network;
 	GameTime timer;
 	private ArrayList<Bullet> bullets;
-	private int level;
+	private byte level;
 	private boolean hasFreshLevel;
 	private byte action;
 	private boolean hasFreshAction;
+	private byte upgrade;
+	private boolean hasFreshUpgrade;
 	
 	public NetworkUpdateThread(Network n, Ship s, ArrayList<Bullet> b) {
 		ship = s;
@@ -22,6 +24,7 @@ public class NetworkUpdateThread extends Thread {
 		bullets = b;
 		hasFreshLevel = false;
 		hasFreshAction = false;
+		hasFreshUpgrade = false;
 	}
 	
 	@Override
@@ -93,6 +96,10 @@ public class NetworkUpdateThread extends Thread {
 					action = currentGame.getAction();
 					hasFreshAction = true;
 				}
+				if(currentGame.getUpgrade() != -1) {
+					upgrade = currentGame.getUpgrade();
+					hasFreshUpgrade = true;
+				}
 				break;
 			}			
 		}
@@ -112,5 +119,13 @@ public class NetworkUpdateThread extends Thread {
 	public int getAction() {
 		hasFreshAction = false;
 		return action;
+	}
+	
+	public boolean hasFreshUpgrade() {
+		return hasFreshUpgrade;
+	}
+	public int getUpgrade() {
+		hasFreshUpgrade = false;
+		return upgrade;
 	}
 }

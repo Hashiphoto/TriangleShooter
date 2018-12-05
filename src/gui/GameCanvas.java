@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import gameControl.MathStuffs;
 import gameControl.Message;
+import gameControl.PowerMeter;
+import gameControl.PowerMeterPanel;
 import gameElements.Bullet;
 import gameElements.Ship;
 import gameElements.Wall;
@@ -18,7 +20,8 @@ public class GameCanvas extends Canvas {
 		Color.CYAN,
 		Color.ORANGE
 	};
-	private static final Color NEUTRAL = Color.WHITE;
+	public static final Color NEUTRAL = Color.WHITE;
+	private static final Color SCOREBOARD = Color.web("0x333333");
 	private static final int SHIP_SIDE_LENGTH = 35;
 	private static final int SHIP_FRONT_LENGTH = 60;
 	private static final int SHIP_OVAL_SIZE = 30;
@@ -37,6 +40,8 @@ public class GameCanvas extends Canvas {
 	private static final Font AGENCY_AMMO = new Font("Agency FB", 25);
 	private static final double LINE_WIDTH = 2;
 	private static final int AMMO_OFFSET = 10;
+	private static final int METER_BORDER = 40;
+	private static final int METER_TOP_BORDER = HUD_HEIGHT + METER_BORDER;
 	
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
@@ -45,7 +50,7 @@ public class GameCanvas extends Canvas {
 	private int numShips;
 	private GraphicsContext gc;
 	private Scoreboard scoreboard;
-	private int lastTimeSeconds;
+	private PowerMeterPanel pmp;
 	
 	public GameCanvas(int width, int height) {
 		super(width, height);
@@ -53,13 +58,14 @@ public class GameCanvas extends Canvas {
 		messages = new ArrayList<Message>();
 	}
 
-	public void init(ArrayList<Ship> ships, ArrayList<Bullet> bullets, Scoreboard scoreboard, ArrayList<Wall> walls) {
+	public void init(ArrayList<Ship> ships, ArrayList<Bullet> bullets, Scoreboard scoreboard, ArrayList<Wall> walls, PowerMeterPanel pmp) {
 		this.ships = ships;
 		this.bullets = bullets;
 		this.numShips = ships.size();
 		this.scoreboard = scoreboard;
-		this.lastTimeSeconds = 0;
 		this.walls = walls;
+		this.pmp = pmp;
+		initializeMeters();
 		gc.setLineWidth(LINE_WIDTH);
 	}
 	
@@ -71,6 +77,9 @@ public class GameCanvas extends Canvas {
 		drawMessage();
 		drawWalls();
 		drawScoreboard();
+		if(pmp.visible) {
+			drawPowerMeters();
+		}
 	}
 	
 	public void addMessage(Message msg) {
@@ -81,7 +90,39 @@ public class GameCanvas extends Canvas {
 		return !messages.isEmpty();
 	}
 	
-	public void drawWalls() {
+	private void initializeMeters() {
+		for(int i = 0; i < pmp.meters.size(); i++) {
+			PowerMeter meter = pmp.meters.get(i);
+			meter.width = (int) (((this.getWidth() - METER_BORDER) / 6) - METER_BORDER);
+			meter.height = (int) (this.getHeight() - METER_TOP_BORDER - METER_BORDER);
+			meter.x = METER_BORDER + (i * (meter.width + METER_BORDER));
+			meter.y = METER_TOP_BORDER;
+		}
+	}
+	
+	private void drawPowerMeters() {
+		for(int i = 0; i < pmp.meters.size(); i++) {
+			PowerMeter meter = pmp.meters.get(i);
+			drawMeter(meter, i);
+		}
+	}
+	
+	private void drawMeter(PowerMeter meter, int offset) {
+		gc.setFill(SCOREBOARD);
+		gc.fillRect(meter.x, meter.y, meter.width, meter.height);
+		if(pmp.disabled || meter.disabled) {
+			gc.setFill(Color.DARKGRAY);
+		}
+		else {
+			gc.setFill(NEUTRAL);
+			gc.setStroke(NEUTRAL);
+			gc.strokeRect(meter.x, meter.y, meter.width, meter.height);
+		}
+		gc.setFont(AGENCY_CLOCK);
+		gc.fillText(meter.getName(), meter.x + meter.width/2, meter.y + meter.height - 30);
+	}
+	
+	private void drawWalls() {
 		int numWalls = walls.size();
 		gc.setStroke(NEUTRAL);
 		for(int i = 0; i < numWalls; i++) {
@@ -91,7 +132,7 @@ public class GameCanvas extends Canvas {
 	}
 	
 	private void drawScoreboard() {
-		gc.setFill(Color.web("0x333333"));
+		gc.setFill(SCOREBOARD);
 		
 		gc.fillRect(0, 0, this.getWidth(), HUD_HEIGHT);
 		gc.setStroke(NEUTRAL);
@@ -182,5 +223,16 @@ public class GameCanvas extends Canvas {
 			gc.setFill(ShipColors[b.getPlayer()]);
 			gc.fillOval((int) b.getX() - (BULLET_SIZE / 2), (int) b.getY() - (BULLET_SIZE / 2), BULLET_SIZE, BULLET_SIZE);
 		}
+	}
+	
+	public int getMeterButtonPressed(double d, double e) {
+		for(int i = 0; i < pmp.meters.size(); i++) {
+			PowerMeter meter = pmp.meters.get(i);
+			if(d > meter.x && d < meter.x + meter.width
+					&& e > meter.y && e < meter.y + meter.height) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }

@@ -85,15 +85,7 @@ public class Network {
 			int id = input.readInt();
 			int x = input.readInt();
 			int y = input.readInt();
-			int maxSpeed = input.readInt();
-			double shipAccel = input.readDouble();
-			int bulletSpeed = input.readInt();
-			int bulletRange = input.readInt();
-			int clipSize = input.readInt();
-			double reloadTime = input.readDouble();
-			int health = input.readInt();
-			int damage = input.readInt();
-			return new Ship(id, new Point(x, y), maxSpeed, shipAccel, bulletSpeed, bulletRange, clipSize, reloadTime, health, damage);
+			return new Ship(id, new Point(x, y));
 		} catch (IOException e) {
 			System.err.println("Network: Unable to read whole ship");
 		}
@@ -105,14 +97,6 @@ public class Network {
 			output.writeInt(id);
 			output.writeInt(myShip.getLocation().x);
 			output.writeInt(myShip.getLocation().y);
-			output.writeInt(myShip.getShipMaxSpeed());
-			output.writeDouble(myShip.getShipAcceleration());
-			output.writeInt(myShip.getBulletSpeed());
-			output.writeInt(myShip.getBulletRange());
-			output.writeInt(myShip.getClipSize());
-			output.writeDouble(myShip.getReloadTime());
-			output.writeInt(myShip.getHealth());
-			output.writeInt(myShip.getDamage());
 			output.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -130,9 +114,9 @@ public class Network {
 		}
 	}
 	
-	public void sendGameInformation(byte level, byte action) {
+	public void sendGameInformation(byte level, byte action, byte upgradeSelected) {
 		try {
-			GameStatePacket gsp = new GameStatePacket(level, action);
+			GameStatePacket gsp = new GameStatePacket(level, action, upgradeSelected);
 			output.write(gsp.toByteArray());
 		}
 		catch(IOException e) {
