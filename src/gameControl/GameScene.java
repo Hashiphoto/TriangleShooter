@@ -33,10 +33,13 @@ public class GameScene extends Scene {
 	private static final double SPEED_REWARD = 0.5;
 	private static final double ACCEL_REWARD = 0.05;
 	private static final double ROTATION_REWARD = -1.3;
-	private static final double ACCURACY_REWARD = 0.1;
+	private static final double ACCURACY_REWARD = -0.05;
 	private static final int RANGE_REWARD = 50;
-	private static final int DAMAGE_REWARD = 5;
-	private static final int RELOAD_REWARD = -100;
+	private static final int DAMAGE_REWARD = 0;
+	private static final int RELOAD_REWARD = -60;
+	private static final int BSPEED_REWARD = 2;
+	private static final int CLIP_REWARD = 1;
+	private static final int BSIZE_REWARD = 2;
 	private GameCanvas canvas;
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
@@ -113,13 +116,14 @@ public class GameScene extends Scene {
 		canvas.addMessage(new Message(winner + " WINS!", 1.5, GameCanvas.ShipColors[roundWinner]));
 		scoreboard.win(roundWinner);
 		if(myShip.getId() == roundWinner) {
-			pmp.disabled = true;
+			pmp.setDisabled(true);
 			canvas.addMessage(new Message("Wait for opponent to choose", 1.5, GameCanvas.NEUTRAL));
 		}
 		else {
-			pmp.disabled = false;
+			pmp.setDisabled(false);
 			canvas.addMessage(new Message("Steal a stat", 1.5, GameCanvas.NEUTRAL));
 		}
+		pmp.enableAllMeters();
 		delay(3.0, e -> pmp.visible = true);
 	}
 	
@@ -163,15 +167,10 @@ public class GameScene extends Scene {
 			checkForAction();
 			break;
 		case WAITING_FOR_UPGRADE:
-			if(checkForUpgrade()) {
-				if(lastWinner == myShip.getId()) {
-					pmp.disabled = false;
-					state = gameState.PAUSED;
-				}
-				else {
-					state = gameState.WAITING_FOR_LEVEL;
-				}
-			}
+			updateShip();
+			myShip.stop();
+			opponent.stop();
+			checkForUpgrade();
 		}
 		
 		canvas.repaint();
@@ -196,13 +195,14 @@ public class GameScene extends Scene {
 	
 	private void playStep() {
 		updateShip();
-		if(myShip.isFiring) {
+		if(myShip.isFiring || myShip.burstFiring) {
 			Bullet bullet = myShip.createBullet();
 			if(bullet != null) {
 				bullets.add(bullet);
 			}
 			else {
 				myShip.isFiring = false;
+				myShip.burstFiring = false;
 			}
 		}
 
@@ -262,12 +262,18 @@ public class GameScene extends Scene {
 		return false;
 	}
 	
-	private boolean checkForUpgrade() {
+	private void checkForUpgrade() {
 		if(opponentThread.hasFreshUpgrade()) {
 			UpdateShipPower(opponentThread.getUpgrade(), true);
-			return true;
+			if(lastWinner == myShip.getId()) {
+				canvas.addMessage(new Message("Upgrade a stat (x2)", 1.5, GameCanvas.NEUTRAL));
+				pmp.setDisabled(false);
+				state = gameState.PAUSED;
+			}
+			else {
+				state = gameState.WAITING_FOR_LEVEL;
+			}
 		}
-		return false;
 	}
 	
 	// Changes the ship power levels for both. Received means the opponent picked this upgrade
@@ -294,33 +300,39 @@ public class GameScene extends Scene {
 			winner.setMaxSpeed((int) (winner.getMaxSpeed() + winnerModifier * SPEED_REWARD));
 			winner.setAcceleration(winner.getAcceleration() + winnerModifier * ACCEL_REWARD);
 			winner.setRotationSpeed(winner.getRotationSpeed() + winnerModifier * ROTATION_REWARD);
-			System.out.println("Winner Speed: " + winner.getMaxSpeed());
-			System.out.println("Winner Accel: " + winner.getAcceleration());
-			System.out.println("Winner Rotat: " + winner.getRotationSpeed());
 			loser.setMaxSpeed((int) (loser.getMaxSpeed() + loserModifier * SPEED_REWARD));
-			System.out.println("Loser Speed: " + loser.getMaxSpeed());
-			System.out.println("Loser Accel: " + loser.getAcceleration());
-			System.out.println("Loser Rotat: " + loser.getRotationSpeed());
 			loser.setAcceleration(loser.getAcceleration() + loserModifier * ACCEL_REWARD);
 			loser.setRotationSpeed(loser.getRotationSpeed() + loserModifier * ROTATION_REWARD);
+			if(received) { pmp.meters.get(0).disabled = true; }
 			break;
 		case 1: // Accuracy
 			winner.setAccuracy(winner.getAccuracy() + winnerModifier * ACCURACY_REWARD);
 			loser.setAccuracy(loser.getAccuracy() + loserModifier * ACCURACY_REWARD);
+			if(received) { pmp.meters.get(1).disabled = true; }
 			break;
-		case 2: // Bullet Range
+		case 2: // Sniping
 			winner.setBulletRange((int) (winner.getBulletRange() + winnerModifier * RANGE_REWARD));
-			loser.setBulletRange((int) (loser.getBulletRange() + loserModifier * RANGE_REWARD));
-			break;
-		case 3: // Bullet Damage
 			winner.setDamage((int) (winner.getDamage() + winnerModifier * DAMAGE_REWARD));
+			winner.setBulletSpeed((int) (winner.getBulletSpeed() + winnerModifier * BSPEED_REWARD));
+			loser.setBulletRange((int) (loser.getBulletRange() + loserModifier * RANGE_REWARD));
 			loser.setDamage((int) (loser.getDamage() + loserModifier * DAMAGE_REWARD));
+			loser.setBulletSpeed((int) (loser.getBulletSpeed() + loserModifier * BSPEED_REWARD));
+			if(received) { pmp.meters.get(2).disabled = true; }
 			break;
-		case 4: // Bullet Size
+		case 3: // Bullet Size
+			winner.setBulletSize((int) (winner.getBulletSize() + winnerModifier * BSIZE_REWARD));
+			loser.setBulletSize((int) (loser.getBulletSize() + loserModifier * BSIZE_REWARD)); 
+			if(received) { pmp.meters.get(3).disabled = true; }
+			break;
+		case 4: // Ammo
+			winner.setClipSize((int) (winner.getClipSize() + winnerModifier * CLIP_REWARD));
+			loser.setClipSize((int) (loser.getClipSize() + loserModifier * CLIP_REWARD));
+			if(received) { pmp.meters.get(4).disabled = true; }
 			break;
 		case 5: // Reload
 			winner.setReloadTime((int) (winner.getReloadTime() + winnerModifier * RELOAD_REWARD));
 			loser.setReloadTime((int) (loser.getReloadTime() + loserModifier * RELOAD_REWARD));
+			if(received) { pmp.meters.get(5).disabled = true; }
 			break;
 		}
 	}
@@ -368,17 +380,17 @@ public class GameScene extends Scene {
 			public void handle(MouseEvent event) {
 				if(state != gameState.PLAYING) {
 					// If in selection mode
-					if(pmp.visible && !pmp.disabled) {
+					if(pmp.visible && !pmp.isDisabled()) {
 						byte buttonPressed = (byte) canvas.getMeterButtonPressed(event.getX(), event.getY());
 						// Click on a button
 						if(buttonPressed != -1) {
+							pmp.setDisabled(true);
 							UpdateShipPower(buttonPressed, false);
 							network.sendGameInformation(NO_BYTE, NO_BYTE, buttonPressed);
 							if(lastWinner == myShip.getId()) {
 								setupNewLevel();
 							}
 							else {
-								pmp.disabled = true;
 								state = gameState.WAITING_FOR_UPGRADE;
 							}
 						}
@@ -387,6 +399,10 @@ public class GameScene extends Scene {
 				}
 				if(event.getButton() == MouseButton.PRIMARY) {
 					myShip.isFiring = true;
+					return;
+				}
+				if(event.getButton() == MouseButton.SECONDARY) {
+					myShip.burstFiring = true;
 				}
 			}
 		};

@@ -106,7 +106,7 @@ public class Network {
 	
 	public void sendShipState(Ship s) {
 		try {
-			ShipPacket packet = new ShipPacket(s.isFiring, s.getLocation().x, s.getLocation().y, (float) s.getRotation(), s.hitBy, s.firingId, s.getHealth(), s.getAmmo());
+			ShipPacket packet = new ShipPacket(s.isFiring || s.burstFiring, s.getLocation().x, s.getLocation().y, (float) s.getRotation(), s.hitBy, s.firingId, s.getHealth(), s.getAmmo(), s.accuracyOffset);
 			output.write(packet.toByteArray());
 		}
 		catch(IOException e) {

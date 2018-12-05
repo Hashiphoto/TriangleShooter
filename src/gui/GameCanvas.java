@@ -24,8 +24,6 @@ public class GameCanvas extends Canvas {
 	private static final Color SCOREBOARD = Color.web("0x333333");
 	private static final int SHIP_SIDE_LENGTH = 35;
 	private static final int SHIP_FRONT_LENGTH = 60;
-	private static final int SHIP_OVAL_SIZE = 30;
-	private static final int BULLET_SIZE = 10;
 	public static final int HUD_HEIGHT = 60;
 	private static final int CLOCK_WIDTH = 50;
 	private static final int HUD_BORDER = 20;
@@ -110,7 +108,7 @@ public class GameCanvas extends Canvas {
 	private void drawMeter(PowerMeter meter, int offset) {
 		gc.setFill(SCOREBOARD);
 		gc.fillRect(meter.x, meter.y, meter.width, meter.height);
-		if(pmp.disabled || meter.disabled) {
+		if(pmp.isDisabled() || meter.disabled) {
 			gc.setFill(Color.DARKGRAY);
 		}
 		else {
@@ -206,15 +204,16 @@ public class GameCanvas extends Canvas {
 			gc.setStroke(ShipColors[s.getId()]);
 			int x = s.getLocation().x;
 			int y = s.getLocation().y;
-			gc.strokeOval(x - SHIP_OVAL_SIZE / 2, y - SHIP_OVAL_SIZE / 2, SHIP_OVAL_SIZE, SHIP_OVAL_SIZE);
+			gc.strokeOval(x - s.getRadius() / 2, y - s.getRadius() / 2, s.getRadius(), s.getRadius());
 			double[][] shipVertices = MathStuffs.shipVertices(s.getLocation(), s.getRotation(), SHIP_SIDE_LENGTH, SHIP_FRONT_LENGTH);
 	        gc.strokePolyline(shipVertices[0], shipVertices[1], shipVertices[0].length);
 
+	        gc.setStroke(NEUTRAL);
+	        double radius = s.getPercentageReload() * s.getRadius();
+	        gc.strokeOval(x - radius / 2, y - radius / 2, radius, radius);
 	        gc.setFill(ShipColors[s.getId()]);
-//	        gc.setFont(AGENCY_AMMO);
-//	        gc.fillText(Integer.toString(s.getAmmo()), x, y + AMMO_OFFSET);
-	        double radius = s.getPercentageReload() * SHIP_OVAL_SIZE;
-	        gc.fillOval(x - radius / 2, y - radius / 2, radius, radius);
+	        gc.setFont(AGENCY_AMMO);
+	        gc.fillText(Integer.toString(s.getAmmo()), x, y + AMMO_OFFSET);
 		}
 	}
 	
@@ -223,14 +222,14 @@ public class GameCanvas extends Canvas {
 		for (int i = 0; i < numBullets; i++) {
 			Bullet b = bullets.get(i);
 			gc.setFill(ShipColors[b.getPlayer()]);
-			gc.fillOval((int) b.getX() - (BULLET_SIZE / 2), (int) b.getY() - (BULLET_SIZE / 2), BULLET_SIZE, BULLET_SIZE);
+			gc.fillOval((int) b.getX() - b.getRadius(), (int) b.getY() - b.getRadius(), b.getSize(), b.getSize());
 		}
 	}
 	
 	public int getMeterButtonPressed(double d, double e) {
 		for(int i = 0; i < pmp.meters.size(); i++) {
 			PowerMeter meter = pmp.meters.get(i);
-			if(d > meter.x && d < meter.x + meter.width
+			if(!meter.disabled && d > meter.x && d < meter.x + meter.width
 					&& e > meter.y && e < meter.y + meter.height) {
 				return i;
 			}

@@ -80,6 +80,7 @@ public class NetworkUpdateThread extends Thread {
 				}
 				ship.firingId = shipCurrent.newBulletId();
 				Bullet bullet = ship.createEnemyBullet();
+				bullet.setOffset(shipCurrent.getAccuracyOffset());
 				if(bullet != null) {
 					bullets.add(bullet);
 				}

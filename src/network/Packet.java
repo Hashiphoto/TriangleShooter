@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public abstract class Packet {
-	protected static final int SHIP_PACKET_SIZE = 2 + Integer.BYTES * 6 + Float.BYTES;
+	protected static final int SHIP_PACKET_SIZE = 2 + Integer.BYTES * 6 + Float.BYTES + Double.BYTES;
 	protected static final int GAME_PACKET_SIZE = 4;
 	protected static final byte SHIP_PACKET_ID = 0;
 	protected static final byte GAME_PACKET_ID = 1;
@@ -17,7 +17,11 @@ public abstract class Packet {
 	
 	protected static float extractFloat(byte[]b, int start) {
 //		return b[start] << 24 | (b[start + 1] & 0xFF) << 16 | (b[start + 2] & 0xFF) << 8 | (b[start + 3] & 0xFF);
-		return ByteBuffer.wrap(b, start, 4).getFloat();
+		return ByteBuffer.wrap(b, start, Float.BYTES).getFloat();
+	}
+	
+	protected static double extractDouble(byte[]b, int start) {
+		return ByteBuffer.wrap(b, start, Double.BYTES).getDouble();
 	}
 	
 	public abstract byte[] toByteArray();
@@ -36,7 +40,8 @@ public abstract class Packet {
 				int createBullet 	= extractInt(b, 18 + i);
 				int health 			= extractInt(b, 22 + i);
 				int ammo 			= extractInt(b, 26 + i);
-				packet = new ShipPacket(isFiring, x, y, rotation, destroyBullet, createBullet, health, ammo);
+				double accOffset 	= extractDouble(b, 30 + i);
+				packet = new ShipPacket(isFiring, x, y, rotation, destroyBullet, createBullet, health, ammo, accOffset);
 				
 				i += SHIP_PACKET_SIZE;
 			}

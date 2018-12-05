@@ -12,8 +12,9 @@ public class ShipPacket extends Packet{
 	private int newBulletId;
 	private int health;
 	private int ammo;
+	private double accuracyOffset;
 	
-	public ShipPacket(boolean isFiring, int x, int y, float rotation, int destroyBullet, int newBulletId, int health, int ammo){
+	public ShipPacket(boolean isFiring, int x, int y, float rotation, int destroyBullet, int newBulletId, int health, int ammo, double accuracyOffset){
 		this.isFiring = isFiring;
 		this.x = x;
 		this.y = y;
@@ -22,6 +23,7 @@ public class ShipPacket extends Packet{
 		this.newBulletId = newBulletId;
 		this.health = health;
 		this.ammo = ammo;
+		this.accuracyOffset = accuracyOffset;
 		this.packetId = SHIP_PACKET_ID;
 	}
 	
@@ -32,7 +34,7 @@ public class ShipPacket extends Packet{
 		if(isFiring) {
 			booleanByte = (byte) 1;
 		}
-		buffer.put(packetId).put(booleanByte).putInt(x).putInt(y).putFloat(rotation).putInt(destroyBullet).putInt(newBulletId).putInt(health).putInt(ammo);
+		buffer.put(packetId).put(booleanByte).putInt(x).putInt(y).putFloat(rotation).putInt(destroyBullet).putInt(newBulletId).putInt(health).putInt(ammo).putDouble(accuracyOffset);
 		return buffer.array();
 	}
 	
@@ -66,5 +68,9 @@ public class ShipPacket extends Packet{
 	
 	public int getAmmo() {
 		return ammo;
+	}
+	
+	public double getAccuracyOffset() {
+		return accuracyOffset;
 	}
 }

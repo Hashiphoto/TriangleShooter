@@ -13,17 +13,21 @@ public class Ship {
 	private static final double DEFAULT_SHIP_ROTATION_SPEED = 3;
 	private static final double DEFAULT_SHIP_ACCEL = 0.2;
 	private static final int DEFAULT_SHIP_MAX_SPEED = 5;
-	private static final double DEFAULT_ACCURACY = 1.0;
+	private static final double DEFAULT_ACCURACY = 0.04;
 	private static final int DEFAULT_BULLET_RANGE = 450;
 	private static final int DEFAULT_BULLET_DAMAGE = 10;
 	private static final int DEFAULT_RELOAD_TIME = 700; // milliseconds
-	private static final int DEFAULT_CLIP_SIZE = 1;
+	private static final int DEFAULT_CLIP_SIZE = 3;
 	private static final int DEFAULT_BULLET_SPEED = 12;
+	private static final int DEFAULT_BULLET_SIZE = 14;
+	private static final int DEFAULT_SHIP_RADIUS = 30;
 	
 	public boolean isFiring;
 	public boolean isEnemy;
 	public int hitBy;
 	public int firingId;
+	public double accuracyOffset;
+	public boolean burstFiring;
 	public static final String[] Name = {
 		"BLUE", "ORANGE"
 	};
@@ -49,14 +53,10 @@ public class Ship {
 	private int health;
 	private Point start;
 	private int maxHealth;
+	private int bulletSize;
+	private int radius;
 	
 	public Ship(int id, Point start) {
-		this(id, start, DEFAULT_SHIP_MAX_SPEED, DEFAULT_SHIP_ACCEL, DEFAULT_BULLET_SPEED, 
-				DEFAULT_BULLET_RANGE, DEFAULT_CLIP_SIZE, DEFAULT_RELOAD_TIME, DEFAULT_HEALTH, DEFAULT_BULLET_DAMAGE);
-	}
-
-	public Ship(int id, Point start, int maxSpeed, double acceleration, int bulletSpeed, 
-			int bulletRange, int clipSize, double reloadTime, int health, int damage) {
 		this.isFiring = false;
 		this.id = id;
 		this.location = start;
@@ -65,22 +65,26 @@ public class Ship {
 		this.ySpeed = 0;
 		this.lastReloaded = 0;
 		this.keysHeld = new boolean[4];
-		this.clipSize = clipSize;
+		this.clipSize = DEFAULT_CLIP_SIZE;
 		this.ammo = clipSize;
 		this.accuracy = DEFAULT_ACCURACY;
 		this.rotationSpeed = DEFAULT_SHIP_ROTATION_SPEED;
-		this.shipMaxSpeed = maxSpeed;
-		this.shipAcceleration = acceleration;
+		this.shipMaxSpeed = DEFAULT_SHIP_MAX_SPEED;
+		this.shipAcceleration = DEFAULT_SHIP_ACCEL;
 //		this.upgrades = new boolean[ShipMods.GetNumUpgrades()];
-		this.bulletSpeed = bulletSpeed;
-		this.bulletRange = bulletRange;
-		this.reloadTime = reloadTime;
-		this.damage = damage;
-		this.health = health;
+		this.bulletSpeed = DEFAULT_BULLET_SPEED;
+		this.bulletRange = DEFAULT_BULLET_RANGE;
+		this.reloadTime = DEFAULT_RELOAD_TIME;
+		this.damage = DEFAULT_BULLET_DAMAGE;
+		this.health = DEFAULT_HEALTH;
 		this.maxHealth = health;
 		this.start = new Point(start.x, start.y);
+		this.bulletSize = DEFAULT_BULLET_SIZE;
+		this.radius = DEFAULT_SHIP_RADIUS;
+		accuracyOffset = 0;
 		hitBy = -1;
 		firingId = -1;
+		burstFiring = false;
 	}
 	
 	public void step(Point mouseLocation) {
@@ -213,7 +217,6 @@ public class Ship {
 	public void checkReload() {
 		long currentTimeSec = System.currentTimeMillis();
 		if (ammo < clipSize && currentTimeSec > reloadTime + lastReloaded) {
-			System.out.println("Increased ammo from " + ammo + " to " + (ammo + 1));
 			ammo++;
 			lastReloaded = currentTimeSec;
 		}
@@ -226,7 +229,8 @@ public class Ship {
 			if(ammo == clipSize) {
 				lastReloaded = System.currentTimeMillis();
 			}
-			newBullet = new Bullet(id, new Point(location), rotation, bulletSpeed, bulletRange, accuracy, damage);
+			accuracyOffset = getNewAccuracyOffset();
+			newBullet = new Bullet(id, new Point(location), rotation + accuracyOffset, bulletSpeed, bulletRange, accuracy, damage, bulletSize);
 			firingId = newBullet.getId();
 			ammo--;
 		}
@@ -238,7 +242,11 @@ public class Ship {
 			lastReloaded = System.currentTimeMillis();
 		}
 		ammo--;
-		return new Bullet(id, new Point(location), rotation, bulletSpeed, bulletRange, accuracy, damage, firingId);
+		return new Bullet(id, new Point(location), rotation, bulletSpeed, bulletRange, accuracy, damage, bulletSize, firingId);
+	}
+	
+	private double getNewAccuracyOffset() {
+		return accuracy * ((Math.random() - 0.5) * Math.PI);
 	}
 	
 	// Gets	///////////////////////////////////////////////////////////////////
@@ -308,6 +316,14 @@ public class Ship {
 		return ammo;
 	}
 	
+	public int getRadius() {
+		return radius;
+	}
+	
+	public int getBulletSize() {
+		return bulletSize;
+	}
+	
 	// Sets ///////////////////////////////////////////////////////////////////
 	public void setLocation(Point newLocation) {
 		if (newLocation == null) {
@@ -354,6 +370,9 @@ public class Ship {
 	
 	public void setAccuracy(double accuracy) {
 		this.accuracy = accuracy;
+		if(accuracy < 0) {
+			accuracy = 0;
+		}
 	}
 	
 	public void setBulletRange(int range) {
@@ -361,6 +380,10 @@ public class Ship {
 		if(bulletRange < 0) {
 			bulletRange = 0;
 		}
+	}
+	
+	public void setBulletSpeed(int speed) {
+		this.bulletSpeed = speed;
 	}
 	
 	public void setDamage(int dmg) {
@@ -372,10 +395,16 @@ public class Ship {
 	
 	public void setClipSize(int size) {
 		clipSize = size;
+		if(clipSize < 1) {
+			clipSize = 1;
+		}
 	}
 	
 	public void setReloadTime(int millis) {
 		reloadTime = millis;
+		if(reloadTime < 0) {
+			reloadTime = 0;
+		}
 	}
 	
 	public double getPercentageReload() {
@@ -387,5 +416,12 @@ public class Ship {
 			}
 		}
 		return percentage;
+	}
+	
+	public void setBulletSize(int size) {
+		bulletSize = size;
+		if(bulletSize < 8) {
+			bulletSize = 8;
+		}
 	}
 }

@@ -105,6 +105,6 @@ public class MathStuffs {
 	
 	public static boolean isCollision(Bullet b, Ship s) {
 		double distance = distance(new Point(b.getX(), b.getY()), new Point(s.getLocation()));
-		return distance < COLLISION_DISTANCE;
+		return distance < b.getRadius() + s.getRadius();
 	}
 }

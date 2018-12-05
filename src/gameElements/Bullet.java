@@ -16,12 +16,14 @@ public class Bullet {
 	private int damage;
 //	private double accuracy;
 	private int id;
+	private int radius;
+	private int size;
 	
-	public Bullet(int player, Point location, double rotation, int speed, int range, double accuracy, int damage) {
-		this(player, location, rotation, speed, range, accuracy, damage, BulletCounter.getNextId());
+	public Bullet(int player, Point location, double rotation, int speed, int range, double accuracy, int damage, int size) {
+		this(player, location, rotation, speed, range, accuracy, damage, size, BulletCounter.getNextId());
 	}
 	
-	public Bullet(int player, Point location, double rotation, int speed, int range, double accuracy, int damage, int id) {
+	public Bullet(int player, Point location, double rotation, int speed, int range, double accuracy, int damage, int size, int id) {
 		this.player = player;
 		this.initialLocation = location;
 		this.x = location.x;
@@ -31,6 +33,8 @@ public class Bullet {
 		this.range = range;
 		this.damage = damage;
 //		this.accuracy = accuracy;
+		this.size = size;
+		this.radius = size / 2;
 		this.id = id;
 	}
 	
@@ -75,5 +79,17 @@ public class Bullet {
 	
 	public int getId() {
 		return id;
+	}
+	
+	public int getSize() {
+		return size;
+	}
+	
+	public int getRadius() {
+		return radius;
+	}
+	
+	public void setOffset(double offset) {
+		rotation += offset;
 	}
 }
