@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import network.Network;
 
@@ -60,6 +61,12 @@ public class NetworkConnectionController {
 		network.setTimeline(timeline);
 	    timeline.setCycleCount(Animation.INDEFINITE);
 	    timeline.play();
+	}
+	
+	@FXML
+	protected void quit() {
+		Stage window = (Stage) quitButton.getScene().getWindow();
+		window.close();
 	}
 	
 	public NetworkConnectionController() {
