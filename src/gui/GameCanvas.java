@@ -74,12 +74,12 @@ public class GameCanvas extends Canvas {
 		gc.fillRect(0, HUD_HEIGHT, this.getWidth(), this.getHeight());
 		drawShips();
 		drawBullets();
-		drawMessage();
 		drawWalls();
 		drawScoreboard();
 		if(pmp.visible) {
 			drawPowerMeters();
 		}
+		drawMessage();
 	}
 	
 	public void addMessage(Message msg) {
@@ -193,7 +193,7 @@ public class GameCanvas extends Canvas {
 		if(currentMessage.duration > 0) {
 			currentMessage.duration--;
 			gc.setFill(currentMessage.color);
-			gc.fillText(currentMessage.text, this.getWidth() / 2, this.getHeight() / 2);
+			gc.fillText(currentMessage.text, this.getWidth() / 2, this.getHeight() / 2 + HUD_HEIGHT);
 		}
 		else {
 			messages.remove(currentMessage);
@@ -211,8 +211,10 @@ public class GameCanvas extends Canvas {
 	        gc.strokePolyline(shipVertices[0], shipVertices[1], shipVertices[0].length);
 
 	        gc.setFill(ShipColors[s.getId()]);
-	        gc.setFont(AGENCY_AMMO);
-	        gc.fillText(Integer.toString(s.getAmmo()), x, y + AMMO_OFFSET);
+//	        gc.setFont(AGENCY_AMMO);
+//	        gc.fillText(Integer.toString(s.getAmmo()), x, y + AMMO_OFFSET);
+	        double radius = s.getPercentageReload() * SHIP_OVAL_SIZE;
+	        gc.fillOval(x - radius / 2, y - radius / 2, radius, radius);
 		}
 	}
 	
