@@ -21,6 +21,14 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import network.Network;
 
+/**
+ * Triangle Shooter is a JavaFX application that relies on TCP connection between two clients.
+ * The information exchanged is purely peer-to-peer. This is the main class from where the app
+ * is launched. The connection dialog is always launched first, and then the game itself is 
+ * opened once a connection between clients is established.
+ * @author Trent
+ *
+ */
 public class Start extends Application{
 	public static final double REFRESH_DELAY = 0.2;
 
@@ -28,6 +36,10 @@ public class Start extends Application{
 		launch(args);
 	}
 	
+	/**
+	 * The text in the connection dialog may be misaligned or cutoff if the computer does not
+	 * have the font "Agency FB". I will look into adding the font as a resource in a future iteration
+	 */
 	@Override
 	public void start(Stage theStage) {
 		try {
@@ -46,6 +58,7 @@ public class Start extends Application{
 	       e.printStackTrace();
 	    }
 		
+		// This section creates the Triangle Shooter launcher
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/network_connection.fxml"));
 		Parent networkRoot = null;
 		try {
@@ -61,6 +74,8 @@ public class Start extends Application{
 		networkStage.setResizable(false);
 		networkStage.show();
 		
+		// A Timeline is created to periodically check if the network connection has been
+		// established. When it is, the Launcher is hidden and the game window appears
 		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(REFRESH_DELAY), ev -> {
 			if(networkConnector.isConnected()) {
 				Network network = networkConnector.getNetwork();

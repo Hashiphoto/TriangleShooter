@@ -3,6 +3,12 @@ package network;
 import java.awt.Point;
 import java.nio.ByteBuffer;
 
+/**
+ * This is an extension of the Packet class that packages and unpackages data that
+ * determines the state of the opponent ship
+ * @author Trent
+ *
+ */
 public class ShipPacket extends Packet{	
 	boolean isFiring;
 	private int x;
@@ -14,6 +20,18 @@ public class ShipPacket extends Packet{
 	private int ammo;
 	private double accuracyOffset;
 	
+	/**
+	 * Instantiates a new ShipPacket object
+	 * @param isFiring			Whether the ship is firing or not
+	 * @param x					The x coordinate of the ship
+	 * @param y					The y coordinate of the ship
+	 * @param rotation			The angle at which the ship is pointing
+	 * @param destroyBullet		The id of the bullet that the ship got hit by
+	 * @param newBulletId		The id of the bullet that has been created
+	 * @param health			The current health of the ship
+	 * @param ammo				The current ammo in the ship
+	 * @param accuracyOffset	The adjustment to add to the angle of the fired bullet
+	 */
 	public ShipPacket(boolean isFiring, int x, int y, float rotation, int destroyBullet, int newBulletId, int health, int ammo, double accuracyOffset){
 		this.isFiring = isFiring;
 		this.x = x;
@@ -27,6 +45,10 @@ public class ShipPacket extends Packet{
 		this.packetId = SHIP_PACKET_ID;
 	}
 	
+	/**
+	 * Converts all class variables into a byte array to send over the network
+	 * The order of the data is the same as the constructror
+	 */
 	@Override
 	public byte[] toByteArray() {
 		ByteBuffer buffer = ByteBuffer.allocate(SHIP_PACKET_SIZE);

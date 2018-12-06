@@ -1,7 +1,7 @@
 package levels;
 
 /**
- * 
+ * This inherits from Level and is a square room with the top compressed vertically to form a hallway
  * @author Trent
  *
  */

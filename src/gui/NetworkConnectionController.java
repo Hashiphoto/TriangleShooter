@@ -11,6 +11,13 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import network.Network;
 
+/**
+ * This is the controller object for the Host/Join connection dialog. The ip address that the guest
+ * joins to should be entered before pressing the Join button, though it is possible to change it while
+ * it is searching for connectivity.
+ * @author Trent
+ *
+ */
 public class NetworkConnectionController {
 	private static final double REFRESH_DELAY = 0.5;
 	
@@ -28,6 +35,11 @@ public class NetworkConnectionController {
 	@FXML
 	private Button quitButton;
 	
+	/**
+	 * Event bound to the Host button
+	 * Opens a TCP port to listen for incoming connection requests and prints the 
+	 * local computer's IP Address int he output text field
+	 */
 	@FXML
 	protected void host() {
 		hostButton.setDisable(true);
@@ -44,6 +56,10 @@ public class NetworkConnectionController {
 	    timeline.play();
 	}
 	
+	/**
+	 * Event bound to the Join button. Starts searching for connections at the
+	 * IP address specified in the textbox attached to the Join button
+	 */
 	@FXML
 	protected void join() {
 		hostButton.setDisable(true);
@@ -63,20 +79,33 @@ public class NetworkConnectionController {
 	    timeline.play();
 	}
 	
+	/**
+	 * Event bound to the Quit button. Closes the application
+	 */
 	@FXML
 	protected void quit() {
 		Stage window = (Stage) quitButton.getScene().getWindow();
 		window.close();
 	}
 	
+	/**
+	 * Instantiate a new NetworkConnectionController
+	 */
 	public NetworkConnectionController() {
 		network = new Network();
 	}
 	
+	/**
+	 * This is passed in from the main Application and used to signal when a connection has been established
+	 * @param timeline
+	 */
 	public void setTimeline(Timeline timeline) {
 		this.timeline = timeline;
 	}
 	
+	/**
+	 * @return	Returns true if the client has connected to another client
+	 */
 	public boolean isConnected() {
 		if(network.isConnected()) {
 			timeline.stop();
@@ -84,10 +113,17 @@ public class NetworkConnectionController {
 		return network.isConnected();
 	}
 	
+	/**
+	 * @return	Return the network object. This should only be done once a connection is established. Use isConnected() to verify this
+	 */
 	public Network getNetwork() {
 		return network;
 	}
 	
+	/**
+	 * Outputs a message to the output text field
+	 * @param text	The text to print
+	 */
 	private void write(String text) {
 		messageText.appendText(text + "\n");
 	}

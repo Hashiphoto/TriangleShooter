@@ -4,7 +4,11 @@ import java.awt.Point;
 
 import gameControl.MathStuffs;
 
-
+/**
+ * A class representing a bullet object. Bullets themselves are not sent over the network, but 
+ * @author Trent
+ *
+ */
 public class Bullet {
 	private Point initialLocation;
 	private double x;
@@ -19,10 +23,33 @@ public class Bullet {
 	private int radius;
 	private int size;
 	
+	/**
+	 * Instantiate a friendly bullet
+	 * @param player	The player that created the Bullet. Used to determine collisions 
+	 * @param location	The starting point of the bullet
+	 * @param rotation	The angle the bullet travels on
+	 * @param speed		The speed of the bullet in pixels/frame
+	 * @param range		The maximum distance the bullet can travel from the origin in a straight line
+	 * @param accuracy	This is unused
+	 * @param damage	How much health will be subtracted from the opponent on impact
+	 * @param size		The circumference of the Bullet
+	 */
 	public Bullet(int player, Point location, double rotation, int speed, int range, double accuracy, int damage, int size) {
 		this(player, location, rotation, speed, range, accuracy, damage, size, BulletCounter.getNextId());
 	}
 	
+	/**
+	 * Instantiate an enemy bullet
+	 * @param player	The player that created the Bullet. Used to determine collisions 
+	 * @param location	The starting point of the bullet
+	 * @param rotation	The angle the bullet travels on
+	 * @param speed		The speed of the bullet in pixels/frame
+	 * @param range		The maximum distance the bullet can travel from the origin in a straight line
+	 * @param accuracy	This is unused
+	 * @param damage	How much health will be subtracted from the opponent on impact
+	 * @param size		The circumference of the Bullet
+	 * @param id		The identifying number of the bullet. This is used to destroy bullets that have come in contact with the opponent
+	 */
 	public Bullet(int player, Point location, double rotation, int speed, int range, double accuracy, int damage, int size, int id) {
 		this.player = player;
 		this.initialLocation = location;
@@ -38,7 +65,10 @@ public class Bullet {
 		this.id = id;
 	}
 	
-	// Returns false if the bullet has expired
+	/**
+	 * Move the bullet according to its angle and direction
+	 * @return	True if the bullet is still alive
+	 */
 	public boolean step() {
 		if (MathStuffs.distance(initialLocation, new Point((int)x, (int)y)) > range) {
 			return false;
@@ -89,6 +119,10 @@ public class Bullet {
 		return radius;
 	}
 	
+	/**
+	 * This is used to replicate the random offset determined by the firing ship
+	 * @param offset	This is a added to the current angle and can be positive or negative
+	 */
 	public void setOffset(double offset) {
 		rotation += offset;
 	}

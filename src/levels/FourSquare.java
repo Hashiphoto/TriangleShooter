@@ -1,5 +1,10 @@
 package levels;
 
+/**
+ * This level has four squares in the center of the screen
+ * @author Trent
+ *
+ */
 public class FourSquare extends Level{
 	public FourSquare() {
 		super();

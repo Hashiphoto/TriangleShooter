@@ -1,5 +1,10 @@
 package levels;
 
+/**
+ * This level has a diving barrier in the middle of the screen with a gap in the center
+ * @author Trent
+ *
+ */
 public class Divide extends Level {
 	public Divide() {
 		super();

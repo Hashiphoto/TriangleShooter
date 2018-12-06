@@ -1,5 +1,10 @@
 package levels;
 
+/**
+ * This level has a single square in the middle of the screen
+ * @author Trent
+ *
+ */
 public class Dot extends Level{
 	public Dot() {
 		super();

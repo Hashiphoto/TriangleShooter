@@ -4,6 +4,11 @@ import java.awt.Point;
 
 import gameControl.MathStuffs;
 
+/**
+ * The Ship class contains all information about a Ship
+ * @author Trent
+ *
+ */
 public class Ship {
 	public static final int DEFAULT_HEALTH = 100;
 	public static final int DEFAULT_SHIP_MAX_SPEED = 5;
@@ -56,6 +61,11 @@ public class Ship {
 	private int bulletSize;
 	private int radius;
 	
+	/**
+	 * Create a new Ship instance
+	 * @param id	The id of the ship
+	 * @param start	The starting location of the ship
+	 */
 	public Ship(int id, Point start) {
 		this.id = id;
 		this.location = start;
@@ -63,12 +73,20 @@ public class Ship {
 		hardReset();
 	}
 	
+	/**
+	 * Iterate one game tick. This moves and turns the ship by the appropriate amounts.
+	 *  It also updates the Ship's reload state.
+	 * @param mouseLocation
+	 */
 	public void step(Point mouseLocation) {
 		move();
 		setDirectionMouse(mouseLocation);
 		checkReload();
 	}
 	
+	/**
+	 * Reset the ship between rounds
+	 */
 	public void reset() {
 		location.x = start.x;
 		location.y = start.y;
@@ -76,6 +94,9 @@ public class Ship {
 		ammo = clipSize;
 	}
 	
+	/**
+	 * Completely reset the ship between games
+	 */
 	public void hardReset() {
 		this.isFiring = false;
 		this.rotation = 0;
@@ -105,6 +126,11 @@ public class Ship {
 	}
 	
 	// Movement ///////////////////////////////////////////////////////////////
+	
+	/**
+	 * Track which keys are being held down
+	 * @param keyCode	The keyCode of the key pressed
+	 */
 	public void keyPressed(String keyCode) {
 		switch(keyCode) {
 		case "W":
@@ -122,6 +148,11 @@ public class Ship {
 		}
 	}
 	
+	
+	/**
+	 * Track which keys have been released
+	 * @param keyCode	The keyCode of the key pressed
+	 */
 	public void keyReleased(String keyCode) {
 		switch(keyCode) {
 		case "W":
@@ -139,6 +170,9 @@ public class Ship {
 		}
 	}
 	
+	/**
+	 * Advance the ship's position based on what keys are being held
+	 */
 	public void move() {
 		if (keysHeld[UP]) {
 			ySpeed -= shipAcceleration;
@@ -197,27 +231,44 @@ public class Ship {
 		location.y += ySpeed;
 	}
 	
+	/**
+	 * Stops the ship movement
+	 */
 	public void stop() {
 		xSpeed = 0;
 		ySpeed = 0;
 		releaseKeys();
 	}
 	
+	/**
+	 * Simulates letting go of all key presses
+	 */
 	public void releaseKeys() {
 		for(int i = 0; i < keysHeld.length; i++) {
 			keysHeld[i] = false;
 		}
 	}
 	
+	/**
+	 * Set the direction of the ship based on mouse position
+	 * @param mouse	The mouse location
+	 */
 	public void setDirectionMouse(Point mouse) {
-		rotation = MathStuffs.calculateNewAngle(location, mouse, rotation, rotationSpeed);
+		rotation = MathStuffs.turnShipToAngle(location, mouse, rotation, rotationSpeed);
 	}
 	
+	/**
+	 * Set the angle of the Ship directly
+	 * @param angle	The angle for the ship to point
+	 */
 	public void setDirectionAngle(Double angle) {
 		rotation = angle;
 	}
 	
-	// Shooting
+	/**
+	 * This must be called every game frame. It checks if enough time has passed to add
+	 * another bullet to the clip and increases ammo by one if so
+	 */
 	public void checkReload() {
 		long currentTimeSec = System.currentTimeMillis();
 		if (ammo < clipSize && currentTimeSec > reloadTime + lastReloaded) {
@@ -226,6 +277,11 @@ public class Ship {
 		}
 	}
 	
+	/**
+	 * Creates a bullet instance based on the ship's current shooting settings. If the ship has
+	 * no ammo, it returns null
+	 * @return	A new bullet instance
+	 */
 	public Bullet createBullet() {
 		Bullet newBullet = null;
 		if (ammo > 0) {
@@ -241,6 +297,11 @@ public class Ship {
 		return newBullet;
 	}
 	
+	/**
+	 * This method is similar to createBullet() but is not restricted by ammo. It will always return
+	 * a new Bullet instance
+	 * @return
+	 */
 	public Bullet createEnemyBullet() {
 		if(ammo == clipSize) {
 			lastReloaded = System.currentTimeMillis();
@@ -249,6 +310,11 @@ public class Ship {
 		return new Bullet(id, new Point(location), rotation, bulletSpeed, bulletRange, accuracy, damage, bulletSize, firingId);
 	}
 	
+	/**
+	 * This method generates a random number from -Pi/2 to PI/2 and multiplied by accuracy. It
+	 * always returns 0 when accuracy is 0.0
+	 * @return	An offset for the new Bullet angle, in radians
+	 */
 	private double getNewAccuracyOffset() {
 		return accuracy * ((Math.random() - 0.5) * Math.PI);
 	}

@@ -29,6 +29,12 @@ import levels.Level;
 import network.Network;
 import network.NetworkUpdateThread;
 
+/**
+ * This extends JavaFX's Scene and is the main component of the game. It uses AnimationTimer for the
+ * pace and redrawing speed of the game. start() must be called once at the beginning to start the game.
+ * @author Trent
+ *
+ */
 public class GameScene extends Scene {
 	private static final int ROUNDS = 7;
 	private static final byte NO_BYTE = -1;
@@ -65,7 +71,13 @@ public class GameScene extends Scene {
 	private gameState state;
 	private PowerMeterPanel pmp;
 	private int lastWinner;
-	
+
+	/**
+	 * Instantiate a new GameScene
+	 * @param network	This must be connected to another client already either has host or guest
+	 * @param group		The JavaFX Group that encloses this scene
+	 * @param canvas	The canvas that will be used to draw the components
+	 */
 	public GameScene(Network network, Group group, GameCanvas canvas) {
 		super(group);
 		this.network = network;
@@ -84,7 +96,7 @@ public class GameScene extends Scene {
 		currentRound = 1;
 		walls = new ArrayList<Wall>();
 		pmp = new PowerMeterPanel();
-		initializeMeters(pmp);
+		initializeMeters();
 		lastWinner = -1;
 		initializeLevels();
 		this.setOnMouseMoved(MouseMoved());
@@ -93,6 +105,10 @@ public class GameScene extends Scene {
 		this.setOnKeyReleased(KeyReleased());
 	}
 	
+	/**
+	 * Begin the game. This can only be called once. The game will automatically reset after
+	 * someone has won.
+	 */
 	public void start() {
 		if(network.isHosting()) {
 			state = gameState.WAITING_FOR_START;
@@ -115,6 +131,9 @@ public class GameScene extends Scene {
 		}
 	}
 	
+	/**
+	 * Reset the game state
+	 */
 	private void hardReset() {
 		myShip.hardReset();
 		myShip.reset();
@@ -123,7 +142,7 @@ public class GameScene extends Scene {
 		bullets.clear();
 		scoreboard.reset();
 		currentRound = 0;
-		initializeMeters(pmp);
+		initializeMeters();
 
 		if(network.isHosting()) {
 			setupNewLevel();
@@ -133,7 +152,10 @@ public class GameScene extends Scene {
 		}
 	}
 	
-	private void initializeMeters(PowerMeterPanel pmp) {
+	/**
+	 * Set all the PowerMeter's ranges and initialize them to the Ship default value
+	 */
+	private void initializeMeters() {
 		for(int i = 0; i < pmp.meters.size(); i++) {
 			PowerMeter meter = pmp.meters.get(i);
 			int roundsToWin =  ROUNDS / 2;
@@ -180,6 +202,10 @@ public class GameScene extends Scene {
 		}
 	}
 	
+	/**
+	 * Show who won the previous round and start the upgrade screen 
+	 * @param roundWinner	The id of who won the previous round
+	 */
 	private void declareWinner(int roundWinner) {
 		String winner = Ship.Name[roundWinner];
 		lastWinner = roundWinner;
@@ -197,6 +223,10 @@ public class GameScene extends Scene {
 		delay(3.0, e -> pmp.visible = true);
 	}
 	
+	/**
+	 * Show the game winner and reset everything
+	 * @param roundWinner	The id of who won the gme
+	 */
 	private void concludeGame(int roundWinner) {
 		String winner = Ship.Name[roundWinner];
 		canvas.addMessage(new Message(winner + " WINS IT ALL!!", 4, GameCanvas.ShipColors[roundWinner]));
@@ -204,6 +234,9 @@ public class GameScene extends Scene {
 		delay(4, e -> hardReset());
 	}
 	
+	/**
+	 * Create a new level and send it to the opponent. They will send back the Start game signal when it is received
+	 */
 	private void setupNewLevel() {
 		state = gameState.WAITING_FOR_START;
 		int index = getRandomLevel();
@@ -212,18 +245,25 @@ public class GameScene extends Scene {
 		network.sendGameInformation((byte) index, NO_BYTE, NO_BYTE);
 	}
 	
+	/**
+	 * Start the new round after a short delay
+	 */
 	private void startRound() {
 		state = gameState.PAUSED;
 		delay(2.0, e -> state = gameState.PLAYING);
 		pmp.visible = false;
 		myShip.reset();
 		bullets.clear();
+		BulletCounter.reset();
 		canvas.addMessage(new Message("ROUND " + currentRound, 2, Color.WHITE));
 		canvas.addMessage(new Message("WIN OR DIE", 0.25, Color.WHITE));
 		scoreboard.start();
 		currentRound++;
 	}
 	
+	/**
+	 * This is run every frame to figure out what to do based on the Game State
+	 */
 	private void update() {
 //		System.out.println(state);
 		switch(state) {
@@ -256,6 +296,10 @@ public class GameScene extends Scene {
 		myShip.hitBy = -1;
 	}
 	
+	/**
+	 * Perform a predefined action sent by the opponent
+	 * @param action	The id of the action to perform
+	 */
 	private void doAction(int action) {
 		switch(action) {
 		case GAME_START: 
@@ -267,11 +311,18 @@ public class GameScene extends Scene {
 		}
 	}
 	
+	/**
+	 * Perform one game tick on each ship object
+	 */
 	private void updateShip() {
 		myShip.step(mouseLocation);
 		opponent.checkReload();
 	}
 	
+	/**
+	 * This is run every frame during the match to determine collisions, bullet
+	 * firing, and round endings
+	 */
 	private void playStep() {
 		updateShip();
 		if(myShip.isFiring || myShip.burstFiring) {
@@ -311,6 +362,9 @@ public class GameScene extends Scene {
 		}
 	}
 	
+	/**
+	 * Run when the player has won a round. It will evaluate if there is a game winner as well
+	 */
 	private void win() {
 		state = gameState.WAITING_FOR_UPGRADE;
 		if(scoreboard.getWins(myShip.getId()) == ROUNDS / 2) {
@@ -321,6 +375,9 @@ public class GameScene extends Scene {
 		}
 	}
 	
+	/**
+	 * Run when the player has lost a round. It will evaluate if there is a game winner as well
+	 */
 	private void lose() {
 		state = gameState.PAUSED;
 		network.sendGameInformation(NO_BYTE, LOSE, NO_BYTE);
@@ -332,6 +389,9 @@ public class GameScene extends Scene {
 		}
 	}
 	
+	/**
+	 * See if the opponent has selected a level to play on yet. When it is received, send the game start signal
+	 */
 	private void checkForLevel() {
 		if(opponentThread.hasNewLevel()) {
 			setLevel(opponentThread.getLevel());
@@ -343,6 +403,10 @@ public class GameScene extends Scene {
 		}
 	}
 	
+	/**
+	 * Check if any actions have been sent by the opponent and execute them
+	 * @return	True if there was at least one pending action
+	 */
 	private boolean checkForAction() {
 		if(opponentThread.hasFreshAction()) {
 			doAction(opponentThread.getAction());
@@ -351,6 +415,9 @@ public class GameScene extends Scene {
 		return false;
 	}
 	
+	/**
+	 * Check if the opponent has selected an upgrade and recreate the settings locally
+	 */
 	private void checkForUpgrade() {
 		if(opponentThread.hasFreshUpgrade()) {
 			UpdateShipPower(opponentThread.getUpgrade(), true);
@@ -364,8 +431,11 @@ public class GameScene extends Scene {
 			}
 		}
 	}
-	
-	// Changes the ship power levels for both. Received means the opponent picked this upgrade
+	/**
+	 * Change the attributes of both local copies of the ships
+	 * @param upgrade	The ID of the upgrade selected
+	 * @param received	True if this was called from the opponent. False if it was called locally
+	 */
 	private void UpdateShipPower(int upgrade, boolean received) {
 		double winnerModifier = -statStolen;
 		double loserModifier = statStolen;
@@ -446,6 +516,9 @@ public class GameScene extends Scene {
 		}
 	}
 	
+	/**
+	 * Fill the Level ArrayList with one copy of each level
+	 */
 	private void initializeLevels() {
 		levels = new ArrayList<Level>();
 		levels.add(new Corridor());
@@ -455,26 +528,47 @@ public class GameScene extends Scene {
 		levels.add(new Dot());
 	}
 	
+	/**
+	 * Picks a random level in the range of the level ArrayList
+	 * @return	The id of the level selected
+	 */
 	private int getRandomLevel() {
 		int random = (int) (Math.random() * levels.size());
 		return random;
 	}
 	
+	/**
+	 * Set the walls of the room to be the given level's
+	 * @param index	The id of the selected room
+	 */
 	private void setLevel(int index) {
 		walls.clear();
 		walls.addAll(levels.get(index).getWalls());
 	}
 	
+	/**
+	 * Run an action after a specified delay. This uses Timeline so that it is compatible with the Animation
+	 * Timer that is constantly running
+	 * @param duration	The time in seconds to wait before executing the action
+	 * @param event		The action to perform
+	 */
 	private void delay(double duration, EventHandler<ActionEvent> event) {
 		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(duration), event));
 	    timeline.setCycleCount(1);
 	    timeline.play();
 	}
 	
+	/**
+	 * Set a binding in the containing stage so that this occurs when the stage loses focus
+	 */
 	public void onLostFocus() {
 		myShip.releaseKeys();
 	}
 	
+	/**
+	 * Binding to track mouse movement
+	 * @return	The MouseMovement EventHandler
+	 */
 	private EventHandler<MouseEvent> MouseMoved() {
 		return new EventHandler<MouseEvent>() {
 			@Override
@@ -485,6 +579,10 @@ public class GameScene extends Scene {
 		};
 	}
 	
+	/**
+	 * Binding to track mouse clicks. It also detects which upgrade was clicked on
+	 * @return	The MousePressed EventHandler
+	 */
 	private EventHandler<MouseEvent> MousePressed() {
 		return new EventHandler<MouseEvent>() {
 			@Override
@@ -519,6 +617,10 @@ public class GameScene extends Scene {
 		};
 	}
 	
+	/**
+	 * EventHandler to handle key presses and WASD movement
+	 * @return	The KeyPressed EventHandler
+	 */
 	private EventHandler<KeyEvent> KeyPressed() {
 		return new EventHandler<KeyEvent>() {
 			@Override
@@ -531,10 +633,17 @@ public class GameScene extends Scene {
 				if(code == "SPACE") {
 					myShip.isFiring = true;	
 				}
+				else if(code == "E") {
+					myShip.burstFiring = true;
+				}
 			}
 		};
 	}
 	
+	/**
+	 * EventHandler for key releases and WASD movement
+	 * @return	The KeyReleased EventHandler
+	 */
 	private EventHandler<KeyEvent> KeyReleased() {
 		return new EventHandler<KeyEvent>() {
 			@Override

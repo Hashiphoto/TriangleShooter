@@ -2,14 +2,18 @@ package network;
 
 import java.util.ArrayList;
 
-import gameControl.GameTime;
 import gameElements.Bullet;
 import gameElements.Ship;
 
+/**
+ * This class runs constantly in the background and updates the enemy ship and game state
+ * variables based on incoming TCP packets from the opponent
+ * @author Trent
+ *
+ */
 public class NetworkUpdateThread extends Thread {
 	private Ship ship;
 	private Network network;
-	GameTime timer;
 	private ArrayList<Bullet> bullets;
 	private byte level;
 	private boolean hasFreshLevel;
@@ -18,26 +22,41 @@ public class NetworkUpdateThread extends Thread {
 	private byte upgrade;
 	private boolean hasFreshUpgrade;
 	
-	public NetworkUpdateThread(Network n, Ship s, ArrayList<Bullet> b) {
-		ship = s;
-		network = n;
-		bullets = b;
-		hasFreshLevel = false;
-		hasFreshAction = false;
-		hasFreshUpgrade = false;
+	/**
+	 * Instantiate a new Network Update Thread. start() must be called to begin listening
+	 * for updates
+	 * @param network	The network instance. It must be connected to another client already
+	 * @param ship		The ship that will be updated based on network input
+	 * @param bullets	The bullet ArrayList that contains all Bullets in the game
+	 */
+	public NetworkUpdateThread(Network network, Ship ship, ArrayList<Bullet> bullets) {
+		this.ship = ship;
+		this.network = network;
+		this.bullets = bullets;
+		this.hasFreshLevel = false;
+		this.hasFreshAction = false;
+		this.hasFreshUpgrade = false;
 	}
 	
+	/**
+	 * Start listening for incoming updates. This Thread must be running for the entire duration
+	 * of the program. It checks for updates every 1 millisecond so as to not overload the CPU
+	 */
 	@Override
 	public void run() {
-		timer = new GameTime();
+		long lastChecked = System.currentTimeMillis();
 		while(true) {
-			if(timer.GetTimeElapsedSeconds() >= 0.001) {
+			if(System.currentTimeMillis() - lastChecked >= 1) {
 				getUpdates();
-				timer.reset();
+				lastChecked = System.currentTimeMillis();
 			}
 		}
 	}	
 	
+	/**
+	 * Gets all the bytes in the TCP stream and parses them. ShipPackets are used to update the 
+	 * ship, and GameStatePackets are used to update the data visible to the GameScene
+	 */
 	public void getUpdates() {
 		if(network.bytesAvailable() == 0) {
 			return;
@@ -106,25 +125,46 @@ public class NetworkUpdateThread extends Thread {
 		}
 	}
 	
+	/**
+	 * @return	True if the level has not been returned yet
+	 */
 	public boolean hasNewLevel() {
 		return hasFreshLevel;
 	}
+	
+	/**
+	 * @return	Returns the last level received
+	 */
 	public int getLevel() {
 		hasFreshLevel = false;
 		return level;
 	}
 	
+	/**
+	 * @return	True if the latest action has not been returned yet
+	 */
 	public boolean hasFreshAction() {
 		return hasFreshAction;
 	}
+	
+	/**
+	 * @return	Returns the latest action received
+	 */
 	public int getAction() {
 		hasFreshAction = false;
 		return action;
 	}
 	
+	/**
+	 * @return	True if the latest upgrade has not yet been returned
+	 */
 	public boolean hasFreshUpgrade() {
 		return hasFreshUpgrade;
 	}
+	
+	/**
+	 * @return	Returns the latest upgrade received
+	 */
 	public int getUpgrade() {
 		hasFreshUpgrade = false;
 		return upgrade;

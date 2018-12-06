@@ -15,6 +15,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
+/**
+ * The GameCanvas is responsible for drawing the visual representations of the game data
+ * @author Trent
+ *
+ */
 public class GameCanvas extends Canvas {
 	public static final Color[] ShipColors = {
 		Color.CYAN,
@@ -50,12 +55,25 @@ public class GameCanvas extends Canvas {
 	private Scoreboard scoreboard;
 	private PowerMeterPanel pmp;
 	
+	/**
+	 * Instantiate a new GameCanvas. init() must also be called by the GameScene before any drawing can be done
+	 * @param width		The width of the canvas in pixels
+	 * @param height	The height of the canvas in pixels
+	 */
 	public GameCanvas(int width, int height) {
 		super(width, height);
 		gc = this.getGraphicsContext2D();
 		messages = new ArrayList<Message>();
 	}
 
+	/**
+	 * Pass in all the necessary objects from the GameScene that will need to be drawn on screen
+	 * @param ships			The player and enemy ship
+	 * @param bullets		All existing bullets
+	 * @param scoreboard	Holds the win/loss record and game time
+	 * @param walls			All of the walls in the current level
+	 * @param pmp			The PowerMeterPanel. This is only drawn when its visible property is set to true
+	 */
 	public void init(ArrayList<Ship> ships, ArrayList<Bullet> bullets, Scoreboard scoreboard, ArrayList<Wall> walls, PowerMeterPanel pmp) {
 		this.ships = ships;
 		this.bullets = bullets;
@@ -67,6 +85,9 @@ public class GameCanvas extends Canvas {
 		gc.setLineWidth(LINE_WIDTH);
 	}
 	
+	/**
+	 * Called every 1/60th of a second. The order of the drawing determines which objects end up "on top"
+	 */
 	public void repaint() {
 		gc.setFill(Color.BLACK);
 		gc.fillRect(0, HUD_HEIGHT, this.getWidth(), this.getHeight());
@@ -80,14 +101,18 @@ public class GameCanvas extends Canvas {
 		drawMessage();
 	}
 	
+	/**
+	 * Add a new message to display in the middle of the screen
+	 * @param msg	The message to display
+	 */
 	public void addMessage(Message msg) {
 		messages.add(msg);
 	}
 	
-	public boolean messageDisplayed() {
-		return !messages.isEmpty();
-	}
-	
+	/**
+	 * This method iterates through all the PoweMeters and determines their x and y coordinates,
+	 * height and width based on their position in the PMP list
+	 */
 	private void initializeMeters() {
 		for(int i = 0; i < pmp.meters.size(); i++) {
 			PowerMeter meter = pmp.meters.get(i);
@@ -98,6 +123,9 @@ public class GameCanvas extends Canvas {
 		}
 	}
 	
+	/**
+	 * Draws the PowerMeters on screen
+	 */
 	private void drawPowerMeters() {
 		for(int i = 0; i < pmp.meters.size(); i++) {
 			PowerMeter meter = pmp.meters.get(i);
@@ -105,11 +133,15 @@ public class GameCanvas extends Canvas {
 		}
 	}
 	
+	/**
+	 * Draw a sinlge PowerMeter
+	 * @param meter		The PowerMeter to draw
+	 * @param offset	The position of the Meter in the PMP list
+	 */
 	private void drawMeter(PowerMeter meter, int offset) {
 		gc.setFill(SCOREBOARD);
 		gc.fillRect(meter.x, meter.y, meter.width, meter.height);
 
-		// TODO: Make this look better
 		gc.setFill(ShipColors[0]);
 		int side = meter.width / 8;
 		int width = meter.width / 4;
@@ -134,6 +166,9 @@ public class GameCanvas extends Canvas {
 		gc.fillText(meter.getName(), meter.x + meter.width/2, meter.y + meter.height - 30);
 	}
 	
+	/**
+	 * Draw all walls on screen
+	 */
 	private void drawWalls() {
 		int numWalls = walls.size();
 		gc.setStroke(NEUTRAL);
@@ -143,6 +178,9 @@ public class GameCanvas extends Canvas {
 		}
 	}
 	
+	/**
+	 * Draw timer, scores, and health in the HUD
+	 */
 	private void drawScoreboard() {
 		gc.setFill(SCOREBOARD);
 		
@@ -154,6 +192,10 @@ public class GameCanvas extends Canvas {
 		drawWins();
 	}
 	
+	/**
+	 * Draws the text in the top middle of the HUD
+	 * @param time	The time left in the match, in seconds
+	 */
 	private void drawGameTime(int time) {
 		gc.setTextAlign(TextAlignment.CENTER);
 		gc.setFont(AGENCY_CLOCK);
@@ -161,6 +203,9 @@ public class GameCanvas extends Canvas {
 		gc.fillText(Integer.toString(time), this.getWidth() / 2, 45);
 	}
 	
+	/**
+	 * Draws player health bars and remaining health
+	 */
 	private void drawHealthBars() {
 		double maxHealth = ships.get(0).getMaxHealth();
 		gc.setStroke(ShipColors[0]);
@@ -175,6 +220,9 @@ public class GameCanvas extends Canvas {
 		gc.fillRect(this.getWidth() - HEALTH_WIDTH - HUD_BORDER + ((maxHealth - ships.get(1).getHealth()) / maxHealth) * HEALTH_WIDTH, HUD_BORDER, (ships.get(1).getHealth() / 100.0) * HEALTH_WIDTH, HUD_HEIGHT - 2 * HUD_BORDER);
 	}
 	
+	/**
+	 * Draws the boxes to indicate how many wins each player has
+	 */
 	private void drawWins() {
 		gc.setStroke(ShipColors[0]);
 		gc.setFill(ShipColors[0]);
@@ -195,6 +243,10 @@ public class GameCanvas extends Canvas {
 		}
 	}
 	
+	/**
+	 * If there are any messages in the queue, display the first on screen. This method decreases
+	 * the duration in that message by one and removes it from the message queue when it reaches -1
+	 */
 	private void drawMessage() {
 		if(messages.isEmpty()) {
 			return;
@@ -212,6 +264,9 @@ public class GameCanvas extends Canvas {
 		}
 	}
 	
+	/**
+	 * Draw the Ship instances on screen
+	 */
 	private void drawShips() {
 		for (int i = 0; i < numShips; i++) {
 			Ship s = ships.get(i);
@@ -231,6 +286,9 @@ public class GameCanvas extends Canvas {
 		}
 	}
 	
+	/**
+	 * Draw all bullets on screen based on the Bullet size
+	 */
 	private void drawBullets() {
 		for (Bullet b : bullets) {
 			gc.setFill(ShipColors[b.getPlayer()]);
@@ -238,11 +296,18 @@ public class GameCanvas extends Canvas {
 		}
 	}
 	
-	public int getMeterButtonPressed(double d, double e) {
+	/**
+	 * This detects whether the mouse was clicked inside one of the PowerMeters. It returns -1 if the 
+	 * mouse is not inside a PowerMeter or the meter is disabled 
+	 * @param mouseX	The x coordinate of the mouse
+	 * @param mouseY	The y coordinate of the mouse
+	 * @return
+	 */
+	public int getMeterButtonPressed(double mouseX, double mouseY) {
 		for(int i = 0; i < pmp.meters.size(); i++) {
 			PowerMeter meter = pmp.meters.get(i);
-			if(!meter.disabled && d > meter.x && d < meter.x + meter.width
-					&& e > meter.y && e < meter.y + meter.height) {
+			if(!meter.disabled && mouseX > meter.x && mouseX < meter.x + meter.width
+					&& mouseY > meter.y && mouseY < meter.y + meter.height) {
 				return i;
 			}
 		}
