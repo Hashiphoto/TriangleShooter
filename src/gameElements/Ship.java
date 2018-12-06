@@ -57,9 +57,27 @@ public class Ship {
 	private int radius;
 	
 	public Ship(int id, Point start) {
-		this.isFiring = false;
 		this.id = id;
 		this.location = start;
+		this.start = new Point(start.x, start.y);
+		hardReset();
+	}
+	
+	public void step(Point mouseLocation) {
+		move();
+		setDirectionMouse(mouseLocation);
+		checkReload();
+	}
+	
+	public void reset() {
+		location.x = start.x;
+		location.y = start.y;
+		health = maxHealth;
+		ammo = clipSize;
+	}
+	
+	public void hardReset() {
+		this.isFiring = false;
 		this.rotation = 0;
 		this.xSpeed = 0;
 		this.ySpeed = 0;
@@ -78,26 +96,12 @@ public class Ship {
 		this.damage = DEFAULT_BULLET_DAMAGE;
 		this.health = DEFAULT_HEALTH;
 		this.maxHealth = health;
-		this.start = new Point(start.x, start.y);
 		this.bulletSize = DEFAULT_BULLET_SIZE;
 		this.radius = DEFAULT_SHIP_RADIUS;
 		accuracyOffset = 0;
 		hitBy = -1;
 		firingId = -1;
 		burstFiring = false;
-	}
-	
-	public void step(Point mouseLocation) {
-		move();
-		setDirectionMouse(mouseLocation);
-		checkReload();
-	}
-	
-	public void reset() {
-		location.x = start.x;
-		location.y = start.y;
-		health = maxHealth;
-		ammo = clipSize;
 	}
 	
 	// Movement ///////////////////////////////////////////////////////////////
@@ -369,7 +373,6 @@ public class Ship {
 	}
 	
 	public void setAccuracy(double accuracy) {
-		double currentacc = getAccuracy();
 		this.accuracy = accuracy;
 		if(this.accuracy < 0) {
 			this.accuracy = 0;

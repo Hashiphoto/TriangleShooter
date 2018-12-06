@@ -22,6 +22,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import levels.Corridor;
+import levels.Divide;
+import levels.Dot;
 import levels.FourSquare;
 import levels.Level;
 import network.Network;
@@ -32,7 +34,7 @@ public class GameScene extends Scene {
 	private static final byte NO_BYTE = -1;
 	private static final int SPEED_REWARD = 1;
 	private static final double ACCEL_REWARD = 0.05;
-	private static final double ROTATION_REWARD = -1.3;
+	private static final double ROTATION_REWARD = -1.7;
 	private static final double ACCURACY_REWARD = -0.05;
 	private static final int RANGE_REWARD = 50;
 	private static final int DAMAGE_REWARD = 1;
@@ -58,9 +60,8 @@ public class GameScene extends Scene {
 	private enum gameState {
 		PLAYING, PAUSED, WAITING_FOR_LEVEL, WAITING_FOR_START, WAITING_FOR_UPGRADE
 	};
-	private static byte GAME_START = 0;
-	private static byte LOSE = 1;
-	private static byte COMPLETE_LOSE = 2;
+	private final byte GAME_START = 0;
+	private final byte LOSE = 1;
 	private gameState state;
 	private PowerMeterPanel pmp;
 	private int lastWinner;
@@ -111,6 +112,24 @@ public class GameScene extends Scene {
 		
 		if(network.isHosting()) {
 			setupNewLevel();
+		}
+	}
+	
+	private void hardReset() {
+		myShip.hardReset();
+		myShip.reset();
+		opponent.hardReset();
+		opponent.reset();
+		bullets.clear();
+		scoreboard.reset();
+		currentRound = 0;
+		initializeMeters(pmp);
+
+		if(network.isHosting()) {
+			setupNewLevel();
+		}
+		else {
+			state = gameState.WAITING_FOR_LEVEL;
 		}
 	}
 	
@@ -178,6 +197,13 @@ public class GameScene extends Scene {
 		delay(3.0, e -> pmp.visible = true);
 	}
 	
+	private void concludeGame(int roundWinner) {
+		String winner = Ship.Name[roundWinner];
+		canvas.addMessage(new Message(winner + " WINS IT ALL!!", 4, GameCanvas.ShipColors[roundWinner]));
+		scoreboard.win(roundWinner);
+		delay(4, e -> hardReset());
+	}
+	
 	private void setupNewLevel() {
 		state = gameState.WAITING_FOR_START;
 		int index = getRandomLevel();
@@ -231,11 +257,13 @@ public class GameScene extends Scene {
 	}
 	
 	private void doAction(int action) {
-		if(action == 0) {
+		switch(action) {
+		case GAME_START: 
 			startRound();
-		}
-		if (action == 1) {
+			break;
+		case LOSE: 
 			win();
+			break;
 		}
 	}
 	
@@ -285,13 +313,23 @@ public class GameScene extends Scene {
 	
 	private void win() {
 		state = gameState.WAITING_FOR_UPGRADE;
-		declareWinner(myShip.getId());
+		if(scoreboard.getWins(myShip.getId()) == ROUNDS / 2) {
+			concludeGame(myShip.getId());
+		}
+		else {
+			declareWinner(myShip.getId());
+		}
 	}
 	
 	private void lose() {
 		state = gameState.PAUSED;
 		network.sendGameInformation(NO_BYTE, LOSE, NO_BYTE);
-		declareWinner(opponent.getId());
+		if(scoreboard.getWins(opponent.getId()) == ROUNDS / 2) {
+			concludeGame(opponent.getId());
+		}
+		else {
+			declareWinner(opponent.getId());
+		}
 	}
 	
 	private void checkForLevel() {
@@ -413,6 +451,8 @@ public class GameScene extends Scene {
 		levels.add(new Corridor());
 		levels.add(new FourSquare());
 		levels.add(new Level());
+		levels.add(new Divide());
+		levels.add(new Dot());
 	}
 	
 	private int getRandomLevel() {

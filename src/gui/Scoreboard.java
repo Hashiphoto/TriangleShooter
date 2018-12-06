@@ -4,7 +4,6 @@ public class Scoreboard {
 	private static final int MATCH_LENGTH = 60;
 	
 	private long startTime;
-	private int gameTime;
 	private int zeroWins;
 	private int oneWins;
 	public Scoreboard() {
@@ -12,7 +11,6 @@ public class Scoreboard {
 	}
 	
 	public void reset() {
-		gameTime = 60;
 		zeroWins = 0;
 		oneWins = 0;
 	}
@@ -21,11 +19,10 @@ public class Scoreboard {
 		startTime = System.currentTimeMillis();
 	}
 	
-	public int getZeroWin() {
-		return zeroWins;
-	}
-	
-	public int getOneWin() {
+	public int getWins(int id) {
+		if(id == 0) {
+			return zeroWins;
+		}
 		return oneWins;
 	}
 

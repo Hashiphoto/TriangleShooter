@@ -180,7 +180,7 @@ public class GameCanvas extends Canvas {
 		gc.setFill(ShipColors[0]);
 		for(int i = 0; i < 4; i++) {
 			gc.strokeRect(HUD_BORDER + HEALTH_WIDTH + MED_BORDER + i * (WIN_SIZE + WIN_BORDER), (HUD_HEIGHT - WIN_SIZE) / 2, WIN_SIZE, WIN_SIZE);
-			if(i < scoreboard.getZeroWin()) {
+			if(i < scoreboard.getWins(0)) {
 				gc.fillRect(HUD_BORDER + HEALTH_WIDTH + MED_BORDER + INNER_WIN_BORDER + i * (WIN_SIZE + WIN_BORDER), (HUD_HEIGHT - INNER_WIN_SIZE) / 2, INNER_WIN_SIZE, INNER_WIN_SIZE);
 			}
 		}
@@ -189,7 +189,7 @@ public class GameCanvas extends Canvas {
 		gc.setFill(ShipColors[1]);
 		for(int i = 0; i < 4; i++) {
 			gc.strokeRect(this.getWidth() - (WIN_SIZE + HUD_BORDER + HEALTH_WIDTH + MED_BORDER + i * (WIN_SIZE + WIN_BORDER)), (HUD_HEIGHT - WIN_SIZE) / 2, WIN_SIZE, WIN_SIZE);
-			if(i < scoreboard.getOneWin()) {
+			if(i < scoreboard.getWins(1)) {
 				gc.fillRect(this.getWidth() - (INNER_WIN_SIZE + HUD_BORDER + HEALTH_WIDTH + MED_BORDER + INNER_WIN_BORDER + i * (WIN_SIZE + WIN_BORDER)), (HUD_HEIGHT - INNER_WIN_SIZE) / 2, INNER_WIN_SIZE, INNER_WIN_SIZE);
 			}
 		}

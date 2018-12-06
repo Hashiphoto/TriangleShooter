@@ -9,7 +9,6 @@ import gameElements.Wall;
 
 public class MathStuffs {
 	private static final int TURN_PRECISION = 1000;
-	private static final int COLLISION_DISTANCE = 35;
 	private static final int WALL_COLLISION_DISTANCE = 15;
 	
 	public static Point collide(Point position, ArrayList<Wall> walls) {

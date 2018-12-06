@@ -15,7 +15,6 @@ import javafx.animation.Timeline;
 
 public class Network {
 	private static final int PORT = 707;
-	private static final int CONNECT_DELAY = 1;
 	
 	private boolean connected;
 	private int id;
