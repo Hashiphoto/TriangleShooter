@@ -6,20 +6,20 @@ import gameControl.MathStuffs;
 
 public class Ship {
 	public static final int DEFAULT_HEALTH = 100;
+	public static final int DEFAULT_SHIP_MAX_SPEED = 5;
+	public static final double DEFAULT_ACCURACY = 0.04;
+	public static final int DEFAULT_BULLET_RANGE = 450;
+	public static final int DEFAULT_BULLET_SIZE = 14;
+	public static final int DEFAULT_CLIP_SIZE = 3;
+	public static final int DEFAULT_RELOAD_TIME = 700; // milliseconds
 	private static final int UP = 0;
 	private static final int DOWN = 1;
 	private static final int LEFT = 2;
 	private static final int RIGHT = 3;
 	private static final double DEFAULT_SHIP_ROTATION_SPEED = 3;
 	private static final double DEFAULT_SHIP_ACCEL = 0.2;
-	private static final int DEFAULT_SHIP_MAX_SPEED = 5;
-	private static final double DEFAULT_ACCURACY = 0.04;
-	private static final int DEFAULT_BULLET_RANGE = 450;
 	private static final int DEFAULT_BULLET_DAMAGE = 10;
-	private static final int DEFAULT_RELOAD_TIME = 700; // milliseconds
-	private static final int DEFAULT_CLIP_SIZE = 3;
 	private static final int DEFAULT_BULLET_SPEED = 12;
-	private static final int DEFAULT_BULLET_SIZE = 14;
 	private static final int DEFAULT_SHIP_RADIUS = 30;
 	
 	public boolean isFiring;
@@ -369,9 +369,10 @@ public class Ship {
 	}
 	
 	public void setAccuracy(double accuracy) {
+		double currentacc = getAccuracy();
 		this.accuracy = accuracy;
-		if(accuracy < 0) {
-			accuracy = 0;
+		if(this.accuracy < 0) {
+			this.accuracy = 0;
 		}
 	}
 	

@@ -108,6 +108,20 @@ public class GameCanvas extends Canvas {
 	private void drawMeter(PowerMeter meter, int offset) {
 		gc.setFill(SCOREBOARD);
 		gc.fillRect(meter.x, meter.y, meter.width, meter.height);
+
+		// TODO: Make this look better
+		gc.setFill(ShipColors[0]);
+		int side = meter.width / 8;
+		int width = meter.width / 4;
+		int bottom = 70;
+		int height = meter.height - side - bottom;
+		double percentage0 = meter.getPercentage0() * height;
+		double percentage1 = meter.getPercentage1() * height;
+		
+		gc.fillRect(meter.x + side, meter.y + side + height - percentage0, meter.width / 4, percentage0);
+		gc.setFill(ShipColors[1]);
+		gc.fillRect(meter.x + meter.width - width - side, meter.y + side + height - percentage1, meter.width / 4, percentage1);
+
 		if(pmp.isDisabled() || meter.disabled) {
 			gc.setFill(Color.DARKGRAY);
 		}
@@ -218,9 +232,7 @@ public class GameCanvas extends Canvas {
 	}
 	
 	private void drawBullets() {
-		int numBullets = bullets.size();
-		for (int i = 0; i < numBullets; i++) {
-			Bullet b = bullets.get(i);
+		for (Bullet b : bullets) {
 			gc.setFill(ShipColors[b.getPlayer()]);
 			gc.fillOval((int) b.getX() - b.getRadius(), (int) b.getY() - b.getRadius(), b.getSize(), b.getSize());
 		}

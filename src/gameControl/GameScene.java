@@ -30,16 +30,18 @@ import network.NetworkUpdateThread;
 public class GameScene extends Scene {
 	private static final int ROUNDS = 7;
 	private static final byte NO_BYTE = -1;
-	private static final double SPEED_REWARD = 0.5;
+	private static final int SPEED_REWARD = 1;
 	private static final double ACCEL_REWARD = 0.05;
 	private static final double ROTATION_REWARD = -1.3;
 	private static final double ACCURACY_REWARD = -0.05;
 	private static final int RANGE_REWARD = 50;
-	private static final int DAMAGE_REWARD = 0;
+	private static final int DAMAGE_REWARD = 1;
 	private static final int RELOAD_REWARD = -60;
 	private static final int BSPEED_REWARD = 2;
 	private static final int CLIP_REWARD = 1;
-	private static final int BSIZE_REWARD = 2;
+	private static final int BSIZE_REWARD = 4;
+	private final double statStolen = 1.0;
+	private final double winBonus = 2.0;
 	private GameCanvas canvas;
 	private ArrayList<Ship> ships;
 	private ArrayList<Bullet> bullets;
@@ -58,6 +60,7 @@ public class GameScene extends Scene {
 	};
 	private static byte GAME_START = 0;
 	private static byte LOSE = 1;
+	private static byte COMPLETE_LOSE = 2;
 	private gameState state;
 	private PowerMeterPanel pmp;
 	private int lastWinner;
@@ -80,6 +83,7 @@ public class GameScene extends Scene {
 		currentRound = 1;
 		walls = new ArrayList<Wall>();
 		pmp = new PowerMeterPanel();
+		initializeMeters(pmp);
 		lastWinner = -1;
 		initializeLevels();
 		this.setOnMouseMoved(MouseMoved());
@@ -107,6 +111,53 @@ public class GameScene extends Scene {
 		
 		if(network.isHosting()) {
 			setupNewLevel();
+		}
+	}
+	
+	private void initializeMeters(PowerMeterPanel pmp) {
+		for(int i = 0; i < pmp.meters.size(); i++) {
+			PowerMeter meter = pmp.meters.get(i);
+			int roundsToWin =  ROUNDS / 2;
+			double baseValue = 0;
+			double rewardIncrement = 0;
+			switch(i) {
+			case 0: // Movement
+				baseValue = Ship.DEFAULT_SHIP_MAX_SPEED;
+				rewardIncrement = SPEED_REWARD;
+				break;
+			case 1: // Accuracy
+				meter.isBackwards = true;
+				baseValue = Ship.DEFAULT_ACCURACY;
+				rewardIncrement = ACCURACY_REWARD;
+				meter.setLimits(baseValue + -rewardIncrement * statStolen * roundsToWin, 0);
+				meter.setVal0(baseValue);
+				meter.setVal1(baseValue);
+				continue;
+			case 2: // Sniping
+				baseValue = Ship.DEFAULT_BULLET_RANGE;
+				rewardIncrement = RANGE_REWARD;
+				break;
+			case 3: // Bullet Size
+				baseValue = Ship.DEFAULT_BULLET_SIZE;
+				rewardIncrement = BSIZE_REWARD;
+				break;
+			case 4: // Ammo
+				baseValue = Ship.DEFAULT_CLIP_SIZE;
+				rewardIncrement = CLIP_REWARD;
+				break;
+			case 5: // Reload
+				meter.isBackwards = true;
+				baseValue = Ship.DEFAULT_RELOAD_TIME;
+				rewardIncrement = RELOAD_REWARD;
+				break;
+			}
+			meter.setVal0(baseValue);
+			meter.setVal1(baseValue);
+			// You can only lose three rounds
+			meter.setLimits(baseValue - (rewardIncrement * statStolen * roundsToWin), 
+					// You can upgrade by winning three times and by losing three times
+					baseValue + (rewardIncrement * winBonus * roundsToWin) + (rewardIncrement * statStolen * roundsToWin));
+
 		}
 	}
 	
@@ -278,14 +329,14 @@ public class GameScene extends Scene {
 	
 	// Changes the ship power levels for both. Received means the opponent picked this upgrade
 	private void UpdateShipPower(int upgrade, boolean received) {
-		double winnerModifier = -1.0;
-		double loserModifier = 1.0;
+		double winnerModifier = -statStolen;
+		double loserModifier = statStolen;
 		// If we won and are picking our upgrade OR we lost and they are picking their upgrade
 		if((lastWinner == myShip.getId()) == (received == false)) {
-			winnerModifier = 2.0;
+			winnerModifier = winBonus;
 			loserModifier = 0.0;
 		}
-		Ship winner, loser;
+		Ship winner, loser, player0, player1;
 		if(lastWinner == myShip.getId()){
 			winner = myShip;
 			loser = opponent;
@@ -293,6 +344,14 @@ public class GameScene extends Scene {
 		else {
 			winner = opponent;
 			loser = myShip;
+		}
+		if(myShip.getId() == 0) {
+			player0 = myShip;
+			player1 = opponent;
+		}
+		else {
+			player0 = opponent;
+			player1 = myShip;
 		}
 		
 		switch(upgrade) {
@@ -303,35 +362,47 @@ public class GameScene extends Scene {
 			loser.setMaxSpeed((int) (loser.getMaxSpeed() + loserModifier * SPEED_REWARD));
 			loser.setAcceleration(loser.getAcceleration() + loserModifier * ACCEL_REWARD);
 			loser.setRotationSpeed(loser.getRotationSpeed() + loserModifier * ROTATION_REWARD);
+			pmp.meters.get(0).setVal0(player0.getMaxSpeed());
+			pmp.meters.get(0).setVal1(player1.getMaxSpeed());
 			if(received) { pmp.meters.get(0).disabled = true; }
 			break;
 		case 1: // Accuracy
 			winner.setAccuracy(winner.getAccuracy() + winnerModifier * ACCURACY_REWARD);
 			loser.setAccuracy(loser.getAccuracy() + loserModifier * ACCURACY_REWARD);
+			pmp.meters.get(1).setVal0(player0.getAccuracy());
+			pmp.meters.get(1).setVal1(player1.getAccuracy());
 			if(received) { pmp.meters.get(1).disabled = true; }
 			break;
 		case 2: // Sniping
 			winner.setBulletRange((int) (winner.getBulletRange() + winnerModifier * RANGE_REWARD));
-			winner.setDamage((int) (winner.getDamage() + winnerModifier * DAMAGE_REWARD));
 			winner.setBulletSpeed((int) (winner.getBulletSpeed() + winnerModifier * BSPEED_REWARD));
 			loser.setBulletRange((int) (loser.getBulletRange() + loserModifier * RANGE_REWARD));
-			loser.setDamage((int) (loser.getDamage() + loserModifier * DAMAGE_REWARD));
 			loser.setBulletSpeed((int) (loser.getBulletSpeed() + loserModifier * BSPEED_REWARD));
+			pmp.meters.get(2).setVal0(player0.getBulletRange());
+			pmp.meters.get(2).setVal1(player1.getBulletRange());
 			if(received) { pmp.meters.get(2).disabled = true; }
 			break;
 		case 3: // Bullet Size
 			winner.setBulletSize((int) (winner.getBulletSize() + winnerModifier * BSIZE_REWARD));
+			winner.setDamage((int) (winner.getDamage() + winnerModifier * DAMAGE_REWARD));
 			loser.setBulletSize((int) (loser.getBulletSize() + loserModifier * BSIZE_REWARD)); 
+			loser.setDamage((int) (loser.getDamage() + loserModifier * DAMAGE_REWARD));
+			pmp.meters.get(3).setVal0(player0.getBulletSize());
+			pmp.meters.get(3).setVal1(player1.getBulletSize());
 			if(received) { pmp.meters.get(3).disabled = true; }
 			break;
 		case 4: // Ammo
 			winner.setClipSize((int) (winner.getClipSize() + winnerModifier * CLIP_REWARD));
 			loser.setClipSize((int) (loser.getClipSize() + loserModifier * CLIP_REWARD));
+			pmp.meters.get(4).setVal0(player0.getClipSize());
+			pmp.meters.get(4).setVal1(player1.getClipSize());
 			if(received) { pmp.meters.get(4).disabled = true; }
 			break;
 		case 5: // Reload
 			winner.setReloadTime((int) (winner.getReloadTime() + winnerModifier * RELOAD_REWARD));
 			loser.setReloadTime((int) (loser.getReloadTime() + loserModifier * RELOAD_REWARD));
+			pmp.meters.get(5).setVal0(player0.getReloadTime());
+			pmp.meters.get(5).setVal1(player1.getReloadTime());
 			if(received) { pmp.meters.get(5).disabled = true; }
 			break;
 		}

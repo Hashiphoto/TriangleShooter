@@ -191,7 +191,6 @@ public class Network {
 	}
 	
 	public void host() {
-		System.out.println("Hosting");
 		if(serverSocket == null) {
 			try {
 				serverSocket = new ServerSocket(PORT);
